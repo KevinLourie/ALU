@@ -3,24 +3,23 @@
  */
 public class Multiplexer<T> implements Input<T> {
 
-    MuxOp muxOp;
+    Input<MuxOp> muxControl;
 
     Input<T> left;
 
     Input<T> right;
 
-    Multiplexer(Input<MuxOp> muxOp, Input<T> left, Input<T> right) {
-        this.muxOp = muxOp.read();
+    Multiplexer(Input<T> left, Input<T> right, Input<MuxOp> muxControl) {
+        this.muxControl = muxControl;
         this.left = left;
         this.right = right;
     }
 
     @Override
     public T read() {
-        switch (muxOp) {
+        switch (muxControl.read()) {
             case Left:
                 return left.read();
-
             case Right:
                 return right.read();
         }
