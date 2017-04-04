@@ -14,12 +14,12 @@ public class Bus<T> implements Input<T>, Output<T>{
     @Override
     public void write(T data) {
         this.data = data;
-        logger.fine("Write " + data);
+        logger.fine(data.toString());
     }
 
     @Override
     public T read() {
-        logger.fine("Read " + data);
+        logger.fine(data.toString());
         return data;
     }
 

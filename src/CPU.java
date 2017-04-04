@@ -8,20 +8,11 @@ public class CPU {
     /** Memory buffer */
     private Register<Integer> mbr;
 
-    /** Memory buffer bus */
-    private Bus<Integer> mbrBus;
-
-    /** Chooses whether to read or write */
-    private Bus<RegisterOp> mbrControl;
+    /** Data bus */
+    private Bus<Integer> dataBus;
 
     /** Reads or writes integers to buses */
     private Register<Integer> ac;
-
-    /** Accumulator bus */
-    private Bus<Integer> acBus;
-
-    /** Chooses whether to read or write */
-    private Bus<RegisterOp> acControl;
 
     /** Arithmetic logic unit */
     private ALU alu;
@@ -38,82 +29,58 @@ public class CPU {
     /** Chooses which bus the accumulator will read from */
     private Multiplexer<Integer> acMux;
 
+    private MainMemory memory;
+
+    private Bus<MemoryOp> memoryControl;
+
+    private Register<Integer> mar;
+
     CPU() {
         // Create all data buses
-        mbrBus = new Bus();
-        acBus = new Bus();
         aluBus = new Bus();
+        dataBus = new Bus();
 
         // Create all controls
-        mbrControl = new Bus();
-        acControl = new Bus();
         aluControl = new Bus();
         acMuxControl = new Bus();
+        memoryControl = new Bus();
+
+        mbr = new Register(dataBus);
+
+        mar = new Register(null);
+
+        memory = new MainMemory(mbr, mar, memoryControl);
 
         // Choose the mbrBus or the aluBus
-        acMux = new Multiplexer(mbrBus, aluBus, acMuxControl);
+        acMux = new Multiplexer(mbr, aluBus, acMuxControl);
 
         // The AC reads the data from the mbrBus or the aluBus. It writes to the acBus
-        ac = new Register(acMux, acBus, acControl);
+        ac = new Register(acMux);
 
         // The ALU operates on the data read from mbrBus and acBus. It writes to the aluBus
-        alu = new ALU(mbrBus, acBus, aluBus, aluControl);
+        alu = new ALU(mbr, ac, aluBus, aluControl);
     }
 
     public void test() {
         Operator operator = null;
         Scanner scanner = new Scanner(System.in);
+
         System.out.println("Enter first integer");
-        mbrBus.write(scanner.nextInt());
-        System.out.println("Enter second integer");
-        acBus.write(scanner.nextInt());
-        System.out.println("Enter 1 to add, 2 to subtract, 3 to multiply, or 4 to divide");
-        int operatorNumber = scanner.nextInt();
-        switch (operatorNumber) {
-            case 1:
-                operator = Operator.Add;
-                break;
-            case 2:
-                operator = Operator.Subtract;
-                break;
-            case 3:
-                operator = Operator.Multiply;
-                break;
-            case 4:
-                operator = Operator.Divide;
-                break;
-        }
-        aluControl.write(operator);
-        alu.cycle();
-        System.out.println(aluBus.read());
-    }
+        dataBus.write(scanner.nextInt());
 
-    public void test2() {
-        Operator operator = null;
-        Scanner scanner = new Scanner(System.in);
+        mbr.write(RegisterOp.Store);
+        mbr.cycle();
 
-        // Get the first number
-        System.out.println("Enter first integer");
-
-        // Write that number to the mbr bus
-        mbrBus.write(scanner.nextInt());
-
-        // Set multiplexer to left
+        // Set ac multiplexer to mbr
         acMuxControl.write(MuxOp.Left);
 
-        // Set accumulator to read
-        acControl.write(RegisterOp.Read);
-
-        // ac will read the ac mux. The ac will read from the mbr bus
+        ac.write(RegisterOp.Store);
         ac.cycle();
 
-        // Get the second number
         System.out.println("Enter second integer");
+        dataBus.write(scanner.nextInt());
+        mbr.cycle();
 
-        // Write that number to the mbr bus
-        mbrBus.write(scanner.nextInt());
-
-        // Get the operator
         System.out.println("Enter 1 to add, 2 to subtract, 3 to multiply, or 4 to divide");
         int operatorNumber = scanner.nextInt();
         switch (operatorNumber) {
@@ -131,11 +98,6 @@ public class CPU {
                 break;
         }
 
-        // Write accumulator to ac bus
-        acControl.write(RegisterOp.Write);
-        ac.cycle();
-
-        // Write operator to
         aluControl.write(operator);
         alu.cycle();
         System.out.println(aluBus.read());

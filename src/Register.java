@@ -3,35 +3,40 @@ import java.util.logging.Logger;
 /**
  * Created by kzlou on 4/1/2017.
  */
-public class Register<T> {
+public class Register<T> implements Input<T>, Output<RegisterOp> {
 
     Input<T> input;
 
-    Output<T> output;
-
     T data;
 
-    Input<RegisterOp> registerOp;
+    RegisterOp registerOp;
 
     public final static Logger logger = Logger.getLogger(Register.class.getName());
 
-    Register(Input<T> a, Output<T> b, Input<RegisterOp> registerOp) {
+    Register(Input<T> a) {
         input = a;
-        output = b;
-        this.registerOp = registerOp;
     }
 
     public void cycle() {
-        switch (registerOp.read()) {
-            case Read:
+        switch (registerOp) {
+            case Store:
                 data = input.read();
-                logger.fine("Read " + data);
+                logger.fine("store " + data);
                 break;
-            case Write:
-                output.write(data);
-                logger.fine("Write " + data);
+            case None:
                 break;
         }
     }
 
+    @Override
+    public T read() {
+        logger.fine(data.toString());
+        return data;
+    }
+
+    @Override
+    public void write(RegisterOp data) {
+        logger.fine(data.toString());
+        registerOp = data;
+    }
 }
