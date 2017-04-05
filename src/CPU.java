@@ -5,31 +5,32 @@ import java.util.Scanner;
  */
 public class CPU {
 
-    /** Memory buffer */
+    /**
+     * Memory buffer
+     */
     private Register<Integer> mbr;
 
-    /** Data bus */
+    /**
+     * Data bus
+     */
     private Bus<Integer> dataBus;
 
-    /** Reads or writes integers to buses */
+    /**
+     * Reads or writes integers to buses
+     */
     private Register<Integer> ac;
 
-    /** Arithmetic logic unit */
+    /**
+     * Arithmetic logic unit
+     */
     private ALU alu;
 
-    /** ALU bus */
-    private Bus<Integer> aluBus;
-
-    /** Operator bus */
-    private Bus<Operator> aluControl;
-
-    /** Control bus that tells multiplexer what to do */
-    private Bus<MuxOp> acMuxControl;
-
-    /** Chooses which bus the accumulator will read from */
+    /**
+     * Chooses which bus the accumulator will read from
+     */
     private Multiplexer<Integer> acMux;
 
-    private MainMemory memory;
+    private Memory memory;
 
     private Bus<MemoryOp> memoryControl;
 
@@ -37,32 +38,29 @@ public class CPU {
 
     CPU() {
         // Create all data buses
-        aluBus = new Bus();
         dataBus = new Bus();
 
         // Create all controls
-        aluControl = new Bus();
-        acMuxControl = new Bus();
         memoryControl = new Bus();
 
         mbr = new Register(dataBus);
 
         mar = new Register(null);
 
-        memory = new MainMemory(mbr, mar, memoryControl);
+        memory = new Memory(mbr, mar, memoryControl);
 
-        // Choose the mbrBus or the aluBus
-        acMux = new Multiplexer(mbr, aluBus, acMuxControl);
+        // Choose the mbr or the alu
+        acMux = new Multiplexer<>(mbr, alu);
 
-        // The AC reads the data from the mbrBus or the aluBus. It writes to the acBus
+        // The AC reads the data from the mbr or the alu
         ac = new Register(acMux);
 
-        // The ALU operates on the data read from mbrBus and acBus. It writes to the aluBus
-        alu = new ALU(mbr, ac, aluBus, aluControl);
+        // The ALU operates on the data read from mbr and ac
+        alu = new ALU(mbr, ac);
     }
 
     public void test() {
-        Operator operator = null;
+        ALUOp operator = null;
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter first integer");
@@ -72,7 +70,7 @@ public class CPU {
         mbr.cycle();
 
         // Set ac multiplexer to mbr
-        acMuxControl.write(MuxOp.Left);
+        acMux.write(0);
 
         ac.write(RegisterOp.Store);
         ac.cycle();
@@ -85,22 +83,21 @@ public class CPU {
         int operatorNumber = scanner.nextInt();
         switch (operatorNumber) {
             case 1:
-                operator = Operator.Add;
+                operator = ALUOp.Add;
                 break;
             case 2:
-                operator = Operator.Subtract;
+                operator = ALUOp.Subtract;
                 break;
             case 3:
-                operator = Operator.Multiply;
+                operator = ALUOp.Multiply;
                 break;
             case 4:
-                operator = Operator.Divide;
+                operator = ALUOp.Divide;
                 break;
         }
 
-        aluControl.write(operator);
-        alu.cycle();
-        System.out.println(aluBus.read());
+        alu.write(operator);
+        System.out.println(alu.read());
     }
 
 }

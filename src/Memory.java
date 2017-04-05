@@ -3,7 +3,7 @@ import java.util.logging.Logger;
 /**
  * Created by kzlou on 4/3/2017.
  */
-public class MainMemory implements Input<Integer> {
+public class Memory implements Input<Integer> {
 
     byte[] arr = new byte[2^24];
 
@@ -15,7 +15,7 @@ public class MainMemory implements Input<Integer> {
 
     public final static Logger logger = Logger.getLogger(Register.class.getName());
 
-    MainMemory(Input<Integer> data, Input<Integer> address, Input<MemoryOp> memoryControl) {
+    Memory(Input<Integer> data, Input<Integer> address, Input<MemoryOp> memoryControl) {
         this.data = data;
         this.address = address;
         this.memoryControl = memoryControl;

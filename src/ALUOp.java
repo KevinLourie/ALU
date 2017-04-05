@@ -1,7 +1,7 @@
 /**
  * Created by kzlou on 3/31/2017.
  */
-public enum Operator {
+public enum ALUOp {
     Add,
     Subtract,
     Multiply,

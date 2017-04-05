@@ -1,28 +1,23 @@
 /**
  * Created by kzlou on 4/1/2017.
  */
-public class Multiplexer<T> implements Input<T> {
+public class Multiplexer<T> implements Input<T>, Output<Integer> {
 
-    Input<MuxOp> muxControl;
+    Input<T>[] inputArray;
 
-    Input<T> left;
+    int index;
 
-    Input<T> right;
-
-    Multiplexer(Input<T> left, Input<T> right, Input<MuxOp> muxControl) {
-        this.muxControl = muxControl;
-        this.left = left;
-        this.right = right;
+    Multiplexer(Input<T>... muxOp) {
+        this.inputArray = muxOp;
     }
 
     @Override
     public T read() {
-        switch (muxControl.read()) {
-            case Left:
-                return left.read();
-            case Right:
-                return right.read();
-        }
-        return null;
+        return inputArray[index].read();
+    }
+
+    @Override
+    public void write(Integer data) {
+        index = data;
     }
 }

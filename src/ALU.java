@@ -1,7 +1,9 @@
+import java.util.logging.Logger;
+
 /**
  * Created by kzlou on 3/31/2017.
  */
-public class ALU {
+public class ALU implements Input<Integer>, Output<ALUOp> {
 
     /**
      * First bus
@@ -14,27 +16,23 @@ public class ALU {
     private Input<Integer> b;
 
     /**
-     * Third bus
-     */
-    private Output<Integer> c;
-
-    /**
      * ALU control
      */
-    private Input<Operator> operator;
+    private ALUOp operator;
 
-    ALU(Input a, Input b, Output c, Input<Operator> aluControl) {
+    public final static Logger logger = Logger.getLogger(Register.class.getName());
+
+    ALU(Input a, Input b) {
         this.a = a;
         this.b = b;
-        this.c = c;
-        this.operator = aluControl;
     }
 
-    public void cycle() {
+    @Override
+    public Integer read() {
         int operand1 = a.read();
         int operand2 = b.read();
         int result = 0;
-        switch (operator.read()) {
+        switch (operator) {
             case Add:
                 result = operand1 + operand2;
                 break;
@@ -48,7 +46,13 @@ public class ALU {
                 result = operand1 / operand2;
                 break;
         }
-        c.write(result);
+        logger.fine(String.valueOf(result));
+        return result;
     }
 
+    @Override
+    public void write(ALUOp data) {
+        logger.fine(data.toString());
+        operator = data;
+    }
 }
