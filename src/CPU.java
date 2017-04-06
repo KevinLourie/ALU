@@ -8,7 +8,7 @@ public class CPU {
     /**
      * Memory buffer
      */
-    private Register<Integer> mbr;
+    private Register<Short> mbr;
 
     /**
      * Data bus
@@ -18,7 +18,7 @@ public class CPU {
     /**
      * Reads or writes integers to buses
      */
-    private Register<Integer> ac;
+    private Register<Short> ac;
 
     /**
      * Arithmetic logic unit
@@ -36,27 +36,55 @@ public class CPU {
 
     private Register<Integer> mar;
 
+    private Register<Integer> programCounter;
+
+    private Register<Integer> stackPointer;
+
+    private Register<Integer> irAddress;
+
+    private Multiplexer<Integer> marMux;
+
+    private Multiplexer<Short> mbrMux;
+
     CPU() {
-        // Create all data buses
+        // Create the data bus
         dataBus = new Bus();
 
-        // Create all controls
+        // Create the control
         memoryControl = new Bus();
 
+        // Create the memory buffer register
         mbr = new Register(dataBus);
 
-        mar = new Register(null);
+        // Create the ir address
+        irAddress = new Register(mbr);
 
-        memory = new Memory(mbr, mar, memoryControl);
+        // Create the program counter
+        programCounter = new Register(irAddress);
 
-        // Choose the mbr or the alu
-        acMux = new Multiplexer<>(mbr, alu);
+        // Create the stack pointer
+        stackPointer = new Register(irAddress);
 
-        // The AC reads the data from the mbr or the alu
-        ac = new Register(acMux);
+        // Pick input for memory address register
+        marMux = new Multiplexer(mbr, irAddress, programCounter, stackPointer);
+
+        // Create the memory address register
+        mar = new Register(marMux);
 
         // The ALU operates on the data read from mbr and ac
         alu = new ALU(mbr, ac);
+
+        // Create the main memory with data input of mbr and address input of mar
+        memory = new Memory(mbr, mar);
+
+        // Read either from main memory or ALU
+        mbrMux = new Multiplexer(memory, alu);
+
+        // Choose the mbr or the alu
+        acMux = new Multiplexer(mbr, alu);
+
+        // The AC reads the data from the mbr or the alu
+        ac = new Register(acMux);
     }
 
     public void test() {

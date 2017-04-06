@@ -3,29 +3,33 @@ import java.util.logging.Logger;
 /**
  * Created by kzlou on 4/3/2017.
  */
-public class Memory implements Input<Integer> {
+public class Memory implements Input<Short>, Output<MemoryOp> {
 
-    byte[] arr = new byte[2^24];
+    // Byte array
+    Short[] arr = new Short[2^23];
 
+    // Address of byte
     Input<Integer> address;
 
-    Input<Integer> data;
+    // Data to read
+    Input<Short> data;
 
-    Input<MemoryOp> memoryControl;
+    // Store, increment, or decrement
+    MemoryOp memoryControl;
 
     public final static Logger logger = Logger.getLogger(Register.class.getName());
 
-    Memory(Input<Integer> data, Input<Integer> address, Input<MemoryOp> memoryControl) {
+    Memory(Input<Short> data, Input<Integer> address) {
         this.data = data;
         this.address = address;
-        this.memoryControl = memoryControl;
     }
 
     public void cycle() {
-        switch (memoryControl.read()) {
+        switch (memoryControl) {
             case Store:
-                int index = address.read();
-                arr[index] = (byte)(int)data.read();
+                // Fetching 2 bytes at a time
+                int index = address.read()/2;
+                arr[index] = data.read();
                 logger.fine(String.format("Store %d from %d", arr[index], index));
                 break;
             case None:
@@ -34,9 +38,15 @@ public class Memory implements Input<Integer> {
     }
 
     @Override
-    public Integer read() {
-        int index = address.read();
+    public Short read() {
+        // Fetching 2 bytes at a time
+        int index = address.read()/2;
         logger.fine(String.format("Read %d from %d", arr[index], index));
-        return (int)arr[index];
+        return arr[index];
+    }
+
+    @Override
+    public void write(MemoryOp data) {
+        memoryControl = data;
     }
 }

@@ -23,6 +23,12 @@ public class Register<T> implements Input<T>, Output<RegisterOp> {
                 data = input.read();
                 logger.fine("store " + data);
                 break;
+            case Increment2:
+                data = (T)(Number)(((Number)data).intValue() + 2);
+                break;
+            case Decrement2:
+                data = (T)(Number)(((Number)data).intValue() - 2);
+                break;
             case None:
                 break;
         }

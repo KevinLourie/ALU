@@ -3,5 +3,7 @@
  */
 public enum RegisterOp {
     Store,
-    None;
+    None,
+    Increment2,
+    Decrement2;
 }
