@@ -3,17 +3,17 @@ import java.util.logging.Logger;
 /**
  * Created by kzlou on 3/31/2017.
  */
-public class ALU implements Input<Integer>, Output<ALUOp> {
+public class ALU implements Input<Short>, Output<ALUOp> {
 
     /**
      * First bus
      */
-    private Input<Integer> a;
+    private Input<Short> a;
 
     /**
      * Second bus
      */
-    private Input<Integer> b;
+    private Input<Short> b;
 
     /**
      * ALU control
@@ -22,15 +22,15 @@ public class ALU implements Input<Integer>, Output<ALUOp> {
 
     public final static Logger logger = Logger.getLogger(Register.class.getName());
 
-    ALU(Input a, Input b) {
+    public void init(Input a, Input b) {
         this.a = a;
         this.b = b;
     }
 
     @Override
-    public Integer read() {
-        int operand1 = a.read();
-        int operand2 = b.read();
+    public Short read() {
+        short operand1 = a.read();
+        short operand2 = b.read();
         int result = 0;
         switch (operator) {
             case Add:
@@ -47,12 +47,11 @@ public class ALU implements Input<Integer>, Output<ALUOp> {
                 break;
         }
         logger.fine(String.valueOf(result));
-        return result;
+        return (short)result;
     }
 
     @Override
     public void write(ALUOp data) {
-        logger.fine(data.toString());
         operator = data;
     }
 }

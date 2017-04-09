@@ -1,4 +1,4 @@
-import java.util.Scanner;
+import java.io.IOException;
 
 /**
  * Created by kzlou on 3/31/2017.
@@ -8,124 +8,118 @@ public class CPU {
     /**
      * Memory buffer
      */
-    private Register<Short> mbr;
+    private Register16 mbr = new Register16("MBR");
 
     /**
      * Data bus
      */
-    private Bus<Integer> dataBus;
+    private Bus<Short> dataBus = new Bus();
 
     /**
      * Reads or writes integers to buses
      */
-    private Register<Short> ac;
+    private Register16 ac = new Register16("AC");
 
     /**
      * Arithmetic logic unit
      */
-    private ALU alu;
+    private ALU alu = new ALU();
 
     /**
      * Chooses which bus the accumulator will read from
      */
-    private Multiplexer<Integer> acMux;
+    private Multiplexer<Short> acMux = new Multiplexer();
 
-    private Memory memory;
+    private Memory memory = new Memory();
 
-    private Bus<MemoryOp> memoryControl;
+    private Register32 mar = new Register32("MAR");
 
-    private Register<Integer> mar;
+    private Register32 pc = new Register32("PC");
 
-    private Register<Integer> programCounter;
+    private Register32 stackPointer = new Register32("SP");
 
-    private Register<Integer> stackPointer;
+    private RegisterI ir = new RegisterI("IR");
 
-    private Register<Integer> irAddress;
+    private Multiplexer<Integer> marMux = new Multiplexer();
 
-    private Multiplexer<Integer> marMux;
-
-    private Multiplexer<Short> mbrMux;
+    private Multiplexer<Short> mbrMux = new Multiplexer();
 
     CPU() {
-        // Create the data bus
-        dataBus = new Bus();
-
-        // Create the control
-        memoryControl = new Bus();
-
-        // Create the memory buffer register
-        mbr = new Register(dataBus);
-
-        // Create the ir address
-        irAddress = new Register(mbr);
-
-        // Create the program counter
-        programCounter = new Register(irAddress);
-
-        // Create the stack pointer
-        stackPointer = new Register(irAddress);
-
-        // Pick input for memory address register
-        marMux = new Multiplexer(mbr, irAddress, programCounter, stackPointer);
-
-        // Create the memory address register
-        mar = new Register(marMux);
-
         // The ALU operates on the data read from mbr and ac
-        alu = new ALU(mbr, ac);
+        alu.init(mbr, ac);
 
-        // Create the main memory with data input of mbr and address input of mar
-        memory = new Memory(mbr, mar);
+
+        mbrMux.init(memory, alu);
 
         // Read either from main memory or ALU
-        mbrMux = new Multiplexer(memory, alu);
+        mbr.init(mbrMux);
+
+
+        ir.init(mbr);
+
+
+        pc.init(ir);
+
+
+        stackPointer.init(ir);
+
+        // Pick input for memory address register
+        marMux.init(ir, pc, stackPointer);
+
+        mar.init(marMux);
+
+        // Create the main memory with data input of mbr and address input of mar
+        memory.init(mbr, mar);
 
         // Choose the mbr or the alu
-        acMux = new Multiplexer(mbr, alu);
+        acMux.init(mbr, alu);
 
         // The AC reads the data from the mbr or the alu
-        ac = new Register(acMux);
+        ac.init(acMux);
     }
 
-    public void test() {
-        ALUOp operator = null;
-        Scanner scanner = new Scanner(System.in);
+    public void test() throws IOException {
+        memory.readFile("memoryInput.txt");
+        MicroInstruction[] microInstructions = new MicroInstruction[]{
+                new MicroInstruction().setMarMuxIndex(1).setMarOp(RegisterOp.Store),
+                new MicroInstruction().setMbrMuxIndex(0).setMbrOp(RegisterOp.Store).setPcOp(RegisterOp.Increment2),
+                new MicroInstruction().setIrOp(RegisterOp.Store),
+                new MicroInstruction().setMarMuxIndex(0).setMarOp(RegisterOp.Store),
+                new MicroInstruction().setMbrMuxIndex(0).setMbrOp(RegisterOp.Store),
+                new MicroInstruction().setAcMuxIndex(0).setAcOp(RegisterOp.Store)
+        };
 
-        System.out.println("Enter first integer");
-        dataBus.write(scanner.nextInt());
+        execute(microInstructions);
+        System.out.printf(" %s%n", ac.read());
+    }
 
-        mbr.write(RegisterOp.Store);
+    /**
+     * Instructs the CPU. The instructions are provided by the micro instruction
+     * @param microInstruction instructions
+     */
+    public void execute(MicroInstruction microInstruction) {
+        acMux.write(microInstruction.acMuxIndex);
+        marMux.write(microInstruction.marMuxIndex);
+        mbrMux.write(microInstruction.mbrMuxIndex);
+
+        mbr.write(microInstruction.mbrOp);
+        ac.write(microInstruction.acOp);
+        alu.write(microInstruction.aluOp);
+        pc.write(microInstruction.pcOp);
+        ir.write(microInstruction.irOp);
+        mar.write(microInstruction.marOp);
+
+        pc.cycle();
         mbr.cycle();
-
-        // Set ac multiplexer to mbr
-        acMux.write(0);
-
-        ac.write(RegisterOp.Store);
+        ir.cycle();
         ac.cycle();
+        mar.cycle();
+    }
 
-        System.out.println("Enter second integer");
-        dataBus.write(scanner.nextInt());
-        mbr.cycle();
-
-        System.out.println("Enter 1 to add, 2 to subtract, 3 to multiply, or 4 to divide");
-        int operatorNumber = scanner.nextInt();
-        switch (operatorNumber) {
-            case 1:
-                operator = ALUOp.Add;
-                break;
-            case 2:
-                operator = ALUOp.Subtract;
-                break;
-            case 3:
-                operator = ALUOp.Multiply;
-                break;
-            case 4:
-                operator = ALUOp.Divide;
-                break;
+    public void execute(MicroInstruction[] microInstructions) {
+        for(int i = 0; i < microInstructions.length; i++) {
+            execute(microInstructions[i]);
         }
-
-        alu.write(operator);
-        System.out.println(alu.read());
     }
 
 }

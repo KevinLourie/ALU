@@ -1,3 +1,6 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
@@ -19,7 +22,7 @@ public class Memory implements Input<Short>, Output<MemoryOp> {
 
     public final static Logger logger = Logger.getLogger(Register.class.getName());
 
-    Memory(Input<Short> data, Input<Integer> address) {
+    public void init(Input<Short> data, Input<Integer> address) {
         this.data = data;
         this.address = address;
     }
@@ -39,14 +42,26 @@ public class Memory implements Input<Short>, Output<MemoryOp> {
 
     @Override
     public Short read() {
+        System.out.print("[");
         // Fetching 2 bytes at a time
-        int index = address.read()/2;
-        logger.fine(String.format("Read %d from %d", arr[index], index));
-        return arr[index];
+        int address = this.address.read();
+        Short data = arr[address/2];
+        System.out.printf(" %d]", address);
+        return data;
     }
 
     @Override
     public void write(MemoryOp data) {
         memoryControl = data;
+    }
+
+    public void readFile(String path) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(path));
+        String line;
+        int i = 0;
+        while((line = bufferedReader.readLine()) != null) {
+            arr[i] = Short.parseShort(line);
+            i++;
+        }
     }
 }

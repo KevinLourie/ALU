@@ -7,7 +7,7 @@ public class Multiplexer<T> implements Input<T>, Output<Integer> {
 
     int index;
 
-    Multiplexer(Input<T>... muxOp) {
+    public void init(Input<T>... muxOp) {
         this.inputArray = muxOp;
     }
 

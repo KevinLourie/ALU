@@ -5,5 +5,6 @@ public enum ALUOp {
     Add,
     Subtract,
     Multiply,
-    Divide;
+    Divide,
+    None;
 }

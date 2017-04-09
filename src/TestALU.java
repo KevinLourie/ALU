@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.logging.*;
 
 /**
@@ -5,17 +6,7 @@ import java.util.logging.*;
  */
 public class TestALU {
 
-    public static void main(String[] args) {
-        Logger.getLogger("").setLevel(Level.ALL);
-        Handler handler = new ConsoleHandler();
-        handler.setLevel(Level.ALL);
-        handler.setFormatter(new Formatter() {
-            public String format(LogRecord record) {
-                return String.format("%s.%s(%s)\n", record.getSourceClassName(), record.getSourceMethodName(), record.getMessage());
-            }
-        });
-        Logger.getLogger("").addHandler(handler);
-
+    public static void main(String[] args) throws IOException {
         CPU cpu = new CPU();
         cpu.test();
     }
