@@ -1,9 +1,7 @@
-import java.util.logging.Logger;
-
 /**
  * Created by kzlou on 4/1/2017.
  */
-public class Register implements Output<RegisterOp> {
+public class Register implements Input<RegisterOp> {
 
     RegisterOp registerOp;
 

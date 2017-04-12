@@ -44,9 +44,15 @@ public class CPU {
 
     private Multiplexer<Short> mbrMux = new Multiplexer();
 
+    private Decoder decoder;
+
+    private Register16 mpc = new Register16("SPC");
+
     CPU() {
         // The ALU operates on the data read from mbr and ac
         alu.init(mbr, ac);
+
+        decoder.init(ir.getOpcodeOutput());
 
 
         mbrMux.init(memory, alu);
@@ -58,17 +64,20 @@ public class CPU {
         ir.init(mbr);
 
 
-        pc.init(ir);
+        pc.init(ir.getAddressOutput());
 
 
-        stackPointer.init(ir);
+        mpc.init(decoder);
 
-        // Pick input for memory address register
-        marMux.init(ir, pc, stackPointer);
+
+        stackPointer.init(ir.getAddressOutput());
+
+        // Pick input for memory addressOutput register
+        marMux.init(ir.getAddressOutput(), pc, stackPointer);
 
         mar.init(marMux);
 
-        // Create the main memory with data input of mbr and address input of mar
+        // Create the main memory with data input of mbr and addressOutput input of mar
         memory.init(mbr, mar);
 
         // Choose the mbr or the alu

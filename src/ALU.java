@@ -3,17 +3,17 @@ import java.util.logging.Logger;
 /**
  * Created by kzlou on 3/31/2017.
  */
-public class ALU implements Input<Short>, Output<ALUOp> {
+public class ALU implements Output<Short>, Input<ALUOp> {
 
     /**
      * First bus
      */
-    private Input<Short> a;
+    private Output<Short> a;
 
     /**
      * Second bus
      */
-    private Input<Short> b;
+    private Output<Short> b;
 
     /**
      * ALU control
@@ -22,7 +22,7 @@ public class ALU implements Input<Short>, Output<ALUOp> {
 
     public final static Logger logger = Logger.getLogger(Register.class.getName());
 
-    public void init(Input a, Input b) {
+    public void init(Output a, Output b) {
         this.a = a;
         this.b = b;
     }

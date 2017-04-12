@@ -1,11 +1,9 @@
-import java.util.logging.Logger;
-
 /**
  * Created by kzlou on 4/6/2017.
  */
-public class Register16 extends Register implements Input<Short> {
+public class Register16 extends Register implements Output<Short> {
 
-    Input<Short> input;
+    Output<Short> input;
 
     short data;
 
@@ -13,7 +11,7 @@ public class Register16 extends Register implements Input<Short> {
         super(name);
     }
 
-    public void init (Input<Short> a) {
+    public void init (Output<Short> a) {
         input = a;
     }
 

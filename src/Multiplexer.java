@@ -1,13 +1,13 @@
 /**
  * Created by kzlou on 4/1/2017.
  */
-public class Multiplexer<T> implements Input<T>, Output<Integer> {
+public class Multiplexer<T> implements Output<T>, Input<Integer> {
 
-    Input<T>[] inputArray;
+    Output<T>[] inputArray;
 
     int index;
 
-    public void init(Input<T>... muxOp) {
+    public void init(Output<T>... muxOp) {
         this.inputArray = muxOp;
     }
 

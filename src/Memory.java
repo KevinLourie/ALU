@@ -6,23 +6,23 @@ import java.util.logging.Logger;
 /**
  * Created by kzlou on 4/3/2017.
  */
-public class Memory implements Input<Short>, Output<MemoryOp> {
+public class Memory implements Output<Short>, Input<MemoryOp> {
 
     // Byte array
     Short[] arr = new Short[2^23];
 
     // Address of byte
-    Input<Integer> address;
+    Output<Integer> address;
 
     // Data to read
-    Input<Short> data;
+    Output<Short> data;
 
     // Store, increment, or decrement
     MemoryOp memoryControl;
 
     public final static Logger logger = Logger.getLogger(Register.class.getName());
 
-    public void init(Input<Short> data, Input<Integer> address) {
+    public void init(Output<Short> data, Output<Integer> address) {
         this.data = data;
         this.address = address;
     }

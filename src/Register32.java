@@ -1,11 +1,9 @@
-import java.util.logging.Logger;
-
 /**
  * Created by kzlou on 4/6/2017.
  */
-public class Register32 extends Register implements Input<Integer> {
+public class Register32 extends Register implements Output<Integer> {
 
-    Input<Integer> input;
+    Output<Integer> input;
 
     int data;
 
@@ -13,7 +11,7 @@ public class Register32 extends Register implements Input<Integer> {
         super(name);
     }
 
-    public void init(Input<Integer> a) {
+    public void init(Output<Integer> a) {
         input = a;
     }
 

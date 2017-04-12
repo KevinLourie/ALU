@@ -4,7 +4,7 @@ import java.util.logging.Logger;
  * Transfer data
  * Created by kzlou on 3/31/2017.
  */
-public class Bus<T> implements Input<T>, Output<T>{
+public class Bus<T> implements Output<T>, Input<T> {
 
     /** Data to write or read */
     private T data;
