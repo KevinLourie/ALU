@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
+ *
  * Created by kzlou on 4/3/2017.
  */
 public class Memory implements Output<Short>, Input<MemoryOp> {
@@ -40,6 +41,10 @@ public class Memory implements Output<Short>, Input<MemoryOp> {
         }
     }
 
+    /**
+     * Gets the data at the address
+     * @return data at the address
+     */
     @Override
     public Short read() {
         System.out.print("[");

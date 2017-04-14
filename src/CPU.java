@@ -1,6 +1,7 @@
 import java.io.IOException;
 
 /**
+ * The CPU fetches the machine code, translates it into microcode, then executes the microinstructions
  * Created by kzlou on 3/31/2017.
  */
 public class CPU {
