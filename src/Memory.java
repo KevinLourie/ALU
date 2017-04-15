@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
- * The memory contains dataOutput. You can read and write to the memory. The address comes from the MAR and the dataOutput comes
- * from the MBR. The dataOutput is retrieved using its address.
+ * The memory contains dataOutput. You can read and write to the memory. The addressInput comes from the MAR and the dataOutput comes
+ * from the MBR. The dataOutput is retrieved using its addressInput.
  * Created by kzlou on 4/3/2017.
  */
 public class Memory implements Output<Short>, Input<MemoryOp> {
@@ -46,8 +46,8 @@ public class Memory implements Output<Short>, Input<MemoryOp> {
     }
 
     /**
-     * Gets the dataOutput at the address
-     * @return dataOutput at the address
+     * Gets the dataOutput at the addressInput
+     * @return dataOutput at the addressInput
      */
     @Override
     public Short read() {

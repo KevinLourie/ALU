@@ -1,5 +1,5 @@
 /**
- * IR register. Input is dataOutput. Output is opcode and its address.
+ * IR register. Input is dataOutput. Output is opcode and its addressInput.
  * Created by kzlou on 4/6/2017.
  */
 public class RegisterI extends Register {

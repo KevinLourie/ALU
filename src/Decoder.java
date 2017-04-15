@@ -12,14 +12,10 @@ public class Decoder implements Output<Short> {
     Output<Byte> input;
 
     Decoder() {
-        storageControlIndexes[Opcode.LDAx.ordinal()] = 10;
-        storageControlIndexes[Opcode.STAx.ordinal()] = 13;
-        storageControlIndexes[Opcode.ADDx.ordinal()] = 15;
-        storageControlIndexes[Opcode.ANDx.ordinal()] = 18;
-        storageControlIndexes[Opcode.JMPx.ordinal()] = 21;
-        storageControlIndexes[Opcode.BZx.ordinal()] = 22;
-        storageControlIndexes[Opcode.NOT.ordinal()] = 24;
-        storageControlIndexes[Opcode.SHR.ordinal()] = 25;
+        // Loop through opcodes
+        for(Opcode opcode : Opcode.values()) {
+            storageControlIndexes[opcode.ordinal()] = opcode.getMicrocodeOrdinal();
+        }
     }
 
     public void init(Output<Byte> input) {

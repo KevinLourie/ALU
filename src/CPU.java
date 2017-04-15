@@ -42,7 +42,7 @@ public class CPU {
     private Memory memory = new Memory();
 
     /**
-     * Memory address register
+     * Memory addressInput register
      */
     private Register32 mar = new Register32("MAR");
 
@@ -100,7 +100,7 @@ public class CPU {
         // Read either from main memory or ALU
         mbr.init(mbrMux);
 
-        cs = new ControlStore(mbr);
+        cs = new ControlStore(mpc);
 
         // The program counter reads the index of the current program from the instruction register
         pc.init(ir.getAddressOutput());
@@ -129,16 +129,7 @@ public class CPU {
 
     public void test() throws IOException {
         memory.readFile("memoryInput.txt");
-        MicroInstruction[] microInstructions = new MicroInstruction[]{
-                new MicroInstruction().setMarMuxIndex(1).setMarOp(RegisterOp.Store),
-                new MicroInstruction().setMbrMuxIndex(0).setMbrOp(RegisterOp.Store).setPcOp(RegisterOp.Increment2),
-                new MicroInstruction().setIrOp(RegisterOp.Store),
-                new MicroInstruction().setMarMuxIndex(0).setMarOp(RegisterOp.Store),
-                new MicroInstruction().setMbrMuxIndex(0).setMbrOp(RegisterOp.Store),
-                new MicroInstruction().setAcMuxIndex(0).setAcOp(RegisterOp.Store),
-        };
-
-        execute(microInstructions);
+        run();
         System.out.printf(" %s%n", ac.read());
     }
 
@@ -173,10 +164,15 @@ public class CPU {
         }
     }
 
+    /**
+     * Fetches microinstruction and executes it
+     */
     public void run() {
         Output<MicroInstruction> microInstructionOutput = cs.getMicroInstructionOutput();
-        for(;;) {
-            execute(microInstructionOutput.read());
+        for(int i = 0; i < 4; i++) {
+            MicroInstruction currentMicroInstruction = microInstructionOutput.read();
+            System.out.printf(" -> %s%n", currentMicroInstruction);
+            execute(currentMicroInstruction);
         }
     }
 }
