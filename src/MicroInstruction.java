@@ -4,6 +4,9 @@
  */
 public class MicroInstruction {
 
+    /** Control for MPC */
+    RegisterOp mpcOp = RegisterOp.Increment;
+
     /** Control for mbr */
     RegisterOp mbrOp = RegisterOp.None;
 
@@ -73,6 +76,11 @@ public class MicroInstruction {
 
     public MicroInstruction setMarOp(RegisterOp marOp) {
         this.marOp = marOp;
+        return this;
+    }
+
+    public MicroInstruction setMpcOp(RegisterOp mpcOp) {
+        this.mpcOp = mpcOp;
         return this;
     }
 }

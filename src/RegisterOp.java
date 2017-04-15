@@ -4,6 +4,9 @@
 public enum RegisterOp {
     Store,
     None,
+    Increment,
+    Decrement,
     Increment2,
-    Decrement2;
+    Decrement2,
+    Clear;
 }

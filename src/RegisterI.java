@@ -1,7 +1,9 @@
 /**
+ * IR register. Input is dataOutput. Output is opcode and its address.
  * Created by kzlou on 4/6/2017.
  */
 public class RegisterI extends Register {
+
 
     Output<Byte> opcodeOutput;
 

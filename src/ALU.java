@@ -1,17 +1,18 @@
 import java.util.logging.Logger;
 
 /**
+ * Input is two numbers. Output is result of two numbers.
  * Created by kzlou on 3/31/2017.
  */
 public class ALU implements Output<Short>, Input<ALUOp> {
 
     /**
-     * First bus
+     * First number
      */
     private Output<Short> a;
 
     /**
-     * Second bus
+     * Second number
      */
     private Output<Short> b;
 
@@ -27,6 +28,10 @@ public class ALU implements Output<Short>, Input<ALUOp> {
         this.b = b;
     }
 
+    /**
+     * Read 2 numbers. Perform operation specified by the operator field.
+     * @return result
+     */
     @Override
     public Short read() {
         short operand1 = a.read();
@@ -50,6 +55,10 @@ public class ALU implements Output<Short>, Input<ALUOp> {
         return (short)result;
     }
 
+    /**
+     * Choose the ALU operation
+     * @param data ALU operation
+     */
     @Override
     public void write(ALUOp data) {
         operator = data;

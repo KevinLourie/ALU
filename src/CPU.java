@@ -12,6 +12,11 @@ public class CPU {
     private Register16 mbr = new Register16("MBR");
 
     /**
+     * Control store
+     */
+    private ControlStore cs;
+
+    /**
      * Data bus
      */
     private Bus<Short> dataBus = new Bus();
@@ -31,60 +36,94 @@ public class CPU {
      */
     private Multiplexer<Short> acMux = new Multiplexer();
 
+    /**
+     * Main memory
+     */
     private Memory memory = new Memory();
 
+    /**
+     * Memory address register
+     */
     private Register32 mar = new Register32("MAR");
 
+    /**
+     * Program counter
+     */
     private Register32 pc = new Register32("PC");
 
-    private Register32 stackPointer = new Register32("SP");
+    /**
+     * Stack pointer
+     */
+    private Register32 sp = new Register32("SP");
 
+    /**
+     * Instruction register
+     */
     private RegisterI ir = new RegisterI("IR");
 
+    /**
+     * Chooses input to MAR
+     */
     private Multiplexer<Integer> marMux = new Multiplexer();
 
+    /**
+     * Chooses input to MBR
+     */
     private Multiplexer<Short> mbrMux = new Multiplexer();
 
+    /**
+     * Decoder
+     */
     private Decoder decoder;
 
-    private Register16 mpc = new Register16("SPC");
+    /**
+     * Microprogram counter
+     */
+    private Register16 mpc = new Register16("MPC");
 
     CPU() {
-        // The ALU operates on the data read from mbr and ac
+        // Make the decoder
+        decoder = new Decoder();
+
+        // The ALU operates on the dataOutput read from mbr and ac
         alu.init(mbr, ac);
 
+        // The IR will read from the MBR
+        ir.init(mbr);
+
+        // The decoder reads from the instruction register
         decoder.init(ir.getOpcodeOutput());
 
-
+        // The MBR will either read from main memory or the ALU
         mbrMux.init(memory, alu);
 
         // Read either from main memory or ALU
         mbr.init(mbrMux);
 
+        cs = new ControlStore(mbr);
 
-        ir.init(mbr);
-
-
+        // The program counter reads the index of the current program from the instruction register
         pc.init(ir.getAddressOutput());
 
-
+        // The microprogram counter reads the index of the current microprogram from the decoder
         mpc.init(decoder);
 
-
-        stackPointer.init(ir.getAddressOutput());
+        // The stack pointer reads the index of next element in the stack from the instruction register
+        sp.init(ir.getAddressOutput());
 
         // Pick input for memory addressOutput register
-        marMux.init(ir.getAddressOutput(), pc, stackPointer);
+        marMux.init(ir.getAddressOutput(), pc, sp);
 
+        // The input to MAR was chosen by the MAR multiplexer
         mar.init(marMux);
 
-        // Create the main memory with data input of mbr and addressOutput input of mar
+        // Create the main memory with dataOutput input of mbr and addressOutput input of mar
         memory.init(mbr, mar);
 
         // Choose the mbr or the alu
         acMux.init(mbr, alu);
 
-        // The AC reads the data from the mbr or the alu
+        // The AC reads the dataOutput from the mbr or the alu
         ac.init(acMux);
     }
 
@@ -96,7 +135,7 @@ public class CPU {
                 new MicroInstruction().setIrOp(RegisterOp.Store),
                 new MicroInstruction().setMarMuxIndex(0).setMarOp(RegisterOp.Store),
                 new MicroInstruction().setMbrMuxIndex(0).setMbrOp(RegisterOp.Store),
-                new MicroInstruction().setAcMuxIndex(0).setAcOp(RegisterOp.Store)
+                new MicroInstruction().setAcMuxIndex(0).setAcOp(RegisterOp.Store),
         };
 
         execute(microInstructions);
@@ -118,12 +157,14 @@ public class CPU {
         pc.write(microInstruction.pcOp);
         ir.write(microInstruction.irOp);
         mar.write(microInstruction.marOp);
+        mpc.write(microInstruction.mpcOp);
 
         pc.cycle();
         mbr.cycle();
         ir.cycle();
         ac.cycle();
         mar.cycle();
+        mpc.cycle();
     }
 
     public void execute(MicroInstruction[] microInstructions) {
@@ -132,4 +173,10 @@ public class CPU {
         }
     }
 
+    public void run() {
+        Output<MicroInstruction> microInstructionOutput = cs.getMicroInstructionOutput();
+        for(;;) {
+            execute(microInstructionOutput.read());
+        }
+    }
 }

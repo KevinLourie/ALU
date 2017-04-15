@@ -1,7 +1,7 @@
 import java.util.logging.Logger;
 
 /**
- * Transfer data
+ * Transfer dataOutput
  * Created by kzlou on 3/31/2017.
  */
 public class Bus<T> implements Output<T>, Input<T> {
