@@ -49,7 +49,10 @@ public class RegisterI extends Register {
     public void cycle() {
         switch (registerOp) {
             case Store:
-                data = input.read();
+                int rawData = input.read();
+                int opcode = (rawData << 16) & 0xFF000000;
+                int address = rawData & 0x000000FF;
+                data = opcode | address;
                 System.out.printf(" -> %s %d%n", name, data);
                 break;
             case None:

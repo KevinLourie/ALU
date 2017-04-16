@@ -169,8 +169,12 @@ public class CPU {
      */
     public void run() {
         Output<MicroInstruction> microInstructionOutput = cs.getMicroInstructionOutput();
-        for(int i = 0; i < 4; i++) {
+        for(int i = 0; ; i++) {
             MicroInstruction currentMicroInstruction = microInstructionOutput.read();
+            if(currentMicroInstruction.halt) {
+                System.out.printf(" -> HALT%n");
+                break;
+            }
             System.out.printf(" -> %s%n", currentMicroInstruction);
             execute(currentMicroInstruction);
         }

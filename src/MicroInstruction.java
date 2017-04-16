@@ -4,6 +4,9 @@
  */
 public class MicroInstruction {
 
+    /** True to halt the CPU */
+    boolean halt;
+
     /** Control for MPC */
     RegisterOp mpcOp = RegisterOp.Increment;
 
@@ -81,6 +84,11 @@ public class MicroInstruction {
 
     public MicroInstruction setMpcOp(RegisterOp mpcOp) {
         this.mpcOp = mpcOp;
+        return this;
+    }
+
+    public MicroInstruction setHalt() {
+        halt = true;
         return this;
     }
 }

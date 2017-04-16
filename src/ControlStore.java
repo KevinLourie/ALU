@@ -9,20 +9,34 @@ public class ControlStore {
 
     // List of microinstructions
     MicroInstruction[] microInstructions = new MicroInstruction[]{
-            // MAR reads addressInput from program counter
+            // 0: MAR reads addressInput from program counter
             new MicroInstruction().setMarMuxIndex(1).setMarOp(RegisterOp.Store),
 
-            // MBR reads instruction, program counter points to next program
+            // 1: MBR reads instruction, program counter points to next program
             new MicroInstruction().setMbrMuxIndex(0).setMbrOp(RegisterOp.Store).setPcOp(RegisterOp.Increment2),
 
-            // IR reads instruction from MBR
+            // 2: IR reads instruction from MBR
             new MicroInstruction().setIrOp(RegisterOp.Store),
 
-            // LDAx
+            // 3: IR reads instruction from MBR
             new MicroInstruction().setMpcOp(RegisterOp.Store),
+
+            // 4: TBD
+            null,
+
+            null,
+
+            null,
+
+            null,
+
+            // HALT
+            new MicroInstruction().setHalt(),
+
+            // LDAx
             new MicroInstruction().setMarMuxIndex(0).setMarOp(RegisterOp.Store),
             new MicroInstruction().setMbrMuxIndex(0).setMbrOp(RegisterOp.Store),
-            new MicroInstruction().setAcMuxIndex(0).setAcOp(RegisterOp.Store)
+            new MicroInstruction().setAcMuxIndex(0).setAcOp(RegisterOp.Store).setMpcOp(RegisterOp.Clear)
     };
 
     /**
