@@ -4,6 +4,10 @@
  */
 public class Register16 extends Register implements Output<Short> {
 
+    Output<Byte> opcodeOutput;
+
+    Output<Integer> addressOutput;
+
     /**
      * Input to register
      */
@@ -16,6 +20,23 @@ public class Register16 extends Register implements Output<Short> {
 
     Register16(String name) {
         super(name);
+        opcodeOutput = new Output<Byte>() {
+
+            @Override
+            public Byte read() {
+                System.out.print(name);
+                return (byte) (data >> 8);
+            }
+        };
+
+        addressOutput = new Output<Integer>() {
+
+            @Override
+            public Integer read() {
+                System.out.print(name);
+                return data & 0xFF;
+            }
+        };
     }
 
     public void init (Output<Short> a) {
@@ -56,5 +77,13 @@ public class Register16 extends Register implements Output<Short> {
     public Short read() {
         System.out.print(name);
         return data;
+    }
+
+    public Output<Byte> getOpcodeOutput() {
+        return opcodeOutput;
+    }
+
+    public Output<Integer> getAddressOutput() {
+        return addressOutput;
     }
 }

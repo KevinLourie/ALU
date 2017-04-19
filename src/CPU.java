@@ -59,7 +59,7 @@ public class CPU {
     /**
      * Instruction register
      */
-    private RegisterI ir = new RegisterI("IR");
+    private Register16 ir = new Register16("IR");
 
     /**
      * Chooses input to MAR
@@ -128,7 +128,7 @@ public class CPU {
     }
 
     public void test() throws IOException {
-        memory.readFile("memoryInput.txt");
+        memory.readFile("memoryInput2.txt");
         run();
         System.out.printf(" %s%n", ac.read());
     }

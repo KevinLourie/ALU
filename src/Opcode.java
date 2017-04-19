@@ -7,7 +7,6 @@ public enum Opcode {
     LDAx(9),
     STAx(12),
     ADDx(14),
-    ANDx(17),
     JMPx(20),
     BZx(21),
     NOT(23),

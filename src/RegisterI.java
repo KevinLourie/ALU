@@ -4,7 +4,6 @@
  */
 public class RegisterI extends Register {
 
-
     Output<Byte> opcodeOutput;
 
     Output<Integer> addressOutput;

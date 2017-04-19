@@ -18,10 +18,12 @@ public class ControlStore {
             // 2: IR reads instruction from MBR
             new MicroInstruction().setIrOp(RegisterOp.Store),
 
-            // 3: IR reads instruction from MBR
+            // 3: MBR reads instruction from the decoder
             new MicroInstruction().setMpcOp(RegisterOp.Store),
 
             // 4: TBD
+            null,
+
             null,
 
             null,
@@ -36,7 +38,17 @@ public class ControlStore {
             // LDAx
             new MicroInstruction().setMarMuxIndex(0).setMarOp(RegisterOp.Store),
             new MicroInstruction().setMbrMuxIndex(0).setMbrOp(RegisterOp.Store),
-            new MicroInstruction().setAcMuxIndex(0).setAcOp(RegisterOp.Store).setMpcOp(RegisterOp.Clear)
+            new MicroInstruction().setAcMuxIndex(0).setAcOp(RegisterOp.Store).setMpcOp(RegisterOp.Clear),
+
+            // STA x
+            new MicroInstruction().setMarMuxIndex(0).setMarOp(RegisterOp.Store).setMbrMuxIndex(1).setMbrOp(RegisterOp.Store).setAluOp(ALUOp.Right),
+            new MicroInstruction().setMemoryOp(MemoryOp.Store),
+
+            // ADD x
+            new MicroInstruction().setMarMuxIndex(0).setMarOp(RegisterOp.Store),
+            new MicroInstruction().setMbrMuxIndex(0).setMbrOp(RegisterOp.Store).setAluOp(ALUOp.Add),
+            new MicroInstruction().setAcMuxIndex(1).setAcOp(RegisterOp.Store)
+
     };
 
     /**

@@ -50,6 +50,8 @@ public class ALU implements Output<Short>, Input<ALUOp> {
             case Divide:
                 result = operand1 / operand2;
                 break;
+            case Right:
+                result = operand2;
         }
         logger.fine(String.valueOf(result));
         return (short)result;

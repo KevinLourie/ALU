@@ -7,6 +7,8 @@ public class MicroInstruction {
     /** True to halt the CPU */
     boolean halt;
 
+    MemoryOp memoryOp = MemoryOp.None;
+
     /** Control for MPC */
     RegisterOp mpcOp = RegisterOp.Increment;
 
@@ -84,6 +86,11 @@ public class MicroInstruction {
 
     public MicroInstruction setMpcOp(RegisterOp mpcOp) {
         this.mpcOp = mpcOp;
+        return this;
+    }
+
+    public MicroInstruction setMemoryOp(MemoryOp memoryOp) {
+        this.memoryOp = memoryOp;
         return this;
     }
 
