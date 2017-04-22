@@ -4,68 +4,52 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
- * The memory contains dataOutput. You can read and write to the memory. The addressInput comes from the MAR and the dataOutput comes
- * from the MBR. The dataOutput is retrieved using its addressInput.
+ * The memory contains dataInput. You can read and write to the memory. The addressInput comes from the MAR and the dataInput comes
+ * from the MBR. The dataInput is retrieved using its addressInput.
  * Created by kzlou on 4/3/2017.
  */
-public class Memory implements Output<Short>, Input<MemoryOp> {
+public class Memory {
 
     // Byte array
-    Short[] arr = new Short[2^23];
+    Integer[] arr = new Integer[2^22];
 
     // Address of byte
-    Output<Integer> address;
+    Output<Integer> addressInput;
 
     // Data to read
-    Output<Short> dataOutput;
+    Output<Integer> dataInput;
 
-    // Store, increment, or decrement
-    MemoryOp memoryControl;
+    Output<Integer> output;
 
     public final static Logger logger = Logger.getLogger(Register.class.getName());
 
-    public void init(Output<Short> data, Output<Integer> address) {
-        this.dataOutput = data;
-        this.address = address;
+    Memory() {
+        output = new Output<Integer>() {
+            @Override
+            public Integer read() {
+                System.out.print("[");
+                // Fetching 2 bytes at a time
+                int address = addressInput.read();
+                int data = arr[address/4];
+                System.out.printf(" %d]", address);
+                return data;
+            }
+        };
+    }
+
+    public void init(Output<Integer> data, Output<Integer> address) {
+        this.dataInput = data;
+        this.addressInput = address;
     }
 
     /**
      * Write data to memory
      */
     public void cycle() {
-        switch (memoryControl) {
-            case Store:
-                // Fetching 2 bytes at a time
-                int index = address.read()/2;
-                arr[index] = dataOutput.read();
-                logger.fine(String.format("Store %d from %d", arr[index], index));
-                break;
-            case None:
-                break;
-        }
-    }
-
-    /**
-     * Gets the dataOutput at the addressInput
-     * @return dataOutput at the addressInput
-     */
-    @Override
-    public Short read() {
-        System.out.print("[");
         // Fetching 2 bytes at a time
-        int address = this.address.read();
-        Short data = arr[address/2];
-        System.out.printf(" %d]", address);
-        return data;
-    }
-
-    /**
-     * Choose the memory operation
-     * @param data memory operation
-     */
-    @Override
-    public void write(MemoryOp data) {
-        memoryControl = data;
+        int index = addressInput.read()/4;
+        arr[index] = dataInput.read();
+        System.out.printf("Store %d from %d %n", arr[index], index);
     }
 
     public void readFile(String path) throws IOException {
@@ -73,7 +57,7 @@ public class Memory implements Output<Short>, Input<MemoryOp> {
         String line;
         int i = 0;
         while((line = bufferedReader.readLine()) != null) {
-            arr[i] = Short.parseShort(line, 16);
+            arr[i] = Integer.parseInt(line);
             i++;
         }
     }

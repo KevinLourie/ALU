@@ -6,42 +6,46 @@ import java.util.logging.Logger;
 public class RegisterBank {
 
     // Register array
-    Integer[] arr = new Integer[32];
+    int[] arr = new int[32];
 
     // Address of register
-    byte address;
+    Output<Byte> addressInput;
 
-    // Data to read
-    int data;
+    Output<Integer> dataInput;
+
+    Output<Integer> output;
 
     public final static Logger logger = Logger.getLogger(Register.class.getName());
 
-    public void init(int data, byte address) {
-        this.data = data;
-        this.address = address;
+    RegisterBank() {
+        output = new Output<Integer>() {
+            @Override
+            public Integer read() {
+                System.out.print("[");
+                // Fetching 2 bytes at a time
+                byte address = addressInput.read();
+                int data = arr[address];
+                System.out.printf(" %d]", address);
+                return data;
+            }
+        };
+    }
+
+    public void init(Output<Byte> addressInput, Output<Integer> dataInput) {
+        this.addressInput = addressInput;
+        this.dataInput = dataInput;
     }
 
     /**
      * Write data to memory
      */
     public void cycle() {
-        // Fetching 2 bytes at a time
-        int index = address / 2;
-        arr[index] = data;
-        logger.fine(String.format("Store %d from %d", arr[index], index));
+        int index = addressInput.read();
+        arr[index] = dataInput.read();
+        System.out.printf("Store %d from %d%n", arr[index], index);
     }
 
-    /**
-     * Gets the data at the address
-     *
-     * @return data at the address
-     */
-    public int read() {
-        System.out.print("[");
-        // Fetching 2 bytes at a time
-        int address = this.address;
-        int data = arr[address / 2];
-        System.out.printf(" %d]", address);
-        return data;
+    public Output<Integer> getOutput() {
+        return output;
     }
 }

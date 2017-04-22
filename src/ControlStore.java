@@ -54,17 +54,17 @@ public class ControlStore {
     /**
      * Constructor
      *
-     * @param addressInput location of microinstruction to be executed
+     * @param opcodeInput location of microinstruction to be executed
      */
-    ControlStore(Output<Short> addressInput) {
+    ControlStore(Output<Byte> opcodeInput) {
         microInstructionOutput = new Output<MicroInstruction>() {
 
             @Override
             public MicroInstruction read() {
                 System.out.print("[");
-                Short address = addressInput.read();
-                System.out.printf(" %d]", address);
-                return microInstructions[address];
+                byte opcode = opcodeInput.read();
+                System.out.printf(" %d]", opcode);
+                return microInstructions[opcode];
             }
         };
     }

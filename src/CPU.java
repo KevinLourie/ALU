@@ -85,7 +85,7 @@ public class CPU {
         // Make the decoder
         decoder = new Decoder();
 
-        // The ALU operates on the dataOutput read from mbr and ac
+        // The ALU operates on the dataInput read from mbr and ac
         alu.init(mbr, ac);
 
         // The IR will read from the MBR
@@ -117,13 +117,13 @@ public class CPU {
         // The input to MAR was chosen by the MAR multiplexer
         mar.init(marMux);
 
-        // Create the main memory with dataOutput input of mbr and addressOutput input of mar
+        // Create the main memory with dataInput input of mbr and addressOutput input of mar
         memory.init(mbr, mar);
 
         // Choose the mbr or the alu
         acMux.init(mbr, alu);
 
-        // The AC reads the dataOutput from the mbr or the alu
+        // The AC reads the dataInput from the mbr or the alu
         ac.init(acMux);
     }
 
