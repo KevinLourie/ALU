@@ -28,7 +28,7 @@ public class MicroInstruction {
     RegisterOp acOp = RegisterOp.None;
 
     /** Control for alu */
-    ALUOp aluOp = ALUOp.None;
+    AluOp aluOp = AluOp.None;
 
     /** Control for pc */
     RegisterOp pcOp = RegisterOp.None;
@@ -64,7 +64,7 @@ public class MicroInstruction {
         return this;
     }
 
-    public MicroInstruction setAluOp(ALUOp aluOp) {
+    public MicroInstruction setAluOp(AluOp aluOp) {
         this.aluOp = aluOp;
         return this;
     }

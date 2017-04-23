@@ -19,7 +19,7 @@ public class ALU {
     /**
      * ALU control
      */
-    private Output<ALUOp> operator;
+    private Output<AluOp> operator;
 
     ALU() {
         result = new Output<Integer>() {

@@ -7,13 +7,27 @@ public class InstructionDecode {
 
     Decoder decoder;
 
-    InstructionDecode() {
-        registerBank = new RegisterBank();
+    Register<Integer> dataRegister;
+
+    Register<Byte> addressRegister;
+
+    InstructionDecode(RegisterBank registerBank) {
+        this.registerBank = registerBank;
         decoder = new Decoder();
+        dataRegister = new Register<>("Data Register", 0);
+        addressRegister = new Register<Byte>("Address Register", null);
     }
 
-    public void init(Register<Integer> dataRegister, Register<Byte> addressRegister) {
-        registerBank.init(null, null, addressRegister.getOutput(), dataRegister.getOutput());
-        decoder.init(addressRegister.getOutput());
+    public void init(Output<Integer> dataInput, Output<Byte> addressInput) {
+        dataRegister.init(dataInput);
+        addressRegister.init(addressInput);
+        registerBank.init(null, null, addressInput, dataInput);
+        decoder.init(addressInput);
+    }
+
+    public void cycle() {
+        registerBank.cycle();
+        dataRegister.cycle();
+        addressRegister.cycle();
     }
 }

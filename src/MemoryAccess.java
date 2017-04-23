@@ -7,14 +7,26 @@ public class MemoryAccess {
 
     Memory memory;
 
+    Register<Integer> dataRegister;
+
+    Register<Integer> addressRegister;
+
     MemoryAccess(Memory memory) {
         this.memory = memory;
         addressMux = new Multiplexer<>();
     }
 
-    public void init(Register<Integer> dataInput, Register<Integer> nextPC) {
-        memory.init(dataInput.getOutput(), nextPC.getOutput());
-        addressMux.init(null);
+    public void init(Output<Integer> dataInput, Output<Integer> nextPC) {
+        dataRegister.init(dataInput);
+        addressRegister.init(nextPC);
+        memory.init(dataRegister.getOutput(), addressRegister.getOutput());
+        addressMux.init(addressRegister.getOutput());
+    }
+
+    public void cycle() {
+        memory.cycle();
+        dataRegister.cycle();
+        addressRegister.cycle();
     }
 
 }

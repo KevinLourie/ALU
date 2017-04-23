@@ -1,6 +1,6 @@
 /**
- * Stateless. Input is opcode. Output is index to control storage array. Translates machine code into microinstructions.
- * Translates the opcode to the index of the corresponding microinstruction in the storage control.
+ * Stateless. Input is opcode. Output is muxInput to control storage array. Translates machine code into microinstructions.
+ * Translates the opcode to the muxInput of the corresponding microinstruction in the storage control.
  * Created by kzlou on 4/9/2017.
  */
 public class Decoder implements Output<Short> {
@@ -23,8 +23,8 @@ public class Decoder implements Output<Short> {
     }
 
     /**
-     * Return index of storage control array
-     * @return index of storage control array
+     * Return muxInput of storage control array
+     * @return muxInput of storage control array
      */
     @Override
     public Short read() {

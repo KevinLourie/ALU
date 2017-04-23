@@ -1,5 +1,5 @@
 /**
- * Store the microinstructions. Input is index. Output is microinstruction.
+ * Store the microinstructions. Input is muxInput. Output is microinstruction.
  * Created by kzlou on 4/13/2017.
  */
 public class ControlStore {
@@ -41,12 +41,12 @@ public class ControlStore {
             new MicroInstruction().setAcMuxIndex(0).setAcOp(RegisterOp.Store).setMpcOp(RegisterOp.Clear),
 
             // STA x
-            new MicroInstruction().setMarMuxIndex(0).setMarOp(RegisterOp.Store).setMbrMuxIndex(1).setMbrOp(RegisterOp.Store).setAluOp(ALUOp.Right),
+            new MicroInstruction().setMarMuxIndex(0).setMarOp(RegisterOp.Store).setMbrMuxIndex(1).setMbrOp(RegisterOp.Store).setAluOp(AluOp.Right),
             new MicroInstruction().setMemoryOp(MemoryOp.Store),
 
             // ADD x
             new MicroInstruction().setMarMuxIndex(0).setMarOp(RegisterOp.Store),
-            new MicroInstruction().setMbrMuxIndex(0).setMbrOp(RegisterOp.Store).setAluOp(ALUOp.Add),
+            new MicroInstruction().setMbrMuxIndex(0).setMbrOp(RegisterOp.Store).setAluOp(AluOp.Add),
             new MicroInstruction().setAcMuxIndex(1).setAcOp(RegisterOp.Store)
 
     };

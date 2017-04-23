@@ -1,7 +1,7 @@
 /**
  * Created by kzlou on 3/31/2017.
  */
-public enum ALUOp {
+public enum AluOp {
     Add,
     Subtract,
     Multiply,

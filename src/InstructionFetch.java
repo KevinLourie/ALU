@@ -9,15 +9,24 @@ public class InstructionFetch {
 
     Register<Integer> PC;
 
+    Multiplexer<Integer> pcMux;
+
     InstructionFetch(Memory memory) {
         this.memory = memory;
         adder = new Adder(4);
-        PC = new Register<>("PC");
+        PC = new Register<>("PC", 0);
+        pcMux = new Multiplexer<>();
     }
 
-    public void init(Register<Integer> dataInput, Register<Integer> nextPC) {
-        memory.init(dataInput.getOutput(), PC.getOutput());
-        adder.init(nextPC.getOutput());
-        PC.init(nextPC.getOutput());
+    public void init(Output<Integer> dataInput, Output<Integer> nextPC) {
+        memory.init(dataInput, PC.getOutput());
+        adder.init(nextPC);
+        PC.init(nextPC);
+        pcMux.init(nextPC);
+    }
+
+    public void cycle() {
+        memory.cycle();
+        PC.cycle();
     }
 }

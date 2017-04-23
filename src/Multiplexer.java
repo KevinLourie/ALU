@@ -2,7 +2,7 @@
  * Choose input for register.
  * Created by kzlou on 4/1/2017.
  */
-public class Multiplexer<T> implements Output<T> {
+public class Multiplexer<T> {
 
     /**
      * Inputs to choose from
@@ -12,19 +12,41 @@ public class Multiplexer<T> implements Output<T> {
     /**
      * Location of desired input
      */
-    Output<Integer> index;
+    Output<Integer> muxInput;
 
-    public void init(Output<Integer> index, Output<T>... muxOp) {
-        this.inputArray = muxOp;
-        this.index = index;
+    /**
+     * Desired input
+     */
+    Output<T> muxOutput;
+
+    Multiplexer() {
+        /**
+         * Return desired input
+         * @return desired input
+         */
+        muxOutput = new Output<T>() {
+            @Override
+            public T read() {
+                return inputArray[muxInput.read()].read();
+            }
+        };
     }
 
     /**
-     * Return desired input
-     * @return desired input
+     * Initialize multiplexer input and multiplexer operator
+     * @param muxInput multiplexer input
+     * @param muxOp multiplexer operator
      */
-    @Override
-    public T read() {
-        return inputArray[index.read()].read();
+    public void init(Output<Integer> muxInput, Output<T>... muxOp) {
+        this.inputArray = muxOp;
+        this.muxInput = muxInput;
+    }
+
+    /**
+     * Getter for output
+     * @return output
+     */
+    public Output<T> getOutput() {
+        return muxOutput;
     }
 }

@@ -5,12 +5,23 @@ public class WriteBack {
 
     Multiplexer<Short> writeBackDataMux;
 
+    Register<Integer> memoryRegister;
+
+    Register<Integer> writeBackRegister;
+
     WriteBack() {
         writeBackDataMux = new Multiplexer<>();
     }
 
-    public void init(Register<Integer> memoryRegister, Register<Integer> writeBack) {
-        writeBackDataMux.init(null);
+    public void init(Output<Integer> memoryInput, Output<Integer> writeBackInput) {
+        memoryRegister.init(memoryInput);
+        writeBackRegister.init(writeBackInput);
+        writeBackDataMux.init(writeBackRegister.getOutput());
+    }
+
+    public void cycle() {
+        memoryRegister.cycle();
+        writeBackRegister.cycle();
     }
 
 }

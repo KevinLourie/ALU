@@ -41,6 +41,18 @@ public class CPU {
      */
     private Memory memory = new Memory();
 
+    InstructionFetch instructionFetch = new InstructionFetch(memory);
+
+    InstructionDecode instructionDecode = new InstructionDecode();
+
+    Execute execute = new Execute();
+
+    MemoryAccess memoryAccess = new MemoryAccess(memory);
+
+    WriteBack writeBack = new WriteBack();
+
+    RegisterBank registerBank = new RegisterBank();
+
     /**
      * Memory dataAddressInput register
      */
@@ -102,13 +114,13 @@ public class CPU {
 
         cs = new ControlStore(mpc);
 
-        // The program counter reads the index of the current program from the instruction register
+        // The program counter reads the muxInput of the current program from the instruction register
         pc.init(ir.getAddressOutput());
 
-        // The microprogram counter reads the index of the current microprogram from the decoder
+        // The microprogram counter reads the muxInput of the current microprogram from the decoder
         mpc.init(decoder);
 
-        // The stack pointer reads the index of next element in the stack from the instruction register
+        // The stack pointer reads the muxInput of next element in the stack from the instruction register
         sp.init(ir.getAddressOutput());
 
         // Pick input for memory addressOutput register

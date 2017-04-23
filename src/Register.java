@@ -22,7 +22,12 @@ public class Register<T> {
 
     Output<T> input;
 
-    Register(String name) {
+    Register(String name, T initial) {
+        this.name = name;
+        data = initial;
+        /**
+         * Prints the name of the register and its data
+         */
         output = new Output<T>() {
             @Override
             public T read() {
@@ -30,7 +35,6 @@ public class Register<T> {
                 return data;
             }
         };
-        this.name = name;
     }
 
     public void init(Output<T> input) {
