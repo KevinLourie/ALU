@@ -47,8 +47,8 @@ public class Memory {
         return dataOutput;
     }
 
-    public void init(Output<Integer> data, Output<Integer> dataAddressInput) {
-        this.dataInput = data;
+    public void init(Output<Integer> dataInput, Output<Integer> dataAddressInput) {
+        this.dataInput = dataInput;
         this.dataAddressInput = dataAddressInput;
     }
 
