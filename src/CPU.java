@@ -42,7 +42,7 @@ public class CPU {
     private Memory memory = new Memory();
 
     /**
-     * Memory addressInput register
+     * Memory dataAddressInput register
      */
     private Register32 mar = new Register32("MAR");
 

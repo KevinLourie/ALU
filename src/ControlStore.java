@@ -9,7 +9,7 @@ public class ControlStore {
 
     // List of microinstructions
     MicroInstruction[] microInstructions = new MicroInstruction[]{
-            // 0: MAR reads addressInput from program counter
+            // 0: MAR reads dataAddressInput from program counter
             new MicroInstruction().setMarMuxIndex(1).setMarOp(RegisterOp.Store),
 
             // 1: MBR reads instruction, program counter points to next program
