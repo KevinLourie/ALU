@@ -37,15 +37,26 @@ public class Register<T> {
         };
     }
 
+    /**
+     * Initializes input
+     * @param input input
+     */
     public void init(Output<T> input) {
         this.input = input;
     }
 
+    /**
+     * Store data in register
+     */
     public void cycle() {
         data = input.read();
         System.out.printf(" -> %s (%s)%n", name, data);
     }
 
+    /**
+     * Getter for output
+     * @return output
+     */
     public Output<T> getOutput() {
         return output;
     }

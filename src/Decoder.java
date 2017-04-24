@@ -1,34 +1,41 @@
 /**
- * Stateless. Input is opcode. Output is muxInput to control storage array. Translates machine code into microinstructions.
- * Translates the opcode to the muxInput of the corresponding microinstruction in the storage control.
- * Created by kzlou on 4/9/2017.
+ * Store the microinstructions. Input is muxInput. Output is microinstruction.
+ * Created by kzlou on 4/13/2017.
  */
-public class Decoder implements Output<Short> {
+public class Decoder {
 
-    /** Array of instructions */
-    short[] storageControlIndexes = new short[256];
+    // Contains the microinstruction to be executed
+    Output<MicroInstruction> microInstructionOutput;
 
-    /** Current instruction */
-    Output<Byte> input;
+    // List of microinstructions
+    MicroInstruction[] microInstructions = new MicroInstruction[]{
 
-    Decoder() {
-        // Loop through opcodes
-        for(Opcode opcode : Opcode.values()) {
-            storageControlIndexes[opcode.ordinal()] = opcode.getMicrocodeOrdinal();
-        }
-    }
+    };
 
-    public void init(Output<Byte> input) {
-        this.input = input;
-    }
+    Output<Byte> opcodeInput;
 
     /**
-     * Return muxInput of storage control array
-     * @return muxInput of storage control array
+     * Constructor
      */
-    @Override
-    public Short read() {
-        int index = input.read();
-        return storageControlIndexes[index];
+    Decoder() {
+        microInstructionOutput = new Output<MicroInstruction>() {
+
+            @Override
+            public MicroInstruction read() {
+                System.out.print("[");
+                byte opcode = opcodeInput.read();
+                System.out.printf(" %d]", opcode);
+                return microInstructions[opcode];
+            }
+        };
     }
+
+    public void init(Output<Byte> opcodeInput) {
+        this.opcodeInput = opcodeInput;
+    }
+
+    public Output<MicroInstruction> getMicroInstructionOutput() {
+        return microInstructionOutput;
+    }
+
 }

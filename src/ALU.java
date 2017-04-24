@@ -14,6 +14,9 @@ public class ALU {
      */
     private Output<Integer> input2;
 
+    /**
+     * Resulting number
+     */
     private Output<Integer> result;
 
     /**
@@ -54,6 +57,12 @@ public class ALU {
         };
     }
 
+    /**
+     * Initialize operands and operator
+     * @param operand1 operand1
+     * @param operand2 operand2
+     * @param operator operator
+     */
     public void init(Output operand1, Output operand2, Output operator) {
         this.input1 = operand1;
         this.input2 = operand2;

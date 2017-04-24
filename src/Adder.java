@@ -4,8 +4,14 @@
  */
 public class Adder {
 
+    /**
+     * Current number
+     */
     private Output<Integer> input;
 
+    /**
+     * Next number
+     */
     private Output<Integer> output;
 
     /**
@@ -21,10 +27,19 @@ public class Adder {
         };
     }
 
+    /**
+     * Initialize input
+     *
+     * @param input number we're adding to
+     */
     public void init(Output<Integer> input) {
         this.input = input;
     }
 
+    /**
+     * Getter for output
+     * @return output
+     */
     public Output<Integer> getOutput() {
         return output;
     }

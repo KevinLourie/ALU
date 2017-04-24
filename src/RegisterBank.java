@@ -47,6 +47,13 @@ public class RegisterBank {
         };
     }
 
+    /**
+     * Initialize address registers and data register
+     * @param addressInput1 input to first address register
+     * @param addressInput2 input to second address register
+     * @param addressInput input to address register
+     * @param dataInput input to data register
+     */
     public void init(Output<Byte> addressInput1, Output<Byte> addressInput2, Output<Byte> addressInput, Output<Integer> dataInput) {
         this.addressInput1 = addressInput1;
         this.addressInput2 = addressInput2;
@@ -63,10 +70,18 @@ public class RegisterBank {
         System.out.printf("Store %d from %d%n", arr[index], index);
     }
 
+    /**
+     * Getter for output1
+     * @return output1
+     */
     public Output<Integer> getOutput1() {
         return output1;
     }
 
+    /**
+     * Getter for output2
+     * @return output2
+     */
     public Output<Integer> getOutput2() {
         return output2;
     }
