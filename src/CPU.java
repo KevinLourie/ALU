@@ -40,7 +40,7 @@ public class CPU {
     }
 
     public void init() {
-        execute.init(registerBank.getOutput1(), registerBank.getOutput2(), instructionDecode.getAddressRegisterOutput(), null);
+        execute.init(registerBank.getsOutput(), registerBank.gettOutput(), instructionDecode.getAddressRegisterOutput(), null);
 
     }
 

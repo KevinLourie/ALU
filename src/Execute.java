@@ -16,22 +16,26 @@ public class Execute {
     /**
      * First data register
      */
-    Register<Integer> dataRegister1;
+    Register<Integer> sRegister;
 
     /**
      * Second data register
      */
-    Register<Integer> dataRegister2;
+    Register<Integer> tRegister;
 
     /**
      * Address register
      */
-    Register<Integer> addressRegister;
+    Register<Integer> nextPCRegister;
 
     /**
      * ALU Operator register
      */
     Register<AluOp> aluOpRegister;
+
+    Register<Integer> constantRegister;
+
+    Bus<Integer, Integer> shiftLeft;
 
     /**
      * Construct ALU, ALU multiplexer, data registers, address register, and ALU operator register
@@ -39,25 +43,31 @@ public class Execute {
     Execute() {
         alu = new ALU();
         aluMux = new Multiplexer<>();
-        dataRegister1 = new Register<>("Data Register 1", 0);
-        dataRegister2 = new Register<>("Data Register 2", 0);
-        addressRegister = new Register<>("Address Register", 0);
+        sRegister = new Register<>("S", 0);
+        tRegister = new Register<>("T", 0);
+        nextPCRegister = new Register<>("Address", 0);
         aluOpRegister = new Register<AluOp>("ALU Operator", AluOp.None);
+        shiftLeft = new Bus<Integer, Integer>() {
+            @Override
+            public Integer read() {
+                return input.read() << 2;
+            }
+        };
     }
 
     /**
      * Initialize data registers, address register, and ALU operator register
-     * @param dataInput1 input to first data register
-     * @param dataInput2 input to second data register
+     * @param sInput input to first data register
+     * @param tInput input to second data register
      * @param addressInput input to address register
      * @param aluOpInput input to ALU operator register
      */
-    public void init(Output<Integer> dataInput1, Output<Integer> dataInput2, Output<Integer> addressInput, Output<AluOp> aluOpInput) {
-        dataRegister1.init(dataInput1);
-        dataRegister2.init(dataInput2);
-        addressRegister.init(addressInput);
+    public void init(Output<Integer> sInput, Output<Integer> tInput, Output<Integer> addressInput, Output<AluOp> aluOpInput) {
+        sRegister.init(sInput);
+        tRegister.init(tInput);
+        nextPCRegister.init(addressInput);
         aluOpRegister.init(aluOpInput);
-        alu.init(dataRegister1.getOutput(), aluMux.getOutput(), aluOpRegister.getOutput());
+        alu.init(sRegister.getOutput(), aluMux.getOutput(), aluOpRegister.getOutput());
         aluMux.init(addressInput);
     }
 
@@ -65,9 +75,9 @@ public class Execute {
      * Cycle data registers and address register
      */
     public void cycle() {
-        dataRegister1.cycle();
-        dataRegister2.cycle();
-        addressRegister.cycle();
+        sRegister.cycle();
+        tRegister.cycle();
+        nextPCRegister.cycle();
     }
 
 }

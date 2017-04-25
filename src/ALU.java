@@ -1,23 +1,27 @@
 /**
- * Input is two numbers. Output is result of two numbers.
+ * Input is two numbers. Output is dOutput of two numbers.
  * Created by kzlou on 3/31/2017.
  */
 public class ALU {
 
+    Output<Boolean> zeroFlagOutput;
+
+    boolean zeroFlag;
+
     /**
      * First number
      */
-    private Output<Integer> input1;
+    private Output<Integer> sInput;
 
     /**
      * Second number
      */
-    private Output<Integer> input2;
+    private Output<Integer> tInput;
 
     /**
      * Resulting number
      */
-    private Output<Integer> result;
+    private Output<Integer> dOutput;
 
     /**
      * ALU control
@@ -25,36 +29,48 @@ public class ALU {
     private Output<AluOp> operator;
 
     ALU() {
-        result = new Output<Integer>() {
+        dOutput = new Output<Integer>() {
             /**
              * Read 2 numbers. Perform operation specified by the operator field.
-             * @return result
+             * @return dOutput
              */
             @Override
             public Integer read() {
-                int operand1 = input1.read();
-                int operand2 = input2.read();
-                int result = 0;
+                int s = sInput.read();
+                int t = tInput.read();
+                int d = 0;
                 switch (operator.read()) {
                     case Add:
-                        result = operand1 + operand2;
+                        d = s + t;
                         break;
                     case Subtract:
-                        result = operand1 - operand2;
+                        d = s - t;
                         break;
                     case Multiply:
-                        result = operand1 * operand2;
+                        d = s * t;
                         break;
                     case Divide:
-                        result = operand1 / operand2;
+                        d = s / t;
                         break;
                     case Right:
-                        result = operand2;
+                        d = t;
                 }
-                System.out.printf("%s%n", result);
-                return result;
+                zeroFlag = d == 0;
+                System.out.printf("%s%n", d);
+                return d;
             }
         };
+
+        zeroFlagOutput = new Output<Boolean>() {
+            @Override
+            public Boolean read() {
+                return zeroFlag;
+            }
+        };
+    }
+
+    public Output<Boolean> getZeroFlagOutput() {
+        return zeroFlagOutput;
     }
 
     /**
@@ -64,8 +80,8 @@ public class ALU {
      * @param operator operator
      */
     public void init(Output operand1, Output operand2, Output operator) {
-        this.input1 = operand1;
-        this.input2 = operand2;
+        this.sInput = operand1;
+        this.tInput = operand2;
         this.operator = operator;
     }
 }

@@ -8,38 +8,38 @@ public class RegisterBank {
     // Register array
     int[] arr = new int[32];
 
-    Output<Byte> addressInput;
+    Output<Byte> addressDInput;
 
-    Output<Byte> addressInput1;
+    Output<Byte> addressSInput;
 
-    Output<Byte> addressInput2;
+    Output<Byte> addressTInput;
 
-    Output<Integer> dataInput;
+    Output<Integer> dInput;
 
-    Output<Integer> output1;
+    Output<Integer> sOutput;
 
-    Output<Integer> output2;
+    Output<Integer> tOutput;
 
     public final static Logger logger = Logger.getLogger(Register.class.getName());
 
     RegisterBank() {
-        output1 = new Output<Integer>() {
+        sOutput = new Output<Integer>() {
             @Override
             public Integer read() {
                 System.out.print("[");
                 // Fetching 2 bytes at a time
-                byte address = addressInput1.read();
+                byte address = addressSInput.read();
                 int data = arr[address];
                 System.out.printf(" %d]", address);
                 return data;
             }
         };
-        output2 = new Output<Integer>() {
+        tOutput = new Output<Integer>() {
             @Override
             public Integer read() {
                 System.out.print("[");
                 // Fetching 2 bytes at a time
-                byte address = addressInput2.read();
+                byte address = addressTInput.read();
                 int data = arr[address];
                 System.out.printf(" %d]", address);
                 return data;
@@ -55,34 +55,34 @@ public class RegisterBank {
      * @param dataInput input to data register
      */
     public void init(Output<Byte> addressInput1, Output<Byte> addressInput2, Output<Byte> addressInput, Output<Integer> dataInput) {
-        this.addressInput1 = addressInput1;
-        this.addressInput2 = addressInput2;
-        this.addressInput = addressInput;
-        this.dataInput = dataInput;
+        this.addressSInput = addressInput1;
+        this.addressTInput = addressInput2;
+        this.addressDInput = addressInput;
+        this.dInput = dataInput;
     }
 
     /**
      * Write data to memory
      */
     public void cycle() {
-        int index = addressInput.read();
-        arr[index] = dataInput.read();
+        int index = addressDInput.read();
+        arr[index] = dInput.read();
         System.out.printf("Store %d from %d%n", arr[index], index);
     }
 
     /**
-     * Getter for output1
-     * @return output1
+     * Getter for sOutput
+     * @return sOutput
      */
-    public Output<Integer> getOutput1() {
-        return output1;
+    public Output<Integer> getsOutput() {
+        return sOutput;
     }
 
     /**
-     * Getter for output2
-     * @return output2
+     * Getter for tOutput
+     * @return tOutput
      */
-    public Output<Integer> getOutput2() {
-        return output2;
+    public Output<Integer> gettOutput() {
+        return tOutput;
     }
 }

@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
- * The memory contains dataInput. You can read and write to the memory. The dataAddressInput comes from the MAR and the dataInput comes
- * from the MBR. The dataInput is retrieved using its dataAddressInput.
+ * The memory contains dInput. You can read and write to the memory. The dataAddressInput comes from the MAR and the dInput comes
+ * from the MBR. The dInput is retrieved using its dataAddressInput.
  * Created by kzlou on 4/3/2017.
  */
 public class Memory {

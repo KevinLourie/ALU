@@ -15,11 +15,13 @@ public class InstructionDecode {
 
     Bus<Integer, Byte> opcodeBus;
 
-    Bus<Integer, Byte> regAddressBus1;
+    Bus<Integer, Byte> addressSBus;
 
-    Bus<Integer, Byte> regAddressBus2;
+    Bus<Integer, Byte> addressTBus;
 
-    Bus<Integer, Byte> regAddressBus;
+    Bus<Integer, Byte> addressDBus;
+
+    Bus<Integer, Integer> immediateBus;
 
     /**
      * Instruction
@@ -42,27 +44,34 @@ public class InstructionDecode {
                 return (byte)(input.read() >> 26);
             }
         };
-        regAddressBus1 = new Bus<Integer, Byte>() {
+        addressSBus = new Bus<Integer, Byte>() {
             @Override
             public Byte read() {
                 return (byte)((input.read() >> 21) & 0x1F);
             }
         };
-        regAddressBus2 = new Bus<Integer, Byte>() {
+        addressTBus = new Bus<Integer, Byte>() {
             @Override
             public Byte read() {
                 return (byte)((input.read() >> 16) & 0x1F);
             }
         };
-        regAddressBus = new Bus<Integer, Byte>() {
+        addressDBus = new Bus<Integer, Byte>() {
             @Override
             public Byte read() {
                 return (byte)((input.read() >> 11) & 0x1F);
             }
         };
+        immediateBus = new Bus<Integer, Integer>() {
+            @Override
+            public Integer read() {
+                // Extract the bottom 16 bits and sign extend it to a 32-bits
+                return (int)(short)(input.read() & 0xFFFF);
+            }
+        };
         this.registerBank = registerBank;
         decoder = new Decoder();
-        instructionRegister = new Register<>("Data Register", 0);
+        instructionRegister = new Register<>("IR", 0);
         nextPC = new Register<>("Next PC", 0);
     }
 
@@ -72,13 +81,14 @@ public class InstructionDecode {
      * @param nextPCInput address register input
      */
     public void init(Output<Integer> dataInput, Output<Integer> nextPCInput) {
-        regAddressBus1.init(instructionRegister.getOutput());
-        regAddressBus2.init(instructionRegister.getOutput());
-        regAddressBus.init(instructionRegister.getOutput());
+        addressSBus.init(instructionRegister.getOutput());
+        addressTBus.init(instructionRegister.getOutput());
+        addressDBus.init(instructionRegister.getOutput());
         opcodeBus.init(instructionRegister.getOutput());
+        immediateBus.init(instructionRegister.getOutput());
         instructionRegister.init(dataInput);
         nextPC.init(nextPCInput);
-        registerBank.init(regAddressBus1, regAddressBus2, regAddressBus, dataInput);
+        registerBank.init(addressSBus, addressTBus, addressDBus, dataInput);
         decoder.init(null);
     }
 
