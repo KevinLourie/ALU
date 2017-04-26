@@ -3,26 +3,34 @@ import java.util.logging.Logger;
 /**
  * Created by kzlou on 4/21/2017.
  */
-public class RegisterBank {
+public class RegisterBank implements ICycle {
 
     // Register array
-    int[] arr = new int[32];
+    private int[] arr = new int[32];
 
-    Output<Byte> addressDInput;
+    private Output<Byte> addressDInput;
 
-    Output<Byte> addressSInput;
+    private Output<Byte> addressSInput;
 
-    Output<Byte> addressTInput;
+    private Output<Byte> addressTInput;
 
-    Output<Integer> dInput;
+    private Output<Integer> dInput;
 
-    Output<Integer> sOutput;
+    private Output<Integer> sOutput;
 
-    Output<Integer> tOutput;
+    private Output<Integer> tOutput;
+
+    private int tempD;
+
+    private byte tempAddressD;
+
+    Output<Boolean> enableInput;
+
+    boolean tempEnable;
 
     public final static Logger logger = Logger.getLogger(Register.class.getName());
 
-    RegisterBank() {
+    RegisterBank(Cycler cycler) {
         sOutput = new Output<Integer>() {
             @Override
             public Integer read() {
@@ -45,6 +53,7 @@ public class RegisterBank {
                 return data;
             }
         };
+        cycler.add(this);
     }
 
     /**
@@ -64,10 +73,19 @@ public class RegisterBank {
     /**
      * Write data to memory
      */
+    @Override
     public void cycle() {
-        int index = addressDInput.read();
-        arr[index] = dInput.read();
-        System.out.printf("Store %d from %d%n", arr[index], index);
+        if(tempEnable) {
+            arr[tempAddressD] = tempD;
+            System.out.printf("Store %d from %d%n", arr[tempAddressD], tempAddressD);
+        }
+    }
+
+    @Override
+    public void sense() {
+        tempD = dInput.read();
+        tempAddressD = addressDInput.read();
+        tempEnable = enableInput.read();
     }
 
     /**

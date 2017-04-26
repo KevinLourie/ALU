@@ -37,7 +37,7 @@ public class InstructionDecode {
      * Constructor
      * @param registerBank register bank
      */
-    InstructionDecode(RegisterBank registerBank) {
+    InstructionDecode(RegisterBank registerBank, Cycler cycler) {
         opcodeBus = new Bus<Integer, Byte>() {
             @Override
             public Byte read() {
@@ -71,8 +71,8 @@ public class InstructionDecode {
         };
         this.registerBank = registerBank;
         decoder = new Decoder();
-        instructionRegister = new Register<>("IR", 0);
-        nextPC = new Register<>("Next PC", 0);
+        instructionRegister = new Register<>("IR", 0, cycler);
+        nextPC = new Register<>("Next PC", 0, cycler);
     }
 
     /**
@@ -81,27 +81,19 @@ public class InstructionDecode {
      * @param nextPCInput address register input
      */
     public void init(Output<Integer> dataInput, Output<Integer> nextPCInput) {
+        // TODO: add correct enable inputs
         addressSBus.init(instructionRegister.getOutput());
         addressTBus.init(instructionRegister.getOutput());
         addressDBus.init(instructionRegister.getOutput());
         opcodeBus.init(instructionRegister.getOutput());
         immediateBus.init(instructionRegister.getOutput());
-        instructionRegister.init(dataInput);
-        nextPC.init(nextPCInput);
+        instructionRegister.init(dataInput, null);
+        nextPC.init(nextPCInput, null);
         registerBank.init(addressSBus, addressTBus, addressDBus, dataInput);
         decoder.init(null);
     }
 
     public Output<Integer> getAddressRegisterOutput() {
         return nextPC.getOutput();
-    }
-
-    /**
-     * Cycle register bank and registers
-     */
-    public void cycle() {
-        registerBank.cycle();
-        instructionRegister.cycle();
-        nextPC.cycle();
     }
 }

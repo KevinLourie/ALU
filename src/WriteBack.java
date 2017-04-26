@@ -18,7 +18,7 @@ public class WriteBack {
      */
     Register<Integer> writeBackRegister;
 
-    WriteBack() {
+    WriteBack(Cycler cycler) {
         writeBackDataMux = new Multiplexer<>();
     }
 
@@ -28,17 +28,9 @@ public class WriteBack {
      * @param writeBackInput write back register input
      */
     public void init(Output<Integer> memoryInput, Output<Integer> writeBackInput) {
-        memoryRegister.init(memoryInput);
-        writeBackRegister.init(writeBackInput);
+        // TODO: add correct enable inputs
+        memoryRegister.init(memoryInput, null);
+        writeBackRegister.init(writeBackInput, null);
         writeBackDataMux.init(writeBackRegister.getOutput());
     }
-
-    /**
-     * Cycle memory and write back registers
-     */
-    public void cycle() {
-        memoryRegister.cycle();
-        writeBackRegister.cycle();
-    }
-
 }

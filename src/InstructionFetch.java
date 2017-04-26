@@ -27,10 +27,10 @@ public class InstructionFetch {
      * Constructor
      * @param memory main memory
      */
-    InstructionFetch(Memory memory) {
+    InstructionFetch(Memory memory, Cycler cycler) {
         this.memory = memory;
         adder = new Adder(4);
-        PC = new Register<>("PC", 0);
+        PC = new Register<>("PC", 0, cycler);
         pcMux = new Multiplexer<>();
     }
 
@@ -40,17 +40,10 @@ public class InstructionFetch {
      * @param nextPC address register input
      */
     public void init(Output<Integer> dataInput, Output<Integer> nextPC) {
-        memory.init(dataInput, PC.getOutput());
+        // TODO: add correct enable inputs
+        memory.init(dataInput, PC.getOutput(), null);
         adder.init(nextPC);
-        PC.init(nextPC);
-        pcMux.init(nextPC);
-    }
-
-    /**
-     * Cycle memory and PC
-     */
-    public void cycle() {
-        memory.cycle();
-        PC.cycle();
+        PC.init(nextPC, null);
+        pcMux.init(nextPC, null);
     }
 }

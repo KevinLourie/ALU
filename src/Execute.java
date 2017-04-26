@@ -40,13 +40,13 @@ public class Execute {
     /**
      * Construct ALU, ALU multiplexer, data registers, address register, and ALU operator register
      */
-    Execute() {
+    Execute(Cycler cycler) {
         alu = new ALU();
         aluMux = new Multiplexer<>();
-        sRegister = new Register<>("S", 0);
-        tRegister = new Register<>("T", 0);
-        nextPCRegister = new Register<>("Address", 0);
-        aluOpRegister = new Register<AluOp>("ALU Operator", AluOp.None);
+        sRegister = new Register<>("S", 0, cycler);
+        tRegister = new Register<>("T", 0, cycler);
+        nextPCRegister = new Register<>("Address", 0, cycler);
+        aluOpRegister = new Register<AluOp>("ALU Operator", AluOp.None, cycler);
         shiftLeft = new Bus<Integer, Integer>() {
             @Override
             public Integer read() {
@@ -63,21 +63,12 @@ public class Execute {
      * @param aluOpInput input to ALU operator register
      */
     public void init(Output<Integer> sInput, Output<Integer> tInput, Output<Integer> addressInput, Output<AluOp> aluOpInput) {
-        sRegister.init(sInput);
-        tRegister.init(tInput);
-        nextPCRegister.init(addressInput);
-        aluOpRegister.init(aluOpInput);
+        // TODO: add correct enable inputs
+        sRegister.init(sInput, null);
+        tRegister.init(tInput, null);
+        nextPCRegister.init(addressInput, null);
+        aluOpRegister.init(aluOpInput, null);
         alu.init(sRegister.getOutput(), aluMux.getOutput(), aluOpRegister.getOutput());
         aluMux.init(addressInput);
     }
-
-    /**
-     * Cycle data registers and address register
-     */
-    public void cycle() {
-        sRegister.cycle();
-        tRegister.cycle();
-        nextPCRegister.cycle();
-    }
-
 }

@@ -2,7 +2,7 @@
  * General register class.
  * Created by kzlou on 4/1/2017.
  */
-public class Register<T> {
+public class Register<T> implements ICycle {
 
     /**
      * Name of register
@@ -14,20 +14,22 @@ public class Register<T> {
      */
     T data;
 
+    T tempData;
+
     /**
      * Output of register
      */
     Output<T> output;
 
-
     Output<T> input;
 
-    Register(String name, T initial) {
+    Output<Boolean> enableInput;
+
+    boolean tempEnable;
+
+    Register(String name, T initial, Cycler cycler) {
         this.name = name;
         data = initial;
-        /**
-         * Prints the name of the register and its data
-         */
         output = new Output<T>() {
             @Override
             public T read() {
@@ -35,22 +37,33 @@ public class Register<T> {
                 return data;
             }
         };
+        cycler.add(this);
     }
 
     /**
      * Initializes input
      * @param input input
      */
-    public void init(Output<T> input) {
+    public void init(Output<T> input, Output<Boolean> enableInput) {
         this.input = input;
+        this.enableInput = enableInput;
     }
 
     /**
      * Store data in register
      */
+    @Override
     public void cycle() {
-        data = input.read();
-        System.out.printf(" -> %s (%s)%n", name, data);
+        if (tempEnable) {
+            data = tempData;
+            System.out.printf(" -> %s (%s)%n", name, data);
+        }
+    }
+
+    @Override
+    public void sense() {
+        tempData = input.read();
+        tempEnable = enableInput.read();
     }
 
     /**

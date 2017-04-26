@@ -8,13 +8,17 @@ import java.util.logging.Logger;
  * from the MBR. The dInput is retrieved using its dataAddressInput.
  * Created by kzlou on 4/3/2017.
  */
-public class Memory {
+public class Memory implements ICycle {
 
     public final static Logger logger = Logger.getLogger(Register.class.getName());
 
     Output<Integer> dataOutput;
 
     Output<Integer> instructionOutput;
+
+    int tempData;
+
+    int tempDataAddress;
 
     /* Byte array */
     private Integer[] arr = new Integer[2 ^ 22];
@@ -25,7 +29,11 @@ public class Memory {
     /* Data to read */
     private Output<Integer> dataInput;
 
-    Memory() {
+    private Output<Boolean> enableInput;
+
+    private boolean tempEnable;
+
+    Memory(Cycler cycler) {
         dataOutput = new Output<Integer>() {
             @Override
             public Integer read() {
@@ -37,6 +45,7 @@ public class Memory {
                 return data;
             }
         };
+        cycler.add(this);
     }
 
     public Output<Integer> getInstructionOutput() {
@@ -47,19 +56,30 @@ public class Memory {
         return dataOutput;
     }
 
-    public void init(Output<Integer> dataInput, Output<Integer> dataAddressInput) {
+    public void init(Output<Integer> dataInput, Output<Integer> dataAddressInput, Output<Boolean> enableInput) {
         this.dataInput = dataInput;
         this.dataAddressInput = dataAddressInput;
+        this.enableInput = enableInput;
     }
 
     /**
      * Write data to memory
      */
+    @Override
     public void cycle() {
-        // Fetching 2 bytes at a time
-        int index = dataAddressInput.read() / 4;
-        arr[index] = dataInput.read();
-        System.out.printf("Store %d from %d %n", arr[index], index);
+        if(tempEnable) {
+            // Fetching 2 bytes at a time
+            int index = tempDataAddress / 4;
+            arr[index] = tempData;
+            System.out.printf("Store %d from %d %n", arr[index], index);
+        }
+    }
+
+    @Override
+    public void sense() {
+        tempData = dataInput.read();
+        tempDataAddress = dataAddressInput.read();
+        tempEnable = enableInput.read();
     }
 
     public void readFile(String path) throws IOException {

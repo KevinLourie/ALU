@@ -22,7 +22,7 @@ public class MemoryAccess {
      * Constructor
      * @param memory main memory
      */
-    MemoryAccess(Memory memory) {
+    MemoryAccess(Memory memory, Cycler cycler) {
         this.memory = memory;
     }
 
@@ -32,18 +32,9 @@ public class MemoryAccess {
      * @param nextPC address register input
      */
     public void init(Output<Integer> dataInput, Output<Integer> nextPC) {
-        dataRegister.init(dataInput);
-        addressRegister.init(nextPC);
-        memory.init(dataRegister.getOutput(), addressRegister.getOutput());
+        // TODO: add correct enable inputs
+        dataRegister.init(dataInput, null);
+        addressRegister.init(nextPC, null);
+        memory.init(dataRegister.getOutput(), addressRegister.getOutput(), null);
     }
-
-    /**
-     * Cycle the memory and registers
-     */
-    public void cycle() {
-        memory.cycle();
-        dataRegister.cycle();
-        addressRegister.cycle();
-    }
-
 }
