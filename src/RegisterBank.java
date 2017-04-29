@@ -1,3 +1,5 @@
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 import java.util.logging.Logger;
 
 /**
@@ -24,9 +26,9 @@ public class RegisterBank implements ICycle {
 
     private byte tempAddressD;
 
-    Output<Boolean> enableInput;
+    private Output<Boolean> enableInput;
 
-    boolean tempEnable;
+    private boolean tempEnable;
 
     public final static Logger logger = Logger.getLogger(Register.class.getName());
 
@@ -58,16 +60,18 @@ public class RegisterBank implements ICycle {
 
     /**
      * Initialize address registers and data register
-     * @param addressInput1 input to first address register
-     * @param addressInput2 input to second address register
      * @param addressInput input to address register
-     * @param dataInput input to data register
+     * @param dInput input to data register
      */
-    public void init(Output<Byte> addressInput1, Output<Byte> addressInput2, Output<Byte> addressInput, Output<Integer> dataInput) {
-        this.addressSInput = addressInput1;
-        this.addressTInput = addressInput2;
+    public void initWrite(Output<Byte> addressInput, Output<Integer> dInput,  Output<Boolean> enableInput) {
         this.addressDInput = addressInput;
-        this.dInput = dataInput;
+        this.dInput = dInput;
+        this.enableInput = enableInput;
+    }
+
+    public void initRead(Output<Byte> addressSInput, Output<Byte> addressTInput) {
+        this.addressSInput = addressSInput;
+        this.addressTInput = addressTInput;
     }
 
     /**

@@ -6,17 +6,23 @@ public class MemoryAccess {
     /**
      * Data is located here
      */
-    Memory memory;
+    private Memory memory;
 
     /**
      * Data register
      */
-    Register<Integer> dataRegister;
+    private Register<Integer> dataRegister;
 
     /**
      * Address register
      */
-    Register<Integer> addressRegister;
+    private Register<Integer> addressRegister;
+
+    private Register<Byte> dAddressRegister;
+
+    private Register<Boolean> dEnableRegister;
+
+    private Register<Integer> dControlRegister;
 
     /**
      * Constructor
@@ -29,12 +35,36 @@ public class MemoryAccess {
     /**
      * Initialize the data register and address register
      * @param dataInput data register input
-     * @param nextPC address register input
+     * @param nextPCInput address register input
      */
-    public void init(Output<Integer> dataInput, Output<Integer> nextPC) {
+    public void init(Output<Integer> dataInput, Output<Integer> nextPCInput, Output<Integer> address,
+                     Output<Byte> dAddressInput, Output<Boolean> enableInput, Output<Integer> controlInput) {
         // TODO: add correct enable inputs
-        dataRegister.init(dataInput, null);
-        addressRegister.init(nextPC, null);
+        dAddressRegister.init(dAddressInput);
+        dEnableRegister.init(enableInput);
+        dControlRegister.init(controlInput);
+        dataRegister.init(dataInput);
+        addressRegister.init(nextPCInput);
         memory.init(dataRegister.getOutput(), addressRegister.getOutput(), null);
+    }
+
+    public Output<Integer> getD0Output() {
+        return memory.getDataOutput();
+    }
+
+    public Output<Integer> getD1Output() {
+        return dataRegister.getOutput();
+    }
+
+    public Output<Byte> getDAddressOutput() {
+        return dAddressRegister.getOutput();
+    }
+
+    public Output<Boolean> getDEnableOutput() {
+        return dEnableRegister.getOutput();
+    }
+
+    public Output<Integer> getDControlOutput() {
+        return dControlRegister.getOutput();
     }
 }

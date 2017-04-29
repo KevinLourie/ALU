@@ -4,9 +4,9 @@
  */
 public class ALU {
 
-    Output<Boolean> zeroFlagOutput;
+    private Output<Boolean> zeroFlagOutput;
 
-    boolean zeroFlag;
+    private boolean zeroFlag;
 
     /**
      * First number

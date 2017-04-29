@@ -6,22 +6,22 @@ public class InstructionFetch {
     /**
      * Fetch instruction from here
      */
-    Memory memory;
+    private Memory memory;
 
     /**
      * Adds to address
      */
-    Adder adder;
+    private Adder adder;
 
     /**
      * Program counter
      */
-    Register<Integer> PC;
+    private Register<Integer> PC;
 
     /**
      * Where to get next program from
      */
-    Multiplexer<Integer> pcMux;
+    private Multiplexer<Integer> pcMux;
 
     /**
      * Constructor
@@ -37,13 +37,13 @@ public class InstructionFetch {
     /**
      * Initialize data register and address register
      * @param dataInput data register input
-     * @param nextPC address register input
+     * @param nextPCInput address register input
      */
-    public void init(Output<Integer> dataInput, Output<Integer> nextPC) {
+    public void init(Output<Integer> dataInput, Output<Integer> nextPCInput) {
         // TODO: add correct enable inputs
         memory.init(dataInput, PC.getOutput(), null);
-        adder.init(nextPC);
-        PC.init(nextPC, null);
-        pcMux.init(nextPC, null);
+        adder.init(nextPCInput);
+        PC.init(nextPCInput, null);
+        pcMux.init(nextPCInput, null);
     }
 }

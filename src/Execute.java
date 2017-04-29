@@ -6,36 +6,36 @@ public class Execute {
     /**
      * Required to do arithmetic for the instruction execution
      */
-    ALU alu;
+    private ALU alu;
 
     /**
      * Second operand
      */
-    Multiplexer<Integer> aluMux;
+    private Multiplexer<Integer> aluMux;
 
     /**
      * First data register
      */
-    Register<Integer> sRegister;
+    private Register<Integer> sRegister;
 
     /**
      * Second data register
      */
-    Register<Integer> tRegister;
+    private Register<Integer> tRegister;
 
     /**
      * Address register
      */
-    Register<Integer> nextPCRegister;
+    private Register<Integer> nextPCRegister;
 
     /**
      * ALU Operator register
      */
-    Register<AluOp> aluOpRegister;
+    private Register<AluOp> aluOpRegister;
 
-    Register<Integer> constantRegister;
+    private Register<Integer> constantRegister;
 
-    Bus<Integer, Integer> shiftLeft;
+    private Bus<Integer, Integer> shiftLeft;
 
     /**
      * Construct ALU, ALU multiplexer, data registers, address register, and ALU operator register
@@ -62,12 +62,12 @@ public class Execute {
      * @param addressInput input to address register
      * @param aluOpInput input to ALU operator register
      */
-    public void init(Output<Integer> sInput, Output<Integer> tInput, Output<Integer> addressInput, Output<AluOp> aluOpInput) {
+    public void init(Output<Integer> sInput, Output<Integer> tInput, Output<Integer> addressInput, Output<AluOp> aluOpInput, Output<Integer> address) {
         // TODO: add correct enable inputs
-        sRegister.init(sInput, null);
-        tRegister.init(tInput, null);
-        nextPCRegister.init(addressInput, null);
-        aluOpRegister.init(aluOpInput, null);
+        sRegister.init(sInput);
+        tRegister.init(tInput);
+        nextPCRegister.init(addressInput);
+        aluOpRegister.init(aluOpInput);
         alu.init(sRegister.getOutput(), aluMux.getOutput(), aluOpRegister.getOutput());
         aluMux.init(addressInput);
     }

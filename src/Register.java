@@ -7,25 +7,25 @@ public class Register<T> implements ICycle {
     /**
      * Name of register
      */
-    String name;
+    private String name;
 
     /**
      * Data type of register
      */
-    T data;
+    private T data;
 
-    T tempData;
+    private T tempData;
 
     /**
      * Output of register
      */
-    Output<T> output;
+    private Output<T> output;
 
-    Output<T> input;
+    private Output<T> input;
 
-    Output<Boolean> enableInput;
+    private Output<Boolean> enableInput;
 
-    boolean tempEnable;
+    private boolean tempEnable;
 
     Register(String name, T initial, Cycler cycler) {
         this.name = name;
@@ -47,6 +47,15 @@ public class Register<T> implements ICycle {
     public void init(Output<T> input, Output<Boolean> enableInput) {
         this.input = input;
         this.enableInput = enableInput;
+    }
+
+    /**
+     * Initializes input
+     * @param input input
+     */
+    public void init(Output<T> input) {
+        this.input = input;
+        this.enableInput = new TrueOutput();
     }
 
     /**

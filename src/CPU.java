@@ -16,31 +16,34 @@ public class CPU {
      */
     private Memory memory;
 
-    InstructionDecode instructionDecode;
+    private InstructionDecode instructionDecode;
 
-    InstructionFetch instructionFetch;
+    private InstructionFetch instructionFetch;
 
-    RegisterBank registerBank;
+    private RegisterBank registerBank;
 
-    Execute execute;
+    private Execute execute;
 
-    MemoryAccess memoryAccess;
+    private MemoryAccess memoryAccess;
 
-    WriteBack writeBack;
+    private WriteBack writeBack;
+
+    private Cycler cycler;
 
     CPU() {
-       execute = new Execute();
+       cycler = new Cycler();
+       execute = new Execute(cycler);
        decoder = new Decoder();
-       memory = new Memory();
-       registerBank = new RegisterBank();
-       instructionFetch = new InstructionFetch(memory);
-       instructionDecode = new InstructionDecode(registerBank);
-       memoryAccess = new MemoryAccess(memory);
-       writeBack = new WriteBack();
+       memory = new Memory(cycler);
+       registerBank = new RegisterBank(cycler);
+       instructionFetch = new InstructionFetch(memory, cycler);
+       instructionDecode = new InstructionDecode(registerBank, cycler);
+       memoryAccess = new MemoryAccess(memory, cycler);
+       writeBack = new WriteBack(cycler, registerBank);
     }
 
     public void init() {
-        execute.init(registerBank.getsOutput(), registerBank.gettOutput(), instructionDecode.getAddressRegisterOutput(), null);
+        execute.init(registerBank.getsOutput(), registerBank.gettOutput(), instructionDecode.getAddressRegisterOutput(), null, null);
 
     }
 

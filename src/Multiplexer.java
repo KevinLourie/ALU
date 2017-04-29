@@ -7,17 +7,17 @@ public class Multiplexer<T> {
     /**
      * Inputs to choose from
      */
-    Output<T>[] inputArray;
+    private Output<T>[] inputArray;
 
     /**
      * Location of desired input
      */
-    Output<Integer> muxInput;
+    private Output<Integer> muxInput;
 
     /**
      * Desired input
      */
-    Output<T> muxOutput;
+    private Output<T> muxOutput;
 
     Multiplexer() {
         /**

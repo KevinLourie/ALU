@@ -12,13 +12,13 @@ public class Memory implements ICycle {
 
     public final static Logger logger = Logger.getLogger(Register.class.getName());
 
-    Output<Integer> dataOutput;
+    private Output<Integer> dataOutput;
 
-    Output<Integer> instructionOutput;
+    private Output<Integer> instructionOutput;
 
-    int tempData;
+    private int tempData;
 
-    int tempDataAddress;
+    private int tempDataAddress;
 
     /* Byte array */
     private Integer[] arr = new Integer[2 ^ 22];

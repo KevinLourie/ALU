@@ -6,32 +6,32 @@ public class InstructionDecode {
     /**
      * Instruction is located here
      */
-    RegisterBank registerBank;
+    private RegisterBank registerBank;
 
     /**
      * Decodes instruction
      */
-    Decoder decoder;
+    private Decoder decoder;
 
-    Bus<Integer, Byte> opcodeBus;
+    private Bus<Integer, Byte> opcodeBus;
 
-    Bus<Integer, Byte> addressSBus;
+    private Bus<Integer, Byte> addressSBus;
 
-    Bus<Integer, Byte> addressTBus;
+    private Bus<Integer, Byte> addressTBus;
 
-    Bus<Integer, Byte> addressDBus;
+    private Bus<Integer, Byte> addressDBus;
 
-    Bus<Integer, Integer> immediateBus;
+    private Bus<Integer, Integer> immediateBus;
 
     /**
      * Instruction
      */
-    Register<Integer> instructionRegister;
+    private Register<Integer> instructionRegister;
 
     /**
      * Location of instruction
      */
-    Register<Integer> nextPC;
+    private Register<Integer> nextPC;
 
     /**
      * Constructor
@@ -89,7 +89,7 @@ public class InstructionDecode {
         immediateBus.init(instructionRegister.getOutput());
         instructionRegister.init(dataInput, null);
         nextPC.init(nextPCInput, null);
-        registerBank.init(addressSBus, addressTBus, addressDBus, dataInput);
+        registerBank.initRead(addressSBus, addressTBus);
         decoder.init(null);
     }
 

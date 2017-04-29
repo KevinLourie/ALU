@@ -5,14 +5,14 @@
 public class Decoder {
 
     // Contains the microinstruction to be executed
-    Output<MicroInstruction> microInstructionOutput;
+    private Output<MicroInstruction> microInstructionOutput;
 
     // List of microinstructions
-    MicroInstruction[] microInstructions = new MicroInstruction[]{
+    private MicroInstruction[] microInstructions = new MicroInstruction[]{
 
     };
 
-    Output<Byte> opcodeInput;
+    private Output<Byte> opcodeInput;
 
     /**
      * Constructor
