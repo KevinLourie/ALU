@@ -4,62 +4,92 @@
 public class InstructionDecode {
 
     /**
-     * Instruction is located here
+     * Register bank
      */
     private RegisterBank registerBank;
 
     /**
-     * Decodes instruction
+     * Returns microcode for instruction
      */
     private Decoder decoder;
 
+    /**
+     * Extracts opcode from instruction
+     */
     private Bus<Integer, Byte> opcodeBus;
 
-    private Bus<Integer, Byte> addressSBus;
+    /**
+     * Extracts S register selection from instruction
+     */
+    private Bus<Integer, Byte> sSelectorBus;
 
-    private Bus<Integer, Byte> addressTBus;
+    /**
+     * Extracts T register selection from instruction
+     */
+    private Bus<Integer, Byte> tSelectorBus;
 
-    private Bus<Integer, Byte> addressDBus;
+    /**
+     * Extracts D register selection from instruction
+     */
+    private Bus<Integer, Byte> dSelectorBus;
 
+    /**
+     * Extracts immediate from instruction
+     */
     private Bus<Integer, Integer> immediateBus;
 
     /**
-     * Instruction
+     * Determine if branch condition is true by comparing data in S and T
+     */
+    private Comparator comparator;
+
+    /**
+     * Holds instruction
      */
     private Register<Integer> instructionRegister;
 
     /**
-     * Location of instruction
+     * Location of next instruction
      */
-    private Register<Integer> nextPC;
+    private Register<Integer> nextPc;
+
+    /**
+     * Shifting the immediate left by 2 bits for branch instruction because instructions are 4 bytes
+     */
+    private Bus<Integer, Integer> shiftLeft;
+
+    private Bus<Integer, Byte> shamtBus;
+
+    private Bus<Integer, Byte> functBus;
 
     /**
      * Constructor
      * @param registerBank register bank
      */
     InstructionDecode(RegisterBank registerBank, Cycler cycler) {
+        comparator = new Comparator();
         opcodeBus = new Bus<Integer, Byte>() {
             @Override
             public Byte read() {
-                return (byte)(input.read() >> 26);
+                return (byte)(input.read() >>> 26);
             }
         };
-        addressSBus = new Bus<Integer, Byte>() {
+        sSelectorBus = new Bus<Integer, Byte>() {
             @Override
             public Byte read() {
-                return (byte)((input.read() >> 21) & 0x1F);
+                return (byte)((input.read() >>> 21) & 0x1F);
             }
         };
-        addressTBus = new Bus<Integer, Byte>() {
+        tSelectorBus = new Bus<Integer, Byte>() {
             @Override
             public Byte read() {
-                return (byte)((input.read() >> 16) & 0x1F);
+                return (byte)((input.read() >>> 16) & 0x1F);
             }
         };
-        addressDBus = new Bus<Integer, Byte>() {
+        dSelectorBus = new Bus<Integer, Byte>() {
             @Override
             public Byte read() {
-                return (byte)((input.read() >> 11) & 0x1F);
+                return (byte)((input.read() >>> 11) & 0x1F);
             }
         };
         immediateBus = new Bus<Integer, Integer>() {
@@ -69,10 +99,28 @@ public class InstructionDecode {
                 return (int)(short)(input.read() & 0xFFFF);
             }
         };
+        shamtBus = new Bus<Integer, Byte>() {
+            @Override
+            public Byte read() {
+                return (byte)((input.read() >>> 6) & 0x1F);
+            }
+        };
+        functBus = new Bus<Integer, Byte>() {
+            @Override
+            public Byte read() {
+                return (byte)(input.read() & 0x3F);
+            }
+        };
         this.registerBank = registerBank;
         decoder = new Decoder();
         instructionRegister = new Register<>("IR", 0, cycler);
-        nextPC = new Register<>("Next PC", 0, cycler);
+        nextPc = new Register<>("Next PC", 0, cycler);
+        shiftLeft = new Bus<Integer, Integer>() {
+            @Override
+            public Integer read() {
+                return input.read() << 2;
+            }
+        };
     }
 
     /**
@@ -82,18 +130,20 @@ public class InstructionDecode {
      */
     public void init(Output<Integer> dataInput, Output<Integer> nextPCInput) {
         // TODO: add correct enable inputs
-        addressSBus.init(instructionRegister.getOutput());
-        addressTBus.init(instructionRegister.getOutput());
-        addressDBus.init(instructionRegister.getOutput());
+        shiftLeft.init(immediateBus);
+        comparator.init(registerBank.getSOutput(), registerBank.getTOutput());
+        sSelectorBus.init(instructionRegister.getOutput());
+        tSelectorBus.init(instructionRegister.getOutput());
+        dSelectorBus.init(instructionRegister.getOutput());
         opcodeBus.init(instructionRegister.getOutput());
         immediateBus.init(instructionRegister.getOutput());
         instructionRegister.init(dataInput, null);
-        nextPC.init(nextPCInput, null);
-        registerBank.initRead(addressSBus, addressTBus);
-        decoder.init(null);
+        nextPc.init(nextPCInput, null);
+        registerBank.initRead(sSelectorBus, tSelectorBus);
+        decoder.init(null, null);
     }
 
-    public Output<Integer> getAddressRegisterOutput() {
-        return nextPC.getOutput();
+    public Output<Integer> getNextPcOutput() {
+        return nextPc.getOutput();
     }
 }

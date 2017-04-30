@@ -43,7 +43,9 @@ public class CPU {
     }
 
     public void init() {
-        execute.init(registerBank.getsOutput(), registerBank.gettOutput(), instructionDecode.getAddressRegisterOutput(), null, null);
+        // Output<Integer> sInput, Output<Integer> tInput, Output<Integer> cInput,
+        // Output<AluOp> aluOpInput, Output<Byte> wbSelectorInput, Output<Integer> muxIndexInput
+        execute.init(registerBank.getSOutput(), registerBank.getTOutput(), instructionFetch.getInstructionOutput(), null, null, null);
 
     }
 
@@ -69,15 +71,14 @@ public class CPU {
      * Fetches microinstruction and executes it
      */
     public void run() {
-        Output<MicroInstruction> microInstructionOutput = decoder.getMicroInstructionOutput();
+        // Output<MicroInstruction> microInstructionOutput = decoder.getWbEnableOutput();
         for(int i = 0; ; i++) {
-            MicroInstruction currentMicroInstruction = microInstructionOutput.read();
-            if(currentMicroInstruction.halt) {
+            // MicroInstruction currentMicroInstruction = microInstructionOutput.read();
+            // if(currentMicroInstruction.halt) {
                 System.out.printf(" -> HALT%n");
                 break;
             }
-            System.out.printf(" -> %s%n", currentMicroInstruction);
-            execute(currentMicroInstruction);
+            // System.out.printf(" -> %s%n", currentMicroInstruction);
+            // execute(currentMicroInstruction);
         }
     }
-}

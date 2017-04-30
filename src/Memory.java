@@ -23,8 +23,11 @@ public class Memory implements ICycle {
     /* Byte array */
     private Integer[] arr = new Integer[2 ^ 22];
 
-    /* Address of byte */
+    /** Address of data */
     private Output<Integer> dataAddressInput;
+
+    /** Address of instruction */
+    private Output<Integer> instructionAddressInput;
 
     /* Data to read */
     private Output<Integer> dataInput;
@@ -34,16 +37,13 @@ public class Memory implements ICycle {
     private boolean tempEnable;
 
     Memory(Cycler cycler) {
-        dataOutput = new Output<Integer>() {
-            @Override
-            public Integer read() {
-                System.out.print("[");
-                // Fetching 4 bytes at a time
-                int address = dataAddressInput.read();
-                int data = arr[address / 4];
-                System.out.printf(" %d]", address);
-                return data;
-            }
+        dataOutput = () -> {
+            System.out.print("[");
+            // Fetching 4 bytes at a time
+            int address = dataAddressInput.read();
+            int data = arr[address / 4];
+            System.out.printf(" %d]", address);
+            return data;
         };
         cycler.add(this);
     }
@@ -56,10 +56,14 @@ public class Memory implements ICycle {
         return dataOutput;
     }
 
-    public void init(Output<Integer> dataInput, Output<Integer> dataAddressInput, Output<Boolean> enableInput) {
+    public void initData(Output<Integer> dataInput, Output<Integer> dataAddressInput, Output<Boolean> enableInput) {
         this.dataInput = dataInput;
         this.dataAddressInput = dataAddressInput;
         this.enableInput = enableInput;
+    }
+
+    public void initInstruction(Output<Integer> instructionAddressInput) {
+        this.instructionAddressInput = instructionAddressInput;
     }
 
     /**

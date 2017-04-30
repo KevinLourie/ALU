@@ -33,27 +33,21 @@ public class RegisterBank implements ICycle {
     public final static Logger logger = Logger.getLogger(Register.class.getName());
 
     RegisterBank(Cycler cycler) {
-        sOutput = new Output<Integer>() {
-            @Override
-            public Integer read() {
-                System.out.print("[");
-                // Fetching 2 bytes at a time
-                byte address = addressSInput.read();
-                int data = arr[address];
-                System.out.printf(" %d]", address);
-                return data;
-            }
+        sOutput = () -> {
+            System.out.print("[");
+            // Fetching 2 bytes at a time
+            byte address = addressSInput.read();
+            int data = arr[address];
+            System.out.printf(" %d]", address);
+            return data;
         };
-        tOutput = new Output<Integer>() {
-            @Override
-            public Integer read() {
-                System.out.print("[");
-                // Fetching 2 bytes at a time
-                byte address = addressTInput.read();
-                int data = arr[address];
-                System.out.printf(" %d]", address);
-                return data;
-            }
+        tOutput = () -> {
+            System.out.print("[");
+            // Fetching 2 bytes at a time
+            byte address = addressTInput.read();
+            int data = arr[address];
+            System.out.printf(" %d]", address);
+            return data;
         };
         cycler.add(this);
     }
@@ -96,7 +90,7 @@ public class RegisterBank implements ICycle {
      * Getter for sOutput
      * @return sOutput
      */
-    public Output<Integer> getsOutput() {
+    public Output<Integer> getSOutput() {
         return sOutput;
     }
 
@@ -104,7 +98,7 @@ public class RegisterBank implements ICycle {
      * Getter for tOutput
      * @return tOutput
      */
-    public Output<Integer> gettOutput() {
+    public Output<Integer> getTOutput() {
         return tOutput;
     }
 }

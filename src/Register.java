@@ -30,12 +30,9 @@ public class Register<T> implements ICycle {
     Register(String name, T initial, Cycler cycler) {
         this.name = name;
         data = initial;
-        output = new Output<T>() {
-            @Override
-            public T read() {
-                System.out.print(name);
-                return data;
-            }
+        output = () -> {
+            System.out.print(name);
+            return data;
         };
         cycler.add(this);
     }
@@ -55,7 +52,7 @@ public class Register<T> implements ICycle {
      */
     public void init(Output<T> input) {
         this.input = input;
-        this.enableInput = new TrueOutput();
+        this.enableInput = new ConstantOutput(true);
     }
 
     /**

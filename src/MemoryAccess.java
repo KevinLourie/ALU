@@ -9,20 +9,29 @@ public class MemoryAccess {
     private Memory memory;
 
     /**
-     * Data register
+     * Data latch
      */
-    private Register<Integer> dataRegister;
+    private Register<Integer> d0Latch;
 
     /**
-     * Address register
+     * ALU latch
      */
-    private Register<Integer> addressRegister;
+    private Register<Integer> d1Latch;
 
-    private Register<Byte> dAddressRegister;
+    /**
+     * Indicates which register to write back to
+     */
+    private Register<Byte> wbSelectorLatch;
 
-    private Register<Boolean> dEnableRegister;
+    /**
+     * Indicates whether to write to a register
+     */
+    private Register<Boolean> wbEnableLatch;
 
-    private Register<Integer> dControlRegister;
+    /**
+     * Choooses between WB0 and WB1
+     */
+    private Register<Integer> wbMuxIndexLatch;
 
     /**
      * Constructor
@@ -33,38 +42,42 @@ public class MemoryAccess {
     }
 
     /**
-     * Initialize the data register and address register
-     * @param dataInput data register input
-     * @param nextPCInput address register input
+     * Initialize the data register and d1Input register
+     * @param d0Input data register input
+     * @param d0Input
+     * @param d1Input
+     * @param dAddressInput
+     * @param enableInput
+     * @param indexInput
      */
-    public void init(Output<Integer> dataInput, Output<Integer> nextPCInput, Output<Integer> address,
-                     Output<Byte> dAddressInput, Output<Boolean> enableInput, Output<Integer> controlInput) {
+    public void init(Output<Integer> d0Input, Output<Integer> d1Input,
+                     Output<Byte> dAddressInput, Output<Boolean> enableInput, Output<Integer> indexInput) {
         // TODO: add correct enable inputs
-        dAddressRegister.init(dAddressInput);
-        dEnableRegister.init(enableInput);
-        dControlRegister.init(controlInput);
-        dataRegister.init(dataInput);
-        addressRegister.init(nextPCInput);
-        memory.init(dataRegister.getOutput(), addressRegister.getOutput(), null);
+        wbSelectorLatch.init(dAddressInput);
+        wbEnableLatch.init(enableInput);
+        wbMuxIndexLatch.init(indexInput);
+        d0Latch.init(d0Input);
+        d1Latch.init(d1Input);
+        memory.initData(d0Latch.getOutput(), d1Latch.getOutput(), null);
     }
 
-    public Output<Integer> getD0Output() {
+    public Output<Integer> getWb0Output() {
         return memory.getDataOutput();
     }
 
-    public Output<Integer> getD1Output() {
-        return dataRegister.getOutput();
+    public Output<Integer> getWb1Output() {
+        return d1Latch.getOutput();
     }
 
-    public Output<Byte> getDAddressOutput() {
-        return dAddressRegister.getOutput();
+    public Output<Byte> getWbSelectorOutput() {
+        return wbSelectorLatch.getOutput();
     }
 
-    public Output<Boolean> getDEnableOutput() {
-        return dEnableRegister.getOutput();
+    public Output<Boolean> getWbEnableOutput() {
+        return wbEnableLatch.getOutput();
     }
 
-    public Output<Integer> getDControlOutput() {
-        return dControlRegister.getOutput();
+    public Output<Integer> getDIndexOutput() {
+        return wbMuxIndexLatch.getOutput();
     }
 }

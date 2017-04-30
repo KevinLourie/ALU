@@ -24,12 +24,7 @@ public class Multiplexer<T> {
          * Return desired input
          * @return desired input
          */
-        muxOutput = new Output<T>() {
-            @Override
-            public T read() {
-                return inputArray[muxInput.read()].read();
-            }
-        };
+        muxOutput = () -> inputArray[muxInput.read()].read();
     }
 
     /**

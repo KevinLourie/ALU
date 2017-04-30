@@ -5,92 +5,80 @@
 public class MicroInstruction {
 
     /** True to halt the CPU */
-    boolean halt;
+    private boolean halt;
 
-    MemoryOp memoryOp = MemoryOp.None;
+    private byte aluOp = AluOp.Add;
 
-    /** Control for MPC */
-    RegisterOp mpcOp = RegisterOp.Increment;
-
-    /** Control for mbr */
-    RegisterOp mbrOp = RegisterOp.None;
-
-    /** Index of input to acMux */
-    int acMuxIndex = -1;
-
-    /** Index of input to marMux */
-    int marMuxIndex = 1;
-
-    /** Index of input to mbr */
-    int mbrMuxIndex = -1;
-
-    /** Control for ac */
-    RegisterOp acOp = RegisterOp.None;
-
-    /** Control for alu */
-    AluOp aluOp = AluOp.None;
-
-    /** Control for pc */
-    RegisterOp pcOp = RegisterOp.None;
-
-    /** Control for ir */
-    RegisterOp irOp = RegisterOp.None;
-
-    /** Control for mar */
-    RegisterOp marOp = RegisterOp.None;
-
-    public MicroInstruction setMbrOp(RegisterOp mbrOp) {
-        this.mbrOp = mbrOp;
-        return this;
+    public byte getAluOp() {
+        return aluOp;
     }
 
-    public MicroInstruction setAcMuxIndex(int acMuxIndex) {
-        this.acMuxIndex = acMuxIndex;
-        return this;
-    }
-
-    public MicroInstruction setMbrMuxIndex(int mbrMuxIndex) {
-        this.mbrMuxIndex = mbrMuxIndex;
-        return this;
-    }
-
-    public MicroInstruction setMarMuxIndex(int marMuxIndex) {
-        this.marMuxIndex = marMuxIndex;
-        return this;
-    }
-
-    public MicroInstruction setAcOp(RegisterOp acOp) {
-        this.acOp = acOp;
-        return this;
-    }
-
-    public MicroInstruction setAluOp(AluOp aluOp) {
+    public MicroInstruction setAluOp(byte aluOp) {
         this.aluOp = aluOp;
         return this;
     }
 
-    public MicroInstruction setPcOp(RegisterOp pcOp) {
-        this.pcOp = pcOp;
+    /** Index of input to ALU mux */
+    private int aluMuxIndex = -1;
+
+    /** Index of input to pc */
+    private int pcMuxIndex = 0;
+
+    /** Index of input to write back mux */
+    private int wbMuxIndex = -1;
+    /**
+     * True if a result should be written to a register
+     */
+    private boolean wbEnable = false;
+
+    private boolean memoryWriteEnable = false;
+
+    public boolean isHalt() {
+        return halt;
+    }
+
+    public int getAluMuxIndex() {
+        return aluMuxIndex;
+    }
+
+    public MicroInstruction setAluMuxIndex(int aluMuxIndex) {
+        this.aluMuxIndex = aluMuxIndex;
         return this;
     }
 
-    public MicroInstruction setIrOp(RegisterOp irOp) {
-        this.irOp = irOp;
+    public int getPcMuxIndex() {
+        return pcMuxIndex;
+    }
+
+    public MicroInstruction setPcMuxIndex(int pcMuxIndex) {
+        this.pcMuxIndex = pcMuxIndex;
         return this;
     }
 
-    public MicroInstruction setMarOp(RegisterOp marOp) {
-        this.marOp = marOp;
+    public int getWbMuxIndex() {
+        return wbMuxIndex;
+    }
+
+    public MicroInstruction setWbMuxIndex(int wbMuxIndex) {
+        this.wbMuxIndex = wbMuxIndex;
         return this;
     }
 
-    public MicroInstruction setMpcOp(RegisterOp mpcOp) {
-        this.mpcOp = mpcOp;
+    public boolean isWbEnable() {
+        return wbEnable;
+    }
+
+    public MicroInstruction setWbEnable(boolean wbEnable) {
+        this.wbEnable = wbEnable;
         return this;
     }
 
-    public MicroInstruction setMemoryOp(MemoryOp memoryOp) {
-        this.memoryOp = memoryOp;
+    public boolean isMemoryWriteEnable() {
+        return memoryWriteEnable;
+    }
+
+    public MicroInstruction setMemoryWriteEnable(boolean memoryWriteEnable) {
+        this.memoryWriteEnable = memoryWriteEnable;
         return this;
     }
 

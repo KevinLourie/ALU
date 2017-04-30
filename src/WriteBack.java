@@ -9,6 +9,9 @@ public class WriteBack {
      */
     private Multiplexer<Integer> dMux;
 
+    /**
+     * Register bank
+     */
     private RegisterBank registerBank;
 
     WriteBack(Cycler cycler, RegisterBank registerBank) {
@@ -19,16 +22,16 @@ public class WriteBack {
     /**
      * Initialize memory register and write back register
      *
-     * @param d0Input
-     * @param d1Input
-     * @param dAddressInput
-     * @param dEnable
-     * @param dControl
+     * @param wb0Input
+     * @param wb1Input
+     * @param wbSelectorInput
+     * @param wbEnable
+     * @param wbMuxIndex
      */
-    public void init(Output<Integer> d0Input, Output<Integer> d1Input, Output<Byte> dAddressInput,
-                     Output<Boolean> dEnable, Output<Integer> dControl) {
-        registerBank.initWrite(dAddressInput, dMux.getOutput(), dEnable);
-        dMux.init(dControl, d0Input, d1Input);
+    public void init(Output<Integer> wb0Input, Output<Integer> wb1Input, Output<Byte> wbSelectorInput,
+                     Output<Boolean> wbEnable, Output<Integer> wbMuxIndex) {
+        registerBank.initWrite(wbSelectorInput, dMux.getOutput(), wbEnable);
+        dMux.init(wbMuxIndex, wb0Input, wb1Input);
     }
 
 }

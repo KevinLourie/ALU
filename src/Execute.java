@@ -9,33 +9,39 @@ public class Execute {
     private ALU alu;
 
     /**
-     * Second operand
+     * Indicates which register to write back to
+     */
+    private Register<Byte> wbSelectorLatch;
+
+    /**
+     * Chooses either T or C
      */
     private Multiplexer<Integer> aluMux;
 
     /**
-     * First data register
+     * Holds S register output
      */
-    private Register<Integer> sRegister;
+    private Register<Integer> sLatch;
 
     /**
-     * Second data register
+     * Holds T register output
      */
-    private Register<Integer> tRegister;
+    private Register<Integer> tLatch;
 
     /**
-     * Address register
+     * Holds ALU operation
      */
-    private Register<Integer> nextPCRegister;
+    private Register<AluOp> aluOpLatch;
 
     /**
-     * ALU Operator register
+     * Holds constant from instruction
      */
-    private Register<AluOp> aluOpRegister;
+    private Register<Integer> cLatch;
 
-    private Register<Integer> constantRegister;
-
-    private Bus<Integer, Integer> shiftLeft;
+    /**
+     * Determines whether T or C is chosen
+     */
+    private Register<Integer> muxIndexLatch;
 
     /**
      * Construct ALU, ALU multiplexer, data registers, address register, and ALU operator register
@@ -43,32 +49,31 @@ public class Execute {
     Execute(Cycler cycler) {
         alu = new ALU();
         aluMux = new Multiplexer<>();
-        sRegister = new Register<>("S", 0, cycler);
-        tRegister = new Register<>("T", 0, cycler);
-        nextPCRegister = new Register<>("Address", 0, cycler);
-        aluOpRegister = new Register<AluOp>("ALU Operator", AluOp.None, cycler);
-        shiftLeft = new Bus<Integer, Integer>() {
-            @Override
-            public Integer read() {
-                return input.read() << 2;
-            }
-        };
+        muxIndexLatch = new Register<>("Mux Index", 0, cycler);
+        wbSelectorLatch = new Register<>("WB Selector", (byte)0, cycler);
+        sLatch = new Register<>("S", 0, cycler);
+        tLatch = new Register<>("T", 0, cycler);
+        cLatch = new Register<>("C", 0, cycler);
+        aluOpLatch = new Register<AluOp>("ALU Operator", AluOp.None, cycler);
     }
 
     /**
      * Initialize data registers, address register, and ALU operator register
      * @param sInput input to first data register
      * @param tInput input to second data register
-     * @param addressInput input to address register
+     * @param cInput input to address register
      * @param aluOpInput input to ALU operator register
      */
-    public void init(Output<Integer> sInput, Output<Integer> tInput, Output<Integer> addressInput, Output<AluOp> aluOpInput, Output<Integer> address) {
+    public void init(Output<Integer> sInput, Output<Integer> tInput, Output<Integer> cInput,
+                     Output<AluOp> aluOpInput, Output<Byte> wbSelectorInput, Output<Integer> muxIndexInput) {
         // TODO: add correct enable inputs
-        sRegister.init(sInput);
-        tRegister.init(tInput);
-        nextPCRegister.init(addressInput);
-        aluOpRegister.init(aluOpInput);
-        alu.init(sRegister.getOutput(), aluMux.getOutput(), aluOpRegister.getOutput());
-        aluMux.init(addressInput);
+        sLatch.init(sInput);
+        tLatch.init(tInput);
+        cLatch.init(cInput);
+        wbSelectorLatch.init(wbSelectorInput);
+        muxIndexLatch.init(muxIndexInput);
+        aluOpLatch.init(aluOpInput);
+        alu.init(sLatch.getOutput(), aluMux.getOutput(), aluOpLatch.getOutput());
+        aluMux.init(muxIndexLatch.getOutput(), sLatch.getOutput(), tLatch.getOutput());
     }
 }

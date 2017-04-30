@@ -1,7 +1,9 @@
 /**
- * Created by kzlou on 4/29/2017.
+ * Adds a constant to an input
+ * Created by kzlou on 4/22/2017.
  */
-public class Adder {
+public class Comparator {
+
     /**
      * Current number
      */
@@ -17,11 +19,11 @@ public class Adder {
     /**
      * Constructor
      */
-    Adder() {
+    Comparator() {
         output = new Output<Integer>() {
             @Override
             public Integer read() {
-                return input1.read() + input2.read();
+                return input1.read() == input2.read() ? 1 : 0;
             }
         };
     }

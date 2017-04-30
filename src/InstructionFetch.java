@@ -16,7 +16,7 @@ public class InstructionFetch {
     /**
      * Program counter
      */
-    private Register<Integer> PC;
+    private Register<Integer> pc;
 
     /**
      * Where to get next program from
@@ -29,8 +29,8 @@ public class InstructionFetch {
      */
     InstructionFetch(Memory memory, Cycler cycler) {
         this.memory = memory;
-        adder = new Adder(4);
-        PC = new Register<>("PC", 0, cycler);
+        adder = new Adder();
+        pc = new Register<>("pc", 0, cycler);
         pcMux = new Multiplexer<>();
     }
 
@@ -41,9 +41,13 @@ public class InstructionFetch {
      */
     public void init(Output<Integer> dataInput, Output<Integer> nextPCInput) {
         // TODO: add correct enable inputs
-        memory.init(dataInput, PC.getOutput(), null);
-        adder.init(nextPCInput);
-        PC.init(nextPCInput, null);
+        memory.initData(dataInput, pc.getOutput(), null);
+        adder.init(nextPCInput, new ConstantOutput<Integer>(4));
+        pc.init(nextPCInput, null);
         pcMux.init(nextPCInput, null);
+    }
+
+    public Output<Integer> getInstructionOutput() {
+        return memory.getInstructionOutput();
     }
 }

@@ -4,10 +4,6 @@
  */
 public class ALU {
 
-    private Output<Boolean> zeroFlagOutput;
-
-    private boolean zeroFlag;
-
     /**
      * First number
      */
@@ -26,12 +22,12 @@ public class ALU {
     /**
      * ALU control
      */
-    private Output<AluOp> operator;
+    private Output<Byte> aluOp;
 
     ALU() {
         dOutput = new Output<Integer>() {
             /**
-             * Read 2 numbers. Perform operation specified by the operator field.
+             * Read 2 numbers. Perform operation specified by the aluOp field.
              * @return dOutput
              */
             @Override
@@ -39,49 +35,38 @@ public class ALU {
                 int s = sInput.read();
                 int t = tInput.read();
                 int d = 0;
-                switch (operator.read()) {
-                    case Add:
+                switch (aluOp.read()) {
+                    case AluOp.Add:
                         d = s + t;
                         break;
-                    case Subtract:
+                    case AluOp.Subtract:
                         d = s - t;
                         break;
-                    case Multiply:
+                    case AluOp.Multiply:
                         d = s * t;
                         break;
-                    case Divide:
+                    case AluOp.Divide:
                         d = s / t;
                         break;
-                    case Right:
+                    case AluOp.ShiftRightLogical:
+                        // TODO: Fix by using shamt
                         d = t;
                 }
-                zeroFlag = d == 0;
                 System.out.printf("%s%n", d);
                 return d;
             }
         };
-
-        zeroFlagOutput = new Output<Boolean>() {
-            @Override
-            public Boolean read() {
-                return zeroFlag;
-            }
-        };
-    }
-
-    public Output<Boolean> getZeroFlagOutput() {
-        return zeroFlagOutput;
     }
 
     /**
-     * Initialize operands and operator
+     * Initialize operands and aluOp
      * @param operand1 operand1
      * @param operand2 operand2
-     * @param operator operator
+     * @param operator aluOp
      */
     public void init(Output operand1, Output operand2, Output operator) {
         this.sInput = operand1;
         this.tInput = operand2;
-        this.operator = operator;
+        this.aluOp = operator;
     }
 }
