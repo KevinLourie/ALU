@@ -32,19 +32,41 @@ public class InstructionFetch {
         adder = new Adder();
         pc = new Register<>("pc", 0, cycler);
         pcMux = new Multiplexer<>();
+
+        // Internal wiring
+        adder.init(pc.getOutput(), new ConstantOutput<Integer>(4));
+        pc.setInput(pcMux.getOutput());
+
     }
 
     /**
-     * Initialize data register and address register
-     * @param dataInput data register input
-     * @param nextPCInput address register input
+     * Initialize memory
+     * @param dataInput input to data memory
+     * @return Instruction Fetch
      */
-    public void init(Output<Integer> dataInput, Output<Integer> nextPCInput) {
-        // TODO: add correct enable inputs
+    public InstructionFetch setDataInput(Output<Integer> dataInput) {
         memory.initData(dataInput, pc.getOutput(), null);
-        adder.init(nextPCInput, new ConstantOutput<Integer>(4));
-        pc.init(nextPCInput, null);
-        pcMux.init(nextPCInput, null);
+        return this;
+    }
+
+    /**
+     * Initialize adder, PC, and pcMux
+     * @param nextPCInput input to pcMux
+     * @return Instruction Fetch
+     */
+    public InstructionFetch setNextPCInput(Output<Integer> nextPCInput) {
+        pcMux.setInputs(nextPCInput, adder.getOutput());
+        return this;
+    }
+
+    /**
+     * Setter for pcMux index
+     * @param pcMuxIndexInput index
+     * @return Instruction Fetch
+     */
+    public InstructionFetch setPcMuxIndexInput(Output<Integer> pcMuxIndexInput) {
+        pcMux.setIndexInput(pcMuxIndexInput);
+        return this;
     }
 
     public Output<Integer> getInstructionOutput() {

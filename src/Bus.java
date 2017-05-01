@@ -5,7 +5,8 @@ public abstract class Bus<IN, OUT> implements Output<OUT> {
 
     Output<IN> input;
 
-    public void init(Output<IN> input) {
+    public Bus<IN, OUT> setInput(Output<IN> input) {
         this.input = input;
+        return this;
     }
 }

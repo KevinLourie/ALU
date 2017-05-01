@@ -62,12 +62,25 @@ public class InstructionDecode {
 
     private Bus<Integer, Byte> functBus;
 
+    private Multiplexer<Byte> wbSelectorMux;
+
     /**
      * Constructor
      * @param registerBank register bank
      */
     InstructionDecode(RegisterBank registerBank, Cycler cycler) {
         comparator = new Comparator();
+        shiftLeft.setInput(immediateBus);
+        comparator.init(registerBank.getSOutput(), registerBank.getTOutput());
+        sSelectorBus.setInput(instructionRegister.getOutput());
+        tSelectorBus.setInput(instructionRegister.getOutput());
+        dSelectorBus.setInput(instructionRegister.getOutput());
+        opcodeBus.setInput(instructionRegister.getOutput());
+        immediateBus.setInput(instructionRegister.getOutput());
+        registerBank
+                .setAddressSInput(sSelectorBus)
+                .setAddressTInput(tSelectorBus);
+        decoder.init(null, null);
         opcodeBus = new Bus<Integer, Byte>() {
             @Override
             public Byte read() {
@@ -121,29 +134,54 @@ public class InstructionDecode {
                 return input.read() << 2;
             }
         };
+
+        // Internal wiring
+        wbSelectorMux
+                .setIndexInput(decoder.getWbSelectorMuxIndexOutput())
+                .setInputs(tSelectorBus, dSelectorBus);
     }
 
     /**
-     * Initilize data register and address register
-     * @param dataInput data register input
-     * @param nextPCInput address register input
+     * Initialize instruction register
+     * @param instructionInput input to instruction register
+     * @return Instruction Decode
      */
-    public void init(Output<Integer> dataInput, Output<Integer> nextPCInput) {
-        // TODO: add correct enable inputs
-        shiftLeft.init(immediateBus);
-        comparator.init(registerBank.getSOutput(), registerBank.getTOutput());
-        sSelectorBus.init(instructionRegister.getOutput());
-        tSelectorBus.init(instructionRegister.getOutput());
-        dSelectorBus.init(instructionRegister.getOutput());
-        opcodeBus.init(instructionRegister.getOutput());
-        immediateBus.init(instructionRegister.getOutput());
-        instructionRegister.init(dataInput, null);
-        nextPc.init(nextPCInput, null);
-        registerBank.initRead(sSelectorBus, tSelectorBus);
-        decoder.init(null, null);
+    public InstructionDecode setInstructionInput(Output<Integer> instructionInput) {
+        instructionRegister.setInput(instructionInput);
+        return this;
     }
 
-    public Output<Integer> getNextPcOutput() {
-        return nextPc.getOutput();
+    /**
+     * Initialize program counter
+     * @param nextPCInput input to instruction register
+     * @return Instruction Decode
+     */
+    public InstructionDecode setNextPcInput(Output<Integer> nextPCInput) {
+        nextPc.setInput(nextPCInput);
+        return this;
+    }
+
+    public Output<Integer> getSOutput() {
+        return registerBank.getSOutput();
+    }
+
+    public Output<Integer> getTOutput() {
+        return registerBank.getTOutput();
+    }
+
+    public Output<Integer> getCOutput() {
+        return immediateBus;
+    }
+
+    public Output<Integer> getAluMuxIndexOutput() {
+        return decoder.getAluMuxIndexOutput();
+    }
+
+    public Output<Byte> getWbSelectorOutput() {
+        return null;
+    }
+
+    public Output<Byte> getAluOpOutput() {
+        return decoder.getAluOpOutput();
     }
 }

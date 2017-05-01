@@ -6,7 +6,7 @@ public class Execute {
     /**
      * Required to do arithmetic for the instruction execution
      */
-    private ALU alu;
+    private Alu alu;
 
     /**
      * Indicates which register to write back to
@@ -31,7 +31,7 @@ public class Execute {
     /**
      * Holds ALU operation
      */
-    private Register<AluOp> aluOpLatch;
+    private Register<Byte> aluOpLatch;
 
     /**
      * Holds constant from instruction
@@ -41,39 +41,88 @@ public class Execute {
     /**
      * Determines whether T or C is chosen
      */
-    private Register<Integer> muxIndexLatch;
+    private Register<Integer> aluMuxIndexLatch;
 
     /**
      * Construct ALU, ALU multiplexer, data registers, address register, and ALU operator register
      */
     Execute(Cycler cycler) {
-        alu = new ALU();
+        alu = new Alu();
         aluMux = new Multiplexer<>();
-        muxIndexLatch = new Register<>("Mux Index", 0, cycler);
+        aluMuxIndexLatch = new Register<>("Mux Index", 0, cycler);
         wbSelectorLatch = new Register<>("WB Selector", (byte)0, cycler);
         sLatch = new Register<>("S", 0, cycler);
         tLatch = new Register<>("T", 0, cycler);
         cLatch = new Register<>("C", 0, cycler);
-        aluOpLatch = new Register<AluOp>("ALU Operator", AluOp.None, cycler);
+        aluOpLatch = new Register<>("ALU Operator", AluOp.Add, cycler);
+
+        // Internal wire
+        alu.init(sLatch.getOutput(), aluMux.getOutput(), aluOpLatch.getOutput());
+        aluMux
+                .setIndexInput(aluMuxIndexLatch.getOutput())
+                .setInputs(sLatch.getOutput(), tLatch.getOutput());
     }
 
     /**
-     * Initialize data registers, address register, and ALU operator register
-     * @param sInput input to first data register
-     * @param tInput input to second data register
-     * @param cInput input to address register
-     * @param aluOpInput input to ALU operator register
+     * Initialize sLatch
+     * @param sInput input to sLatch
+     * @return Execute
      */
-    public void init(Output<Integer> sInput, Output<Integer> tInput, Output<Integer> cInput,
-                     Output<AluOp> aluOpInput, Output<Byte> wbSelectorInput, Output<Integer> muxIndexInput) {
+    public Execute setSInput(Output<Integer> sInput) {
         // TODO: add correct enable inputs
-        sLatch.init(sInput);
-        tLatch.init(tInput);
-        cLatch.init(cInput);
-        wbSelectorLatch.init(wbSelectorInput);
-        muxIndexLatch.init(muxIndexInput);
-        aluOpLatch.init(aluOpInput);
-        alu.init(sLatch.getOutput(), aluMux.getOutput(), aluOpLatch.getOutput());
-        aluMux.init(muxIndexLatch.getOutput(), sLatch.getOutput(), tLatch.getOutput());
+        sLatch.setInput(sInput);
+        return this;
+    }
+
+    /**
+     * Initialize tLatch
+     * @param tInput input to tLatch
+     * @return Execute
+     */
+    public Execute setTInput(Output<Integer> tInput) {
+        // TODO: add correct enable inputs
+        tLatch.setInput(tInput);
+        return this;
+    }
+
+    /**
+     * Initialize cLatch
+     * @param cInput input to cLatch
+     * @return Execute
+     */
+    public Execute setCInput(Output<Integer> cInput) {
+        // TODO: add correct enable inputs
+        cLatch.setInput(cInput);
+        return this;
+    }
+
+    /**
+     * Initialize aluOpLatch
+     * @param aluOpInput input to aluOpLatch
+     * @return Execute
+     */
+    public Execute setAluOpInput(Output<Byte> aluOpInput) {
+        aluOpLatch.setInput(aluOpInput);
+        return this;
+    }
+
+    /**
+     * Initialize wbSelectorLatch
+     * @param wbSelectorInput input to wbSelectorLatch
+     * @return Execute
+     */
+    public Execute setWbSelectorInput(Output<Byte> wbSelectorInput) {
+        wbSelectorLatch.setInput(wbSelectorInput);
+        return this;
+    }
+
+    /**
+     * Initialize aluMux
+     * @param muxIndexInput input to aluMux
+     * @return Execute
+     */
+    public Execute setAluMuxIndexInput(Output<Integer> muxIndexInput) {
+        aluMuxIndexLatch.setInput(muxIndexInput);
+        return this;
     }
 }

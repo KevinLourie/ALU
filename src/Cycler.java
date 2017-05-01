@@ -5,8 +5,12 @@ import java.util.ArrayList;
  */
 public class Cycler {
 
+    /** Collection of cycles */
     private ArrayList<ICycle> cycles = new ArrayList<>();
 
+    /**
+     * Sense all inputs. Cycle all registers
+     */
     public void senseAndCycle() {
         for(ICycle cycle : cycles) {
             cycle.sense();
@@ -16,6 +20,10 @@ public class Cycler {
         }
     }
 
+    /**
+     * Add cycle to collection
+     * @param cycle cycle to add
+     */
     public void add(ICycle cycle) {
         cycles.add(cycle);
     }

@@ -2,16 +2,14 @@
  * Created by kzlou on 4/29/2017.
  */
 public class Adder {
-    /**
-     * Current number
-     */
+
+    /** Current number */
     private Output<Integer> input1;
 
+    /** Second input to PC */
     private Output<Integer> input2;
 
-    /**
-     * Next number
-     */
+    /** PC result */
     private Output<Integer> output;
 
     /**
@@ -27,8 +25,9 @@ public class Adder {
     }
 
     /**
-     * Initialize input
-     *
+     * Initialize inputs
+     * @param input1 first input
+     * @param input2 second input
      */
     public void init(Output<Integer> input1, Output<Integer> input2) {
         this.input1 = input1;

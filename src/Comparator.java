@@ -4,16 +4,13 @@
  */
 public class Comparator {
 
-    /**
-     * Current number
-     */
+    /** First number */
     private Output<Integer> input1;
 
+    /** Second number */
     private Output<Integer> input2;
 
-    /**
-     * Next number
-     */
+    /** 0 if numbers are same, 1 if not */
     private Output<Integer> output;
 
     /**
@@ -30,7 +27,8 @@ public class Comparator {
 
     /**
      * Initialize input
-     *
+     * @param input1 first input
+     * @param input2 second input
      */
     public void init(Output<Integer> input1, Output<Integer> input2) {
         this.input1 = input1;

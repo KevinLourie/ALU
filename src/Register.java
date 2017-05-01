@@ -35,24 +35,26 @@ public class Register<T> implements ICycle {
             return data;
         };
         cycler.add(this);
-    }
-
-    /**
-     * Initializes input
-     * @param input input
-     */
-    public void init(Output<T> input, Output<Boolean> enableInput) {
-        this.input = input;
-        this.enableInput = enableInput;
-    }
-
-    /**
-     * Initializes input
-     * @param input input
-     */
-    public void init(Output<T> input) {
-        this.input = input;
         this.enableInput = new ConstantOutput(true);
+    }
+
+    /**
+     * Setter for enable input
+     * @param enableInput enable input
+     * @return register
+     */
+    public Register<T> setEnableInput(Output<Boolean> enableInput) {
+        this.enableInput = enableInput;
+        return this;
+    }
+
+    /**
+     * Initializes input
+     * @param input input
+     */
+    public Register<T> setInput(Output<T> input) {
+        this.input = input;
+        return this;
     }
 
     /**

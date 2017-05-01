@@ -39,26 +39,57 @@ public class MemoryAccess {
      */
     MemoryAccess(Memory memory, Cycler cycler) {
         this.memory = memory;
+        memory.initData(d0Latch.getOutput(), d1Latch.getOutput(), null);
     }
 
     /**
-     * Initialize the data register and d1Input register
-     * @param d0Input data register input
-     * @param d0Input
-     * @param d1Input
-     * @param dAddressInput
-     * @param enableInput
-     * @param indexInput
+     * Initialize d0Latch
+     * @param d0Input input to d0Latch
+     * @return Memory Access
      */
-    public void init(Output<Integer> d0Input, Output<Integer> d1Input,
-                     Output<Byte> dAddressInput, Output<Boolean> enableInput, Output<Integer> indexInput) {
-        // TODO: add correct enable inputs
-        wbSelectorLatch.init(dAddressInput);
-        wbEnableLatch.init(enableInput);
-        wbMuxIndexLatch.init(indexInput);
-        d0Latch.init(d0Input);
-        d1Latch.init(d1Input);
-        memory.initData(d0Latch.getOutput(), d1Latch.getOutput(), null);
+    public MemoryAccess setD0Input(Output<Integer> d0Input) {
+        d0Latch.setInput(d0Input);
+        return this;
+    }
+
+    /**
+     * Initialize d1Latch
+     * @param d1Input input to d1Latch
+     * @return Memory Access
+     */
+    public MemoryAccess setD1Input(Output<Integer> d1Input) {
+        d1Latch.setInput(d1Input);
+        return this;
+    }
+
+    /**
+     * Initialize wbSelectorLatch
+     * @param dAddressInput input to wbSelectorLatch
+     * @return Memory Access
+     */
+    public MemoryAccess setdAddressInput(Output<Byte> dAddressInput) {
+        wbSelectorLatch.setInput(dAddressInput);
+        return this;
+    }
+
+    /**
+     * Initialize wbEnableLatch
+     * @param enableInput input to wbEnableLatch
+     * @return Memory Access
+     */
+    public MemoryAccess setEnableOutput(Output<Boolean> enableInput) {
+        wbEnableLatch.setInput(enableInput);
+        return this;
+    }
+
+    /**
+     * Initialize wbMuxIndexLatch
+     * @param indexInput input to wbMuxIndexLatch
+     * @return Memory Access
+     */
+    public MemoryAccess setIndexInput(Output<Integer> indexInput) {
+        wbMuxIndexLatch.setInput(indexInput);
+        return this;
     }
 
     public Output<Integer> getWb0Output() {

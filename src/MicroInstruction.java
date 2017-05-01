@@ -26,6 +26,18 @@ public class MicroInstruction {
 
     /** Index of input to write back mux */
     private int wbMuxIndex = -1;
+
+    public int getWbSelectorMuxIndex() {
+        return wbSelectorMuxIndex;
+    }
+
+    public MicroInstruction setWbSelectorMuxIndex(int wbSelectorMuxIndex) {
+        this.wbSelectorMuxIndex = wbSelectorMuxIndex;
+        return this;
+    }
+
+    private int wbSelectorMuxIndex = -1;
+
     /**
      * True if a result should be written to a register
      */

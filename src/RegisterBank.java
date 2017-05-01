@@ -52,20 +52,29 @@ public class RegisterBank implements ICycle {
         cycler.add(this);
     }
 
-    /**
-     * Initialize address registers and data register
-     * @param addressInput input to address register
-     * @param dInput input to data register
-     */
-    public void initWrite(Output<Byte> addressInput, Output<Integer> dInput,  Output<Boolean> enableInput) {
-        this.addressDInput = addressInput;
-        this.dInput = dInput;
-        this.enableInput = enableInput;
+    public RegisterBank setAddressDInput(Output<Byte> addressDInput) {
+        this.addressDInput = addressDInput;
+        return this;
     }
 
-    public void initRead(Output<Byte> addressSInput, Output<Byte> addressTInput) {
+    public RegisterBank setAddressSInput(Output<Byte> addressSInput) {
         this.addressSInput = addressSInput;
+        return this;
+    }
+
+    public RegisterBank setAddressTInput(Output<Byte> addressTInput) {
         this.addressTInput = addressTInput;
+        return this;
+    }
+
+    public RegisterBank setdInput(Output<Integer> dInput) {
+        this.dInput = dInput;
+        return this;
+    }
+
+    public RegisterBank setEnableInput(Output<Boolean> enableInput) {
+        this.enableInput = enableInput;
+        return this;
     }
 
     /**

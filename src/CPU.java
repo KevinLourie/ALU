@@ -43,10 +43,13 @@ public class CPU {
     }
 
     public void init() {
-        // Output<Integer> sInput, Output<Integer> tInput, Output<Integer> cInput,
-        // Output<AluOp> aluOpInput, Output<Byte> wbSelectorInput, Output<Integer> muxIndexInput
-        execute.init(registerBank.getSOutput(), registerBank.getTOutput(), instructionFetch.getInstructionOutput(), null, null, null);
-
+        execute
+                .setSInput(instructionDecode.getSOutput())
+                .setTInput(instructionDecode.getTOutput())
+                .setCInput(instructionDecode.getCOutput())
+                .setAluOpInput(instructionDecode.getAluOpOutput())
+                .setWbSelectorInput(instructionDecode.getWbSelectorOutput())
+                .setAluMuxIndexInput(instructionDecode.getAluMuxIndexOutput());
     }
 
     public void test() throws IOException {

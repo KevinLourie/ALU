@@ -2,29 +2,21 @@
  * Input is two numbers. Output is dOutput of two numbers.
  * Created by kzlou on 3/31/2017.
  */
-public class ALU {
+public class Alu {
 
-    /**
-     * First number
-     */
+    /** First number */
     private Output<Integer> sInput;
 
-    /**
-     * Second number
-     */
+    /** Second number */
     private Output<Integer> tInput;
 
-    /**
-     * Resulting number
-     */
+    /** Result number */
     private Output<Integer> dOutput;
 
-    /**
-     * ALU control
-     */
+    /** ALU control */
     private Output<Byte> aluOp;
 
-    ALU() {
+    Alu() {
         dOutput = new Output<Integer>() {
             /**
              * Read 2 numbers. Perform operation specified by the aluOp field.

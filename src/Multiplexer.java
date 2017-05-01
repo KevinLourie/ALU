@@ -12,7 +12,7 @@ public class Multiplexer<T> {
     /**
      * Location of desired input
      */
-    private Output<Integer> muxInput;
+    private Output<Integer> index;
 
     /**
      * Desired input
@@ -24,17 +24,25 @@ public class Multiplexer<T> {
          * Return desired input
          * @return desired input
          */
-        muxOutput = () -> inputArray[muxInput.read()].read();
+        muxOutput = () -> inputArray[index.read()].read();
     }
 
     /**
-     * Initialize multiplexer input and multiplexer operator
-     * @param muxInput multiplexer input
-     * @param muxOp multiplexer operator
+     * Initialize multiplexer index
+     * @param index multiplexer input
      */
-    public void init(Output<Integer> muxInput, Output<T>... muxOp) {
-        this.inputArray = muxOp;
-        this.muxInput = muxInput;
+    public Multiplexer<T> setIndexInput(Output<Integer> index) {
+        this.index = index;
+        return this;
+    }
+
+    /**
+     * Initialize multiplexer inputs
+     * @param inputs inputs to multiplexer
+     */
+    public Multiplexer<T> setInputs(Output<T>... inputs) {
+        this.inputArray = inputs;
+        return this;
     }
 
     /**
