@@ -3,24 +3,16 @@
  */
 public class InstructionFetch {
 
-    /**
-     * Fetch instruction from here
-     */
+    /** Fetch instruction from here */
     private Memory memory;
 
-    /**
-     * Adds to address
-     */
+    /** Adds to address */
     private Adder adder;
 
-    /**
-     * Program counter
-     */
+    /** Program counter */
     private Register<Integer> pc;
 
-    /**
-     * Where to get next program from
-     */
+    /** Where to get next program from */
     private Multiplexer<Integer> pcMux;
 
     /**

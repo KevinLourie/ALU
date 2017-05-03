@@ -4,20 +4,25 @@
  */
 public class WriteBack {
 
+    /** Latch for WB 0 */
     Register<Integer> wb0Latch;
+
+    /** Latch for WB 1 */
     Register<Integer> wb1Latch;
+
+    /** Latch for WB Selector */
     Register<Byte> wbSelectorLatch;
+
+    /** Latch for WB enable */
     Register<Boolean> wbEnableLatch;
+
+    /** Latch for WB mux index */
     Register<Integer> wbMuxIndexLatch;
 
-    /**
-     * Choose what to write back
-     */
+    /** Choose what to write back */
     private Multiplexer<Integer> wbMux;
 
-    /**
-     * Register bank
-     */
+    /** Register bank */
     private RegisterBank registerBank;
 
     WriteBack(Cycler cycler, RegisterBank registerBank) {
@@ -35,20 +40,24 @@ public class WriteBack {
                 .setInputs(wb0Latch.getOutput(), wb1Latch.getOutput());
     }
 
-    public void setWbInputs(Output<Integer> wb0Input, Output<Integer> wb1Input) {
+    public WriteBack setWbInputs(Output<Integer> wb0Input, Output<Integer> wb1Input) {
         wbMux.setInputs(wb0Input, wb1Input);
+        return this;
     }
 
-    public void setWbSelectorInput(Output<Byte> wbSelectorInput) {
+    public WriteBack setWbSelectorInput(Output<Byte> wbSelectorInput) {
         registerBank.setAddressDInput(wbSelectorInput);
+        return this;
     }
 
-    public void setWbEnableInput(Output<Boolean> wbEnableInput) {
+    public WriteBack setWbEnableInput(Output<Boolean> wbEnableInput) {
         registerBank.setEnableInput(wbEnableInput);
+        return this;
     }
 
-    public void setWbMuxIndexInput(Output<Integer> wbMuxIndexInput) {
+    public WriteBack setWbMuxIndexInput(Output<Integer> wbMuxIndexInput) {
         wbMux.setIndexInput(wbMuxIndexInput);
+        return this;
     }
 
 }

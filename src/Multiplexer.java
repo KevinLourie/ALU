@@ -4,19 +4,13 @@
  */
 public class Multiplexer<T> {
 
-    /**
-     * Inputs to choose from
-     */
+    /** Inputs to choose from */
     private Output<T>[] inputArray;
 
-    /**
-     * Location of desired input
-     */
+    /** Location of desired input */
     private Output<Integer> index;
 
-    /**
-     * Desired input
-     */
+    /** Desired input */
     private Output<T> muxOutput;
 
     Multiplexer() {

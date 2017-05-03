@@ -3,34 +3,22 @@
  */
 public class MemoryAccess {
 
-    /**
-     * Data is located here
-     */
+    /** Data is located here */
     private Memory memory;
 
-    /**
-     * Data latch
-     */
+    /** Data latch */
     private Register<Integer> d0Latch;
 
-    /**
-     * ALU latch
-     */
+    /** ALU latch */
     private Register<Integer> d1Latch;
 
-    /**
-     * Indicates which register to write back to
-     */
+    /** Indicates which register to write back to */
     private Register<Byte> wbSelectorLatch;
 
-    /**
-     * Indicates whether to write to a register
-     */
+    /** Indicates whether to write to a register */
     private Register<Boolean> wbEnableLatch;
 
-    /**
-     * Choooses between WB0 and WB1
-     */
+    /** Choooses between WB0 and WB1 */
     private Register<Integer> wbMuxIndexLatch;
 
     /**

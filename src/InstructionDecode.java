@@ -3,65 +3,46 @@
  */
 public class InstructionDecode {
 
-    /**
-     * Register bank
-     */
+    /** Register bank */
     private RegisterBank registerBank;
 
-    /**
-     * Returns microcode for instruction
-     */
+    /** Returns microcode for instruction */
     private Decoder decoder;
 
-    /**
-     * Extracts opcode from instruction
-     */
+    /** Extracts opcode from instruction */
     private Bus<Integer, Byte> opcodeBus;
 
-    /**
-     * Extracts S register selection from instruction
-     */
+    /** Extracts S bus from instruction */
     private Bus<Integer, Byte> sSelectorBus;
 
-    /**
-     * Extracts T register selection from instruction
-     */
+    /** Extracts T bus from instructon */
     private Bus<Integer, Byte> tSelectorBus;
 
-    /**
-     * Extracts D register selection from instruction
-     */
+    /** Extracts D register selection from instruction*/
     private Bus<Integer, Byte> dSelectorBus;
 
-    /**
-     * Extracts immediate from instruction
-     */
+    /** Extracts immediate from instruction */
     private Bus<Integer, Integer> immediateBus;
 
-    /**
-     * Determine if branch condition is true by comparing data in S and T
-     */
+    /**Determine if branch condition is true by comparing data in S and T */
     private Comparator comparator;
 
-    /**
-     * Holds instruction
-     */
+    /** Holds instruction */
     private Register<Integer> instructionRegister;
 
-    /**
-     * Location of next instruction
-     */
+    /** Location of next instruction*/
     private Register<Integer> nextPc;
 
-    /**
-     * Shifting the immediate left by 2 bits for branch instruction because instructions are 4 bytes
-     */
+    /** Shifting the immediate left by 2 bits for branch instruction because instructions are 4 bytes */
     private Bus<Integer, Integer> shiftLeft;
 
+    /** Contains the amount of bits to shift */
     private Bus<Integer, Byte> shamtBus;
 
+    /** Contains the register function. Used as index into functMicroinstructions for register instructions*/
     private Bus<Integer, Byte> functBus;
 
+    /** Chooses between T and D register to write back to */
     private Multiplexer<Byte> wbSelectorMux;
 
     /**
@@ -80,7 +61,7 @@ public class InstructionDecode {
         registerBank
                 .setAddressSInput(sSelectorBus)
                 .setAddressTInput(tSelectorBus);
-        decoder.init(null, null);
+        decoder.init(opcodeBus, functBus);
         opcodeBus = new Bus<Integer, Byte>() {
             @Override
             public Byte read() {

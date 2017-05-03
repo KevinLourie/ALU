@@ -4,27 +4,25 @@
  */
 public class Register<T> implements ICycle {
 
-    /**
-     * Name of register
-     */
+    /** Name of register */
     private String name;
 
-    /**
-     * Data type of register
-     */
+    /** Data type of register */
     private T data;
 
+    /** Temporary data */
     private T tempData;
 
-    /**
-     * Output of register
-     */
+    /** Output of register */
     private Output<T> output;
 
+    /** Input to register */
     private Output<T> input;
 
+    /** Controls whehter data is written to register */
     private Output<Boolean> enableInput;
 
+    /** Temporary enable */
     private boolean tempEnable;
 
     Register(String name, T initial, Cycler cycler) {

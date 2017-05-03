@@ -3,44 +3,28 @@
  */
 public class Execute {
 
-    /**
-     * Required to do arithmetic for the instruction execution
-     */
+    /** Required to do arithmetic for the instruction execution */
     private Alu alu;
 
-    /**
-     * Indicates which register to write back to
-     */
+    /** Indicates which register to write back to */
     private Register<Byte> wbSelectorLatch;
 
-    /**
-     * Chooses either T or C
-     */
+    /** Chooses either T or C */
     private Multiplexer<Integer> aluMux;
 
-    /**
-     * Holds S register output
-     */
+    /** Holds S register output */
     private Register<Integer> sLatch;
 
-    /**
-     * Holds T register output
-     */
+    /** Holds T register output */
     private Register<Integer> tLatch;
 
-    /**
-     * Holds ALU operation
-     */
+    /** Holds ALU operation */
     private Register<Byte> aluOpLatch;
 
-    /**
-     * Holds constant from instruction
-     */
+    /** Holds constant from instruction */
     private Register<Integer> cLatch;
 
-    /**
-     * Determines whether T or C is chosen
-     */
+    /** Determines whether T or C is chosen */
     private Register<Integer> aluMuxIndexLatch;
 
     /**
@@ -57,7 +41,10 @@ public class Execute {
         aluOpLatch = new Register<>("ALU Operator", AluOp.Add, cycler);
 
         // Internal wire
-        alu.init(sLatch.getOutput(), aluMux.getOutput(), aluOpLatch.getOutput());
+        alu
+                .setInput0(sLatch.getOutput())
+                .setInput1(aluMux.getOutput())
+                .setOperation(aluOpLatch.getOutput());
         aluMux
                 .setIndexInput(aluMuxIndexLatch.getOutput())
                 .setInputs(sLatch.getOutput(), tLatch.getOutput());
@@ -124,5 +111,17 @@ public class Execute {
     public Execute setAluMuxIndexInput(Output<Integer> muxIndexInput) {
         aluMuxIndexLatch.setInput(muxIndexInput);
         return this;
+    }
+
+    public Output<Integer> getD1Output() {
+        return alu.getOutput();
+    }
+
+    public Output<Integer> getD0Input() {
+        return tLatch.getOutput();
+    }
+
+    public Output<Byte> getWBSelector() {
+        return wbSelectorLatch.getOutput();
     }
 }

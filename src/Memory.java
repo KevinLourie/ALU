@@ -12,12 +12,16 @@ public class Memory implements ICycle {
 
     public final static Logger logger = Logger.getLogger(Register.class.getName());
 
+    /** Data in memory */
     private Output<Integer> dataOutput;
 
+    /** Instruction in memory */
     private Output<Integer> instructionOutput;
 
+    /** Temporary data */
     private int tempData;
 
+    /** Temporary address */
     private int tempDataAddress;
 
     /* Byte array */
@@ -32,8 +36,10 @@ public class Memory implements ICycle {
     /* Data to read */
     private Output<Integer> dataInput;
 
+    /** Controls whether data is written to memory */
     private Output<Boolean> enableInput;
 
+    /** Temporary enable */
     private boolean tempEnable;
 
     Memory(Cycler cycler) {

@@ -6,28 +6,31 @@ import java.io.IOException;
  */
 public class CPU {
 
-    /**
-     * Control store
-     */
+    /** Control store */
     private Decoder decoder;
 
-    /**
-     * Main memory
-     */
+    /** Main memory */
     private Memory memory;
 
+    /** Second stage, where the instruction is broken down into its part */
     private InstructionDecode instructionDecode;
 
+    /** First stage, where the instruction is fetched */
     private InstructionFetch instructionFetch;
 
+    /** Register bank */
     private RegisterBank registerBank;
 
+    /** Third stage, where the ALU performs an operation */
     private Execute execute;
 
+    /** Fourth stage, where the data from a register is stored in memory */
     private MemoryAccess memoryAccess;
 
+    /** Fifth stage, where the data is either writen to a register or to memory */
     private WriteBack writeBack;
 
+    /** Cycle all registers */
     private Cycler cycler;
 
     CPU() {
@@ -43,6 +46,13 @@ public class CPU {
     }
 
     public void init() {
+        instructionFetch
+                .setDataInput(memory.getInstructionOutput())
+                .setNextPCInput(memory.getInstructionOutput())
+                .setPcMuxIndexInput(decoder.getPcMuxIndexOutput());
+        instructionDecode
+                .setInstructionInput(instructionFetch.getInstructionOutput())
+                .setNextPcInput(memory.getInstructionOutput());
         execute
                 .setSInput(instructionDecode.getSOutput())
                 .setTInput(instructionDecode.getTOutput())
@@ -50,6 +60,17 @@ public class CPU {
                 .setAluOpInput(instructionDecode.getAluOpOutput())
                 .setWbSelectorInput(instructionDecode.getWbSelectorOutput())
                 .setAluMuxIndexInput(instructionDecode.getAluMuxIndexOutput());
+        memoryAccess
+                .setIndexInput(decoder.getWbSelectorMuxIndexOutput())
+                .setD0Input(memory.getDataOutput())
+                .setD1Input(decoder.getAluMuxIndexOutput())
+                .setdAddressInput(instructionDecode.getWbSelectorOutput())
+                .setEnableOutput(decoder.getWbEnableOutput());
+        writeBack
+                .setWbEnableInput(memoryAccess.getWbEnableOutput())
+                .setWbInputs(memoryAccess.getWb0Output(), memoryAccess.getWb1Output())
+                .setWbMuxIndexInput(memoryAccess.getDIndexOutput())
+                .setWbSelectorInput(execute.getWBSelector());
     }
 
     public void test() throws IOException {

@@ -10,24 +10,34 @@ public class RegisterBank implements ICycle {
     // Register array
     private int[] arr = new int[32];
 
+    /** Address of D register */
     private Output<Byte> addressDInput;
 
+    /** Address of S register */
     private Output<Byte> addressSInput;
 
+    /** Address of T register */
     private Output<Byte> addressTInput;
 
+    /** D register */
     private Output<Integer> dInput;
 
+    /** S register */
     private Output<Integer> sOutput;
 
+    /** T register */
     private Output<Integer> tOutput;
 
+    /** Temporary D register */
     private int tempD;
 
+    /** Temporary address of D register */
     private byte tempAddressD;
 
+    /** Controls whether register bank is written to */
     private Output<Boolean> enableInput;
 
+    /** Temporary enable */
     private boolean tempEnable;
 
     public final static Logger logger = Logger.getLogger(Register.class.getName());
