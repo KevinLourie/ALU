@@ -6,46 +6,63 @@ import java.io.IOException;
  */
 public class CPU {
 
-    /** Control store */
+    /**
+     * Control store
+     */
     private Decoder decoder;
 
-    /** Main memory */
+    /**
+     * Main memory
+     */
     private Memory memory;
 
-    /** Second stage, where the instruction is broken down into its part */
+    /**
+     * Second stage, where the instruction is broken down into its part
+     */
     private InstructionDecode instructionDecode;
 
-    /** First stage, where the instruction is fetched */
+    /**
+     * First stage, where the instruction is fetched
+     */
     private InstructionFetch instructionFetch;
 
-    /** Register bank */
+    /**
+     * Register bank
+     */
     private RegisterBank registerBank;
 
-    /** Third stage, where the ALU performs an operation */
+    /**
+     * Third stage, where the ALU performs an operation
+     */
     private Execute execute;
 
-    /** Fourth stage, where the data from a register is stored in memory */
+    /**
+     * Fourth stage, where the data from a register is stored in memory
+     */
     private MemoryAccess memoryAccess;
 
-    /** Fifth stage, where the data is either writen to a register or to memory */
+    /**
+     * Fifth stage, where the data is either writen to a register or to memory
+     */
     private WriteBack writeBack;
 
-    /** Cycle all registers */
+    /**
+     * Cycle all registers
+     */
     private Cycler cycler;
 
     CPU() {
-       cycler = new Cycler();
-       execute = new Execute(cycler);
-       decoder = new Decoder();
-       memory = new Memory(cycler);
-       registerBank = new RegisterBank(cycler);
-       instructionFetch = new InstructionFetch(memory, cycler);
-       instructionDecode = new InstructionDecode(registerBank, cycler);
-       memoryAccess = new MemoryAccess(memory, cycler);
-       writeBack = new WriteBack(cycler, registerBank);
-    }
+        cycler = new Cycler();
+        execute = new Execute(cycler);
+        decoder = new Decoder();
+        memory = new Memory(cycler);
+        registerBank = new RegisterBank(cycler);
+        instructionFetch = new InstructionFetch(memory, cycler);
+        instructionDecode = new InstructionDecode(registerBank, cycler);
+        memoryAccess = new MemoryAccess(memory, cycler);
+        writeBack = new WriteBack(cycler, registerBank);
 
-    public void init() {
+        // Internal Wiring
         instructionFetch
                 .setDataInput(memory.getInstructionOutput())
                 .setNextPCInput(memory.getInstructionOutput())
@@ -74,19 +91,20 @@ public class CPU {
     }
 
     public void test() throws IOException {
-        memory.readFile("memoryInput2.txt");
+        memory.readFile("memoryInput3.txt");
         run();
     }
 
     /**
      * Instructs the CPU. The instructions are provided by the micro instruction
+     *
      * @param microInstruction instructions
      */
     public void execute(MicroInstruction microInstruction) {
     }
 
     public void execute(MicroInstruction[] microInstructions) {
-        for(int i = 0; i < microInstructions.length; i++) {
+        for (int i = 0; i < microInstructions.length; i++) {
             execute(microInstructions[i]);
         }
     }
@@ -95,14 +113,8 @@ public class CPU {
      * Fetches microinstruction and executes it
      */
     public void run() {
-        // Output<MicroInstruction> microInstructionOutput = decoder.getWbEnableOutput();
-        for(int i = 0; ; i++) {
-            // MicroInstruction currentMicroInstruction = microInstructionOutput.read();
-            // if(currentMicroInstruction.halt) {
-                System.out.printf(" -> HALT%n");
-                break;
-            }
-            // System.out.printf(" -> %s%n", currentMicroInstruction);
-            // execute(currentMicroInstruction);
+        for (int i = 0; i < 5; i++) {
+            cycler.senseAndCycle();
         }
     }
+}

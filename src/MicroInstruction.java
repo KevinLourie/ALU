@@ -45,7 +45,7 @@ public class MicroInstruction {
 
     private boolean memoryWriteEnable = false;
 
-    public boolean isHalt() {
+    public boolean isWait() {
         return halt;
     }
 

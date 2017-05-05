@@ -10,19 +10,19 @@ public class InstructionDecode {
     private Decoder decoder;
 
     /** Extracts opcode from instruction */
-    private Bus<Integer, Byte> opcodeBus;
+    private Bus<Integer, Byte> opcodeBus = new OpcodeBus();
 
     /** Extracts S bus from instruction */
-    private Bus<Integer, Byte> sSelectorBus;
+    private Bus<Integer, Byte> sSelectorBus = new SSelectorBus();
 
     /** Extracts T bus from instructon */
-    private Bus<Integer, Byte> tSelectorBus;
+    private Bus<Integer, Byte> tSelectorBus = new TSelectorBus();
 
     /** Extracts D register selection from instruction*/
-    private Bus<Integer, Byte> dSelectorBus;
+    private Bus<Integer, Byte> dSelectorBus = new DSelectorBus();
 
     /** Extracts immediate from instruction */
-    private Bus<Integer, Integer> immediateBus;
+    private Bus<Integer, Integer> immediateBus = new ImmediateBus();
 
     /**Determine if branch condition is true by comparing data in S and T */
     private Comparator comparator;
@@ -34,13 +34,13 @@ public class InstructionDecode {
     private Register<Integer> nextPc;
 
     /** Shifting the immediate left by 2 bits for branch instruction because instructions are 4 bytes */
-    private Bus<Integer, Integer> shiftLeft;
+    private Bus<Integer, Integer> shiftLeft = new ShiftLeft();
 
     /** Contains the amount of bits to shift */
-    private Bus<Integer, Byte> shamtBus;
+    private Bus<Integer, Byte> shamtBus = new ShamtBus();
 
     /** Contains the register function. Used as index into functMicroinstructions for register instructions*/
-    private Bus<Integer, Byte> functBus;
+    private Bus<Integer, Byte> functBus = new FunctBus();
 
     /** Chooses between T and D register to write back to */
     private Multiplexer<Byte> wbSelectorMux;
@@ -51,7 +51,10 @@ public class InstructionDecode {
      */
     InstructionDecode(RegisterBank registerBank, Cycler cycler) {
         comparator = new Comparator();
+        wbSelectorMux = new Multiplexer<>();
+        instructionRegister = new Register<>("IR", 0, cycler);
         shiftLeft.setInput(immediateBus);
+        functBus.setInput(instructionRegister.getOutput());
         comparator.init(registerBank.getSOutput(), registerBank.getTOutput());
         sSelectorBus.setInput(instructionRegister.getOutput());
         tSelectorBus.setInput(instructionRegister.getOutput());
@@ -61,60 +64,10 @@ public class InstructionDecode {
         registerBank
                 .setAddressSInput(sSelectorBus)
                 .setAddressTInput(tSelectorBus);
-        decoder.init(opcodeBus, functBus);
-        opcodeBus = new Bus<Integer, Byte>() {
-            @Override
-            public Byte read() {
-                return (byte)(input.read() >>> 26);
-            }
-        };
-        sSelectorBus = new Bus<Integer, Byte>() {
-            @Override
-            public Byte read() {
-                return (byte)((input.read() >>> 21) & 0x1F);
-            }
-        };
-        tSelectorBus = new Bus<Integer, Byte>() {
-            @Override
-            public Byte read() {
-                return (byte)((input.read() >>> 16) & 0x1F);
-            }
-        };
-        dSelectorBus = new Bus<Integer, Byte>() {
-            @Override
-            public Byte read() {
-                return (byte)((input.read() >>> 11) & 0x1F);
-            }
-        };
-        immediateBus = new Bus<Integer, Integer>() {
-            @Override
-            public Integer read() {
-                // Extract the bottom 16 bits and sign extend it to a 32-bits
-                return (int)(short)(input.read() & 0xFFFF);
-            }
-        };
-        shamtBus = new Bus<Integer, Byte>() {
-            @Override
-            public Byte read() {
-                return (byte)((input.read() >>> 6) & 0x1F);
-            }
-        };
-        functBus = new Bus<Integer, Byte>() {
-            @Override
-            public Byte read() {
-                return (byte)(input.read() & 0x3F);
-            }
-        };
-        this.registerBank = registerBank;
         decoder = new Decoder();
-        instructionRegister = new Register<>("IR", 0, cycler);
+        decoder.init(opcodeBus, functBus);
+        this.registerBank = registerBank;
         nextPc = new Register<>("Next PC", 0, cycler);
-        shiftLeft = new Bus<Integer, Integer>() {
-            @Override
-            public Integer read() {
-                return input.read() << 2;
-            }
-        };
 
         // Internal wiring
         wbSelectorMux
@@ -164,5 +117,62 @@ public class InstructionDecode {
 
     public Output<Byte> getAluOpOutput() {
         return decoder.getAluOpOutput();
+    }
+
+    private static class SSelectorBus extends Bus<Integer, Byte> {
+        @Override
+        public Byte read() {
+            return (byte)((input.read() >>> 21) & 0x1F);
+        }
+    }
+
+    private static class TSelectorBus extends Bus<Integer, Byte> {
+        @Override
+        public Byte read() {
+            return (byte)((input.read() >>> 16) & 0x1F);
+        }
+    }
+
+    private static class DSelectorBus extends Bus<Integer, Byte> {
+        @Override
+        public Byte read() {
+            return (byte)((input.read() >>> 11) & 0x1F);
+        }
+    }
+
+    private static class OpcodeBus extends Bus<Integer, Byte> {
+        @Override
+        public Byte read() {
+            return (byte)(input.read() >>> 26);
+        }
+    }
+
+    private static class FunctBus extends Bus<Integer, Byte> {
+        @Override
+        public Byte read() {
+            return (byte)(input.read() & 0x3F);
+        }
+    }
+
+    private static class ImmediateBus extends Bus<Integer, Integer> {
+        @Override
+        public Integer read() {
+            // Extract the bottom 16 bits and sign extend it to a 32-bits
+            return (int)(short)(input.read() & 0xFFFF);
+        }
+    }
+
+    private static class ShiftLeft extends Bus<Integer, Integer> {
+        @Override
+        public Integer read() {
+            return input.read() << 2;
+        }
+    }
+
+    private static class ShamtBus extends Bus<Integer, Byte> {
+        @Override
+        public Byte read() {
+            return (byte)((input.read() >>> 6) & 0x1F);
+        }
     }
 }

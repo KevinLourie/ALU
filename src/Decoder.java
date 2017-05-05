@@ -43,6 +43,10 @@ public class Decoder {
      * Generate outputs for each of the fields in the microinstruction
      */
     Decoder() {
+        for(int i = 0; i < 64; i++) {
+            opcodeMicroInstructions[i] = new MicroInstruction();
+            functMicroInstructions[i] = new MicroInstruction();
+        }
         opcodeMicroInstructions[0].setWbEnable(false).setMemoryWriteEnable(false);
         opcodeMicroInstructions[35] = new MicroInstruction().setPcMuxIndex(1).setAluMuxIndex(1).setWbMuxIndex(0).setMemoryWriteEnable(false).setWbEnable(true);
         wbEnableOutput = () -> getMicroInstruction().isWbEnable();
@@ -60,7 +64,7 @@ public class Decoder {
      *
      * @return
      */
-    private MicroInstruction getMicroInstruction() {
+    public MicroInstruction getMicroInstruction() {
         if (opcodeInput.read() == 0) {
             return functMicroInstructions[functInput.read()];
         }

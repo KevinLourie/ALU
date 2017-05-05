@@ -27,7 +27,13 @@ public class MemoryAccess {
      */
     MemoryAccess(Memory memory, Cycler cycler) {
         this.memory = memory;
-        memory.initData(d0Latch.getOutput(), d1Latch.getOutput(), null);
+        d0Latch = new Register<>("D0", 0, cycler);
+        d1Latch = new Register<>("D1", 0, cycler);
+        wbSelectorLatch = new Register<>("MemoryAccess.wbSelector", (byte)0, cycler);
+        wbEnableLatch = new Register<>("MemoryAccess.wbEnable", true, cycler);
+        wbMuxIndexLatch = new Register<>("MemoryAccess.wbMuxIndex", 0, cycler);
+
+        memory.initData(d0Latch.getOutput(), d1Latch.getOutput(), wbEnableLatch.getOutput());
     }
 
     /**

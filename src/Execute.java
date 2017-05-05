@@ -33,7 +33,7 @@ public class Execute {
     Execute(Cycler cycler) {
         alu = new Alu();
         aluMux = new Multiplexer<>();
-        aluMuxIndexLatch = new Register<>("Mux Index", 0, cycler);
+        aluMuxIndexLatch = new Register<>("ALU Mux Index", 0, cycler);
         wbSelectorLatch = new Register<>("WB Selector", (byte)0, cycler);
         sLatch = new Register<>("S", 0, cycler);
         tLatch = new Register<>("T", 0, cycler);
