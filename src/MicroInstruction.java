@@ -7,7 +7,26 @@ public class MicroInstruction {
     /** True to halt the CPU */
     private boolean halt;
 
+    /** ALU operation */
     private byte aluOp = AluOp.Add;
+
+    /** Index of input to ALU mux */
+    private int aluMuxIndex = 0;
+
+    /** Index of input to pc */
+    private int pcMuxIndex = 0;
+
+    /** Index of input to write back mux */
+    private int wbMuxIndex = 0;
+
+    /** Index of input to WB selector mux */
+    private int wbSelectorMuxIndex = 0;
+
+    /** True if a result should be written to a register*/
+    private boolean wbEnable = false;
+
+    /** True if result is written to memory */
+    private boolean memoryWriteEnable = false;
 
     public byte getAluOp() {
         return aluOp;
@@ -18,15 +37,6 @@ public class MicroInstruction {
         return this;
     }
 
-    /** Index of input to ALU mux */
-    private int aluMuxIndex = -1;
-
-    /** Index of input to pc */
-    private int pcMuxIndex = 0;
-
-    /** Index of input to write back mux */
-    private int wbMuxIndex = -1;
-
     public int getWbSelectorMuxIndex() {
         return wbSelectorMuxIndex;
     }
@@ -35,15 +45,6 @@ public class MicroInstruction {
         this.wbSelectorMuxIndex = wbSelectorMuxIndex;
         return this;
     }
-
-    private int wbSelectorMuxIndex = -1;
-
-    /**
-     * True if a result should be written to a register
-     */
-    private boolean wbEnable = false;
-
-    private boolean memoryWriteEnable = false;
 
     public boolean isWait() {
         return halt;

@@ -28,11 +28,11 @@ public class WriteBack {
     WriteBack(Cycler cycler, RegisterBank registerBank) {
         wbMux = new Multiplexer<>();
         this.registerBank = registerBank;
-        wb0Latch = new Register<>("WB0", 0, cycler);
-        wb1Latch = new Register<>("WB1", 0, cycler);
-        wbSelectorLatch = new Register<>("WB Selector", (byte)0, cycler);
-        wbEnableLatch = new Register<>("WB Enable", true, cycler);
-        wbMuxIndexLatch = new Register<>("WB Mux Index", 0, cycler);
+        wb0Latch = new Register<>("WriteBack.WB0", 0, cycler);
+        wb1Latch = new Register<>("WriteBack.WB1", 0, cycler);
+        wbSelectorLatch = new Register<>("WriteBack.wbSelector", (byte)0, cycler);
+        wbEnableLatch = new Register<>("WriteBack.wbEnable", true, cycler);
+        wbMuxIndexLatch = new Register<>("WriteBack.wbMuxIndex", 0, cycler);
 
         // Internal wiring
         wbMux

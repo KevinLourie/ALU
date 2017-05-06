@@ -68,6 +68,21 @@ public class Memory implements ICycle {
         this.enableInput = enableInput;
     }
 
+    public Memory setDataInput(Output<Integer> dataInput) {
+        this.dataInput = dataInput;
+        return this;
+    }
+
+    public Memory setDataAddressInput(Output<Integer> dataAddressInput) {
+        this.dataAddressInput = dataAddressInput;
+        return this;
+    }
+
+    public Memory setEnableInput(Output<Boolean> enableInput) {
+        this.enableInput = enableInput;
+        return this;
+    }
+
     public void initInstruction(Output<Integer> instructionAddressInput) {
         this.instructionAddressInput = instructionAddressInput;
     }
@@ -97,7 +112,7 @@ public class Memory implements ICycle {
         String line;
         int i = 0;
         while ((line = bufferedReader.readLine()) != null) {
-            arr[i] = Integer.parseInt(line);
+            arr[i] = Integer.parseUnsignedInt(line, 16);
             i++;
         }
     }

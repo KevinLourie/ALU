@@ -52,7 +52,7 @@ public class InstructionDecode {
     InstructionDecode(RegisterBank registerBank, Cycler cycler) {
         comparator = new Comparator();
         wbSelectorMux = new Multiplexer<>();
-        instructionRegister = new Register<>("IR", 0, cycler);
+        instructionRegister = new Register<>("InstructionDecode.Instruction", 0, cycler);
         shiftLeft.setInput(immediateBus);
         functBus.setInput(instructionRegister.getOutput());
         comparator.init(registerBank.getSOutput(), registerBank.getTOutput());
@@ -67,7 +67,7 @@ public class InstructionDecode {
         decoder = new Decoder();
         decoder.init(opcodeBus, functBus);
         this.registerBank = registerBank;
-        nextPc = new Register<>("Next PC", 0, cycler);
+        nextPc = new Register<>("InstructionDecode.nextPc", 0, cycler);
 
         // Internal wiring
         wbSelectorMux
@@ -112,7 +112,7 @@ public class InstructionDecode {
     }
 
     public Output<Byte> getWbSelectorOutput() {
-        return null;
+        return wbSelectorMux.getOutput();
     }
 
     public Output<Byte> getAluOpOutput() {

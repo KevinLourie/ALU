@@ -22,23 +22,13 @@ public class InstructionFetch {
     InstructionFetch(Memory memory, Cycler cycler) {
         this.memory = memory;
         adder = new Adder();
-        pc = new Register<>("pc", 0, cycler);
+        pc = new Register<>("InstructionFetch.pc", 0, cycler);
         pcMux = new Multiplexer<>();
 
         // Internal wiring
         adder.init(pc.getOutput(), new ConstantOutput<Integer>(4));
         pc.setInput(pcMux.getOutput());
 
-    }
-
-    /**
-     * Initialize memory
-     * @param dataInput input to data memory
-     * @return Instruction Fetch
-     */
-    public InstructionFetch setDataInput(Output<Integer> dataInput) {
-        memory.initData(dataInput, pc.getOutput(), null);
-        return this;
     }
 
     /**

@@ -64,7 +64,6 @@ public class CPU {
 
         // Internal Wiring
         instructionFetch
-                .setDataInput(memory.getInstructionOutput())
                 .setNextPCInput(memory.getInstructionOutput())
                 .setPcMuxIndexInput(decoder.getPcMuxIndexOutput());
         instructionDecode
@@ -78,6 +77,7 @@ public class CPU {
                 .setWbSelectorInput(instructionDecode.getWbSelectorOutput())
                 .setAluMuxIndexInput(instructionDecode.getAluMuxIndexOutput());
         memoryAccess
+                .setDataInput(memory.getInstructionOutput())
                 .setIndexInput(decoder.getWbSelectorMuxIndexOutput())
                 .setD0Input(memory.getDataOutput())
                 .setD1Input(decoder.getAluMuxIndexOutput())

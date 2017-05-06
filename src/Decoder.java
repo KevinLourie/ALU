@@ -48,7 +48,7 @@ public class Decoder {
             functMicroInstructions[i] = new MicroInstruction();
         }
         opcodeMicroInstructions[0].setWbEnable(false).setMemoryWriteEnable(false);
-        opcodeMicroInstructions[35] = new MicroInstruction().setPcMuxIndex(1).setAluMuxIndex(1).setWbMuxIndex(0).setMemoryWriteEnable(false).setWbEnable(true);
+        opcodeMicroInstructions[35].setWbSelectorMuxIndex(1).setPcMuxIndex(1).setAluMuxIndex(1).setWbMuxIndex(0).setMemoryWriteEnable(false).setWbEnable(true);
         wbEnableOutput = () -> getMicroInstruction().isWbEnable();
         aluMuxIndexOutput = () -> getMicroInstruction().getAluMuxIndex();
         pcMuxIndexOutput = () -> getMicroInstruction().getPcMuxIndex();
