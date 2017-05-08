@@ -19,9 +19,6 @@ public class MicroInstruction {
     /** Index of input to write back mux */
     private int wbMuxIndex = 0;
 
-    /** Index of input to WB selector mux */
-    private int wbSelectorMuxIndex = 0;
-
     /** True if a result should be written to a register*/
     private boolean wbEnable = false;
 
@@ -34,15 +31,6 @@ public class MicroInstruction {
 
     public MicroInstruction setAluOp(byte aluOp) {
         this.aluOp = aluOp;
-        return this;
-    }
-
-    public int getWbSelectorMuxIndex() {
-        return wbSelectorMuxIndex;
-    }
-
-    public MicroInstruction setWbSelectorMuxIndex(int wbSelectorMuxIndex) {
-        this.wbSelectorMuxIndex = wbSelectorMuxIndex;
         return this;
     }
 

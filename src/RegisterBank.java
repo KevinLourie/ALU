@@ -62,17 +62,17 @@ public class RegisterBank implements ICycle {
         cycler.add(this);
     }
 
-    public RegisterBank setAddressDInput(Output<Byte> addressDInput) {
+    public RegisterBank setDSelectorInput(Output<Byte> addressDInput) {
         this.addressDInput = addressDInput;
         return this;
     }
 
-    public RegisterBank setAddressSInput(Output<Byte> addressSInput) {
+    public RegisterBank setSSelectorInput(Output<Byte> addressSInput) {
         this.addressSInput = addressSInput;
         return this;
     }
 
-    public RegisterBank setAddressTInput(Output<Byte> addressTInput) {
+    public RegisterBank setTSelectorInput(Output<Byte> addressTInput) {
         this.addressTInput = addressTInput;
         return this;
     }

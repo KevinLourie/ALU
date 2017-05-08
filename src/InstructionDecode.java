@@ -6,23 +6,10 @@ public class InstructionDecode {
     /** Register bank */
     private RegisterBank registerBank;
 
+    private Adder adder;
+
     /** Returns microcode for instruction */
     private Decoder decoder;
-
-    /** Extracts opcode from instruction */
-    private Bus<Integer, Byte> opcodeBus = new OpcodeBus();
-
-    /** Extracts S bus from instruction */
-    private Bus<Integer, Byte> sSelectorBus = new SSelectorBus();
-
-    /** Extracts T bus from instructon */
-    private Bus<Integer, Byte> tSelectorBus = new TSelectorBus();
-
-    /** Extracts D register selection from instruction*/
-    private Bus<Integer, Byte> dSelectorBus = new DSelectorBus();
-
-    /** Extracts immediate from instruction */
-    private Bus<Integer, Integer> immediateBus = new ImmediateBus();
 
     /**Determine if branch condition is true by comparing data in S and T */
     private Comparator comparator;
@@ -31,48 +18,31 @@ public class InstructionDecode {
     private Register<Integer> instructionRegister;
 
     /** Location of next instruction*/
-    private Register<Integer> nextPc;
+    private Register<Integer> nextPcLatch;
 
-    /** Shifting the immediate left by 2 bits for branch instruction because instructions are 4 bytes */
-    private Bus<Integer, Integer> shiftLeft = new ShiftLeft();
-
-    /** Contains the amount of bits to shift */
-    private Bus<Integer, Byte> shamtBus = new ShamtBus();
-
-    /** Contains the register function. Used as index into functMicroinstructions for register instructions*/
-    private Bus<Integer, Byte> functBus = new FunctBus();
-
-    /** Chooses between T and D register to write back to */
-    private Multiplexer<Byte> wbSelectorMux;
+    private Output<Boolean> memoryWriteEnableOutput;
 
     /**
      * Constructor
-     * @param registerBank register bank
+     * @param cycler cycler
      */
-    InstructionDecode(RegisterBank registerBank, Cycler cycler) {
+    InstructionDecode(Cycler cycler) {
+        adder = new Adder();
+        registerBank = new RegisterBank(cycler);
         comparator = new Comparator();
-        wbSelectorMux = new Multiplexer<>();
-        instructionRegister = new Register<>("InstructionDecode.Instruction", 0, cycler);
-        shiftLeft.setInput(immediateBus);
-        functBus.setInput(instructionRegister.getOutput());
-        comparator.init(registerBank.getSOutput(), registerBank.getTOutput());
-        sSelectorBus.setInput(instructionRegister.getOutput());
-        tSelectorBus.setInput(instructionRegister.getOutput());
-        dSelectorBus.setInput(instructionRegister.getOutput());
-        opcodeBus.setInput(instructionRegister.getOutput());
-        immediateBus.setInput(instructionRegister.getOutput());
-        registerBank
-                .setAddressSInput(sSelectorBus)
-                .setAddressTInput(tSelectorBus);
         decoder = new Decoder();
-        decoder.init(opcodeBus, functBus);
-        this.registerBank = registerBank;
-        nextPc = new Register<>("InstructionDecode.nextPc", 0, cycler);
+        instructionRegister = new Register<>("InstructionDecode.Instruction", 0, cycler);
+        comparator.init(registerBank.getSOutput(), registerBank.getTOutput());
+        registerBank
+                .setSSelectorInput(decoder.getSSelectorOutput())
+                .setTSelectorInput(decoder.getTSelectorOutput());
+        nextPcLatch = new Register<>("InstructionDecode.nextPcLatch", 0, cycler);
 
         // Internal wiring
-        wbSelectorMux
-                .setIndexInput(decoder.getWbSelectorMuxIndexOutput())
-                .setInputs(tSelectorBus, dSelectorBus);
+        adder
+                .setInput1(nextPcLatch.getOutput())
+                .setInput2(decoder.getConstantOutput());
+        decoder.setInstructionInput(instructionRegister.getOutput());
     }
 
     /**
@@ -91,7 +61,7 @@ public class InstructionDecode {
      * @return Instruction Decode
      */
     public InstructionDecode setNextPcInput(Output<Integer> nextPCInput) {
-        nextPc.setInput(nextPCInput);
+        nextPcLatch.setInput(nextPCInput);
         return this;
     }
 
@@ -104,75 +74,68 @@ public class InstructionDecode {
     }
 
     public Output<Integer> getCOutput() {
-        return immediateBus;
+        return decoder.getConstantOutput();
     }
 
     public Output<Integer> getAluMuxIndexOutput() {
         return decoder.getAluMuxIndexOutput();
     }
 
-    public Output<Byte> getWbSelectorOutput() {
-        return wbSelectorMux.getOutput();
-    }
-
     public Output<Byte> getAluOpOutput() {
         return decoder.getAluOpOutput();
     }
 
-    private static class SSelectorBus extends Bus<Integer, Byte> {
-        @Override
-        public Byte read() {
-            return (byte)((input.read() >>> 21) & 0x1F);
-        }
+    public Output<Boolean> getMemoryWriteEnableOutput() {
+        return decoder.getMemoryWriteEnableOutput();
     }
 
-    private static class TSelectorBus extends Bus<Integer, Byte> {
-        @Override
-        public Byte read() {
-            return (byte)((input.read() >>> 16) & 0x1F);
-        }
+    public Output<Integer> getWbMuxIndexOutput() {
+        return decoder.getWbMuxIndexOutput();
     }
 
-    private static class DSelectorBus extends Bus<Integer, Byte> {
-        @Override
-        public Byte read() {
-            return (byte)((input.read() >>> 11) & 0x1F);
-        }
+    public Output<Byte> getWbSelectorMuxOutput() {
+        return decoder.getWbSelectorOutput();
     }
 
-    private static class OpcodeBus extends Bus<Integer, Byte> {
-        @Override
-        public Byte read() {
-            return (byte)(input.read() >>> 26);
-        }
+    public Output<Boolean> getWbEnableOutput() {
+        return decoder.getWbEnableOutput();
     }
 
-    private static class FunctBus extends Bus<Integer, Byte> {
-        @Override
-        public Byte read() {
-            return (byte)(input.read() & 0x3F);
-        }
+    /**
+     * Setter for D input in register bank. Comes from Write Back, so no latch is needed
+     * @param wbInput what to set D input to
+     * @return Instruction Decode
+     */
+    public InstructionDecode setWBInput(Output<Integer> wbInput) {
+        registerBank.setdInput(wbInput);
+        return this;
     }
 
-    private static class ImmediateBus extends Bus<Integer, Integer> {
-        @Override
-        public Integer read() {
-            // Extract the bottom 16 bits and sign extend it to a 32-bits
-            return (int)(short)(input.read() & 0xFFFF);
-        }
+    /**
+     * Setter for WB selector input in register bank. Comes from Write Back, so no latch is needed
+     * @param wbSelectorInput what to set WB selector input to
+     * @return Instruction Decode
+     */
+    public InstructionDecode setWBSelectorInput(Output<Byte> wbSelectorInput) {
+        registerBank.setDSelectorInput(wbSelectorInput);
+        return this;
     }
 
-    private static class ShiftLeft extends Bus<Integer, Integer> {
-        @Override
-        public Integer read() {
-            return input.read() << 2;
-        }
+    /**
+     * Getter for the next program counter. This is an input to the InstructionFetch. It is used for jumps
+     * @return next program counter
+     */
+    public Output<Integer> getNextPcOutput() {
+        return adder.getOutput();
     }
 
-    private static class ShamtBus extends Bus<Integer, Byte> {
-        @Override
-        public Byte read() {
-            return (byte)((input.read() >>> 6) & 0x1F);
-        }
+    /**
+     * Setter for WB enable input in register bank. Comes from Write Back, so no latch is needed
+     * @param wbEnableInput what to set WB enable input to
+     * @return Instruction Decode
+     */
+    public InstructionDecode setWBEnableInput(Output<Boolean> wbEnableInput) {
+        registerBank.setEnableInput(wbEnableInput);
+        return this;
     }
 }

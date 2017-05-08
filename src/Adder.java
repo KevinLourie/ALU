@@ -35,6 +35,24 @@ public class Adder {
     }
 
     /**
+     * Initialize first input
+     * @param input1 first input
+     */
+    public Adder setInput1(Output<Integer> input1) {
+        this.input1 = input1;
+        return this;
+    }
+
+    /**
+     * Initialize second input
+     * @param input2 second input
+     */
+    public Adder setInput2(Output<Integer> input2) {
+        this.input2 = input2;
+        return this;
+    }
+
+    /**
      * Getter for output
      * @return output
      */

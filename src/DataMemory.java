@@ -8,15 +8,12 @@ import java.util.logging.Logger;
  * from the MBR. The dInput is retrieved using its dataAddressInput.
  * Created by kzlou on 4/3/2017.
  */
-public class Memory implements ICycle {
+public class DataMemory implements ICycle {
 
     public final static Logger logger = Logger.getLogger(Register.class.getName());
 
     /** Data in memory */
     private Output<Integer> dataOutput;
-
-    /** Instruction in memory */
-    private Output<Integer> instructionOutput;
 
     /** Temporary data */
     private int tempData;
@@ -25,13 +22,10 @@ public class Memory implements ICycle {
     private int tempDataAddress;
 
     /* Byte array */
-    private Integer[] arr = new Integer[2 ^ 22];
+    private Integer[] arr;
 
     /** Address of data */
     private Output<Integer> dataAddressInput;
-
-    /** Address of instruction */
-    private Output<Integer> instructionAddressInput;
 
     /* Data to read */
     private Output<Integer> dataInput;
@@ -42,7 +36,8 @@ public class Memory implements ICycle {
     /** Temporary enable */
     private boolean tempEnable;
 
-    Memory(Cycler cycler) {
+    DataMemory(Cycler cycler, Integer[] arr) {
+        this.arr = arr;
         dataOutput = () -> {
             System.out.print("[");
             // Fetching 4 bytes at a time
@@ -54,37 +49,23 @@ public class Memory implements ICycle {
         cycler.add(this);
     }
 
-    public Output<Integer> getInstructionOutput() {
-        return instructionOutput;
-    }
-
     public Output<Integer> getDataOutput() {
         return dataOutput;
     }
 
-    public void initData(Output<Integer> dataInput, Output<Integer> dataAddressInput, Output<Boolean> enableInput) {
-        this.dataInput = dataInput;
-        this.dataAddressInput = dataAddressInput;
-        this.enableInput = enableInput;
-    }
-
-    public Memory setDataInput(Output<Integer> dataInput) {
+    public DataMemory setDataInput(Output<Integer> dataInput) {
         this.dataInput = dataInput;
         return this;
     }
 
-    public Memory setDataAddressInput(Output<Integer> dataAddressInput) {
+    public DataMemory setDataAddressInput(Output<Integer> dataAddressInput) {
         this.dataAddressInput = dataAddressInput;
         return this;
     }
 
-    public Memory setEnableInput(Output<Boolean> enableInput) {
+    public DataMemory setEnableInput(Output<Boolean> enableInput) {
         this.enableInput = enableInput;
         return this;
-    }
-
-    public void initInstruction(Output<Integer> instructionAddressInput) {
-        this.instructionAddressInput = instructionAddressInput;
     }
 
     /**
@@ -105,15 +86,5 @@ public class Memory implements ICycle {
         tempData = dataInput.read();
         tempDataAddress = dataAddressInput.read();
         tempEnable = enableInput.read();
-    }
-
-    public void readFile(String path) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(path));
-        String line;
-        int i = 0;
-        while ((line = bufferedReader.readLine()) != null) {
-            arr[i] = Integer.parseUnsignedInt(line, 16);
-            i++;
-        }
     }
 }

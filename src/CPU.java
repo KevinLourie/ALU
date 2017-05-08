@@ -1,3 +1,5 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 
 /**
@@ -6,92 +8,75 @@ import java.io.IOException;
  */
 public class CPU {
 
-    /**
-     * Control store
-     */
+    /** Control store */
     private Decoder decoder;
 
-    /**
-     * Main memory
-     */
-    private Memory memory;
+    private Integer[] arr = new Integer[2 ^ 22];
 
-    /**
-     * Second stage, where the instruction is broken down into its part
-     */
+    /** Second stage, where the instruction is broken down into its part */
     private InstructionDecode instructionDecode;
 
-    /**
-     * First stage, where the instruction is fetched
-     */
+    /** First stage, where the instruction is fetched */
     private InstructionFetch instructionFetch;
 
-    /**
-     * Register bank
-     */
-    private RegisterBank registerBank;
-
-    /**
-     * Third stage, where the ALU performs an operation
-     */
+    /** Third stage, where the ALU performs an operation */
     private Execute execute;
 
-    /**
-     * Fourth stage, where the data from a register is stored in memory
-     */
+    /** Fourth stage, where the data from a register is stored in memory */
     private MemoryAccess memoryAccess;
 
-    /**
-     * Fifth stage, where the data is either writen to a register or to memory
+    /** Fifth stage, where the data is either written to a register or to memory
      */
     private WriteBack writeBack;
 
-    /**
-     * Cycle all registers
-     */
+    /** Cycle all registers */
     private Cycler cycler;
+
+    WbLatches executeWbLatches;
+
+    WbLatches memoryAccessLatches;
+
+    WbLatches writeBackWbLatches;
 
     CPU() {
         cycler = new Cycler();
         execute = new Execute(cycler);
         decoder = new Decoder();
-        memory = new Memory(cycler);
-        registerBank = new RegisterBank(cycler);
-        instructionFetch = new InstructionFetch(memory, cycler);
-        instructionDecode = new InstructionDecode(registerBank, cycler);
-        memoryAccess = new MemoryAccess(memory, cycler);
-        writeBack = new WriteBack(cycler, registerBank);
+        instructionFetch = new InstructionFetch(arr, cycler);
+        instructionDecode = new InstructionDecode(cycler);
+        memoryAccess = new MemoryAccess(arr, cycler);
+        writeBack = new WriteBack(cycler);
+        writeBackWbLatches = new WbLatches(cycler);
 
         // Internal Wiring
         instructionFetch
-                .setNextPCInput(memory.getInstructionOutput())
-                .setPcMuxIndexInput(decoder.getPcMuxIndexOutput());
+                .setNextPcInput(instructionDecode.getNextPcOutput())
+                .setPcMuxIndexInput(instructionFetch.getPcMuxOutput());
         instructionDecode
                 .setInstructionInput(instructionFetch.getInstructionOutput())
-                .setNextPcInput(memory.getInstructionOutput());
+                .setNextPcInput(instructionFetch.getPcMuxOutput())
+                .setWBEnableInput(writeBack.getWbEnableLatch())
+                .setWBInput(instructionDecode.getWbMuxIndexOutput())
+                .setWBSelectorInput(writeBack.getWbSelectorOutput());
         execute
                 .setSInput(instructionDecode.getSOutput())
                 .setTInput(instructionDecode.getTOutput())
                 .setCInput(instructionDecode.getCOutput())
                 .setAluOpInput(instructionDecode.getAluOpOutput())
-                .setWbSelectorInput(instructionDecode.getWbSelectorOutput())
+                .setMemoryWriteEnableInput(instructionDecode.getMemoryWriteEnableOutput())
                 .setAluMuxIndexInput(instructionDecode.getAluMuxIndexOutput());
         memoryAccess
-                .setDataInput(memory.getInstructionOutput())
-                .setIndexInput(decoder.getWbSelectorMuxIndexOutput())
-                .setD0Input(memory.getDataOutput())
+                .setMemoryWriteEnableInput(instructionDecode.getMemoryWriteEnableOutput())
+                .setD0Input(instructionDecode.getTOutput())
                 .setD1Input(decoder.getAluMuxIndexOutput())
-                .setdAddressInput(instructionDecode.getWbSelectorOutput())
-                .setEnableOutput(decoder.getWbEnableOutput());
+                .setdAddressInput(instructionFetch.getInstructionOutput());
         writeBack
-                .setWbEnableInput(memoryAccess.getWbEnableOutput())
-                .setWbInputs(memoryAccess.getWb0Output(), memoryAccess.getWb1Output())
-                .setWbMuxIndexInput(memoryAccess.getDIndexOutput())
-                .setWbSelectorInput(execute.getWBSelector());
+                .setWbControlInputs(writeBackWbLatches)
+                .setWbDataInputs(memoryAccess.getWb0Output(), memoryAccess.getWb1Output());
     }
 
     public void test() throws IOException {
-        memory.readFile("memoryInput3.txt");
+        readFile("memoryInput3.txt");
         run();
     }
 
@@ -115,6 +100,16 @@ public class CPU {
     public void run() {
         for (int i = 0; i < 5; i++) {
             cycler.senseAndCycle();
+        }
+    }
+
+    public void readFile(String path) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(path));
+        String line;
+        int i = 0;
+        while ((line = bufferedReader.readLine()) != null) {
+            arr[i] = Integer.parseUnsignedInt(line, 16);
+            i++;
         }
     }
 }

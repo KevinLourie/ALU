@@ -4,46 +4,32 @@
 public class MemoryAccess {
 
     /** Data is located here */
-    private Memory memory;
+    private DataMemory dataMemory;
 
-    /** Data latch */
+    /** D0 latch which connects to the data of the data memory */
     private Register<Integer> d0Latch;
 
-    /** ALU latch */
+    /** D1 latch which is either the address of the data memory or the write back data. The type of instruction
+     * determines how it's used */
     private Register<Integer> d1Latch;
 
-    /** Indicates which register to write back to */
-    private Register<Byte> wbSelectorLatch;
-
-    /** Indicates whether to write to a register */
-    private Register<Boolean> wbEnableLatch;
-
-    /** Choooses between WB0 and WB1 */
-    private Register<Integer> wbMuxIndexLatch;
+    /** Memory write enable latch which decides whether the data in D0 is written to memory */
+    private Register<Boolean> memoryWriteEnableLatch;
 
     /**
      * Constructor
-     * @param memory main memory
+     * @param arr integer array
      */
-    MemoryAccess(Memory memory, Cycler cycler) {
-        this.memory = memory;
-        d0Latch = new Register<>("MemoryAcess.D0", 0, cycler);
-        d1Latch = new Register<>("MemoryAcess.D1", 0, cycler);
-        wbSelectorLatch = new Register<>("MemoryAccess.wbSelector", (byte)0, cycler);
-        wbEnableLatch = new Register<>("MemoryAccess.wbEnable", true, cycler);
-        wbMuxIndexLatch = new Register<>("MemoryAccess.wbMuxIndex", 0, cycler);
+    MemoryAccess(Integer[] arr, Cycler cycler) {
+        dataMemory = new DataMemory(cycler, arr);
+        d0Latch = new Register<>("MemoryAcess.d0", 0, cycler);
+        d1Latch = new Register<>("MemoryAcess.d1", 0, cycler);
+        memoryWriteEnableLatch = new Register<>("MemoryAccess.MemoryWriteEnable", true, cycler);
 
-        memory.initData(d0Latch.getOutput(), d1Latch.getOutput(), wbEnableLatch.getOutput());
-    }
-
-    /**
-     * Initialize memory
-     * @param dataInput input to data memory
-     * @return Instruction Fetch
-     */
-    public MemoryAccess setDataInput(Output<Integer> dataInput) {
-        memory.setDataInput(dataInput).setDataAddressInput(d1Latch.getOutput()).setEnableInput(wbEnableLatch.getOutput());
-        return this;
+        dataMemory
+                .setDataInput(d0Latch.getOutput())
+                .setDataAddressInput(d1Latch.getOutput())
+                .setEnableInput(memoryWriteEnableLatch.getOutput());
     }
 
     /**
@@ -66,53 +52,26 @@ public class MemoryAccess {
         return this;
     }
 
+    public MemoryAccess setMemoryWriteEnableInput(Output<Boolean> memoryWriteEnableInput) {
+        memoryWriteEnableLatch.setEnableInput(memoryWriteEnableInput);
+        return this;
+    }
+
     /**
      * Initialize wbSelectorLatch
      * @param dAddressInput input to wbSelectorLatch
      * @return Memory Access
      */
-    public MemoryAccess setdAddressInput(Output<Byte> dAddressInput) {
-        wbSelectorLatch.setInput(dAddressInput);
-        return this;
-    }
-
-    /**
-     * Initialize wbEnableLatch
-     * @param enableInput input to wbEnableLatch
-     * @return Memory Access
-     */
-    public MemoryAccess setEnableOutput(Output<Boolean> enableInput) {
-        wbEnableLatch.setInput(enableInput);
-        return this;
-    }
-
-    /**
-     * Initialize wbMuxIndexLatch
-     * @param indexInput input to wbMuxIndexLatch
-     * @return Memory Access
-     */
-    public MemoryAccess setIndexInput(Output<Integer> indexInput) {
-        wbMuxIndexLatch.setInput(indexInput);
+    public MemoryAccess setdAddressInput(Output<Integer> dAddressInput) {
+        d1Latch.setInput(dAddressInput);
         return this;
     }
 
     public Output<Integer> getWb0Output() {
-        return memory.getDataOutput();
+        return dataMemory.getDataOutput();
     }
 
     public Output<Integer> getWb1Output() {
         return d1Latch.getOutput();
-    }
-
-    public Output<Byte> getWbSelectorOutput() {
-        return wbSelectorLatch.getOutput();
-    }
-
-    public Output<Boolean> getWbEnableOutput() {
-        return wbEnableLatch.getOutput();
-    }
-
-    public Output<Integer> getDIndexOutput() {
-        return wbMuxIndexLatch.getOutput();
     }
 }

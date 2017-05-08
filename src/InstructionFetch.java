@@ -4,7 +4,7 @@
 public class InstructionFetch {
 
     /** Fetch instruction from here */
-    private Memory memory;
+    private InstructionMemory instructionMemory;
 
     /** Adds to address */
     private Adder adder;
@@ -17,10 +17,10 @@ public class InstructionFetch {
 
     /**
      * Constructor
-     * @param memory main memory
+     * @param arr integer array
      */
-    InstructionFetch(Memory memory, Cycler cycler) {
-        this.memory = memory;
+    InstructionFetch(Integer[] arr, Cycler cycler) {
+        instructionMemory = new InstructionMemory(arr);
         adder = new Adder();
         pc = new Register<>("InstructionFetch.pc", 0, cycler);
         pcMux = new Multiplexer<>();
@@ -36,7 +36,7 @@ public class InstructionFetch {
      * @param nextPCInput input to pcMux
      * @return Instruction Fetch
      */
-    public InstructionFetch setNextPCInput(Output<Integer> nextPCInput) {
+    public InstructionFetch setNextPcInput(Output<Integer> nextPCInput) {
         pcMux.setInputs(nextPCInput, adder.getOutput());
         return this;
     }
@@ -52,6 +52,14 @@ public class InstructionFetch {
     }
 
     public Output<Integer> getInstructionOutput() {
-        return memory.getInstructionOutput();
+        return instructionMemory.getInstructionOutput();
+    }
+
+    /**
+     * Getter for the next PC. It is an input to the Instruction Decode for computing the branch target
+     * @return next PC
+     */
+    public Output<Integer> getPcMuxOutput() {
+        return pcMux.getOutput();
     }
 }
