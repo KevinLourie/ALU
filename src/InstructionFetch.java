@@ -59,7 +59,7 @@ public class InstructionFetch {
      * Getter for the next PC. It is an input to the Instruction Decode for computing the branch target
      * @return next PC
      */
-    public Output<Integer> getPcMuxOutput() {
+    public Output<Integer> getNextPcOutput() {
         return pcMux.getOutput();
     }
 }

@@ -51,10 +51,10 @@ public class CPU {
         // Internal Wiring
         instructionFetch
                 .setNextPcInput(instructionDecode.getNextPcOutput())
-                .setPcMuxIndexInput(instructionFetch.getPcMuxOutput());
+                .setPcMuxIndexInput(instructionDecode.getNextPcOutput());
         instructionDecode
                 .setInstructionInput(instructionFetch.getInstructionOutput())
-                .setNextPcInput(instructionFetch.getPcMuxOutput())
+                .setNextPcInput(instructionFetch.getNextPcOutput())
                 .setWBEnableInput(writeBack.getWbEnableLatch())
                 .setWBInput(instructionDecode.getWbMuxIndexOutput())
                 .setWBSelectorInput(writeBack.getWbSelectorOutput());
@@ -68,7 +68,7 @@ public class CPU {
         memoryAccess
                 .setMemoryWriteEnableInput(instructionDecode.getMemoryWriteEnableOutput())
                 .setD0Input(instructionDecode.getTOutput())
-                .setD1Input(decoder.getAluMuxIndexOutput())
+                .setD1Input(instructionDecode.getAluMuxIndexOutput())
                 .setdAddressInput(instructionFetch.getInstructionOutput());
         writeBack
                 .setWbControlInputs(writeBackWbLatches)

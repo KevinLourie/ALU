@@ -1,38 +1,35 @@
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
-import java.util.logging.Logger;
-
 /**
+ * Collection of 32 registers. Each register is referred to by its 5 bits.
  * Created by kzlou on 4/21/2017.
  */
 public class RegisterBank implements ICycle {
 
     // Register array
-    private int[] arr = new int[32];
+    private int[] registers = new int[32];
 
-    /** Address of D register */
-    private Output<Byte> addressDInput;
+    /** D register selector. Picks a register to be read */
+    private Output<Byte> dSelectorInput;
 
-    /** Address of S register */
-    private Output<Byte> addressSInput;
+    /** S register selector. Picks another register to be read */
+    private Output<Byte> sSelectorInput;
 
-    /** Address of T register */
-    private Output<Byte> addressTInput;
+    /** T register selector. Picks a register to write to */
+    private Output<Byte> tSelectorInput;
 
-    /** D register */
+    /** D register input */
     private Output<Integer> dInput;
 
-    /** S register */
+    /** S register output */
     private Output<Integer> sOutput;
 
-    /** T register */
+    /** T register output */
     private Output<Integer> tOutput;
 
-    /** Temporary D register */
+    /** Temporary D */
     private int tempD;
 
-    /** Temporary address of D register */
-    private byte tempAddressD;
+    /** Temporary selector of D register */
+    private byte tempDSelector;
 
     /** Controls whether register bank is written to */
     private Output<Boolean> enableInput;
@@ -40,48 +37,71 @@ public class RegisterBank implements ICycle {
     /** Temporary enable */
     private boolean tempEnable;
 
-    public final static Logger logger = Logger.getLogger(Register.class.getName());
-
     RegisterBank(Cycler cycler) {
         sOutput = () -> {
             System.out.print("[");
             // Fetching 2 bytes at a time
-            byte address = addressSInput.read();
-            int data = arr[address];
+            byte address = sSelectorInput.read();
+            int data = registers[address];
             System.out.printf(" %d]", address);
             return data;
         };
         tOutput = () -> {
             System.out.print("[");
             // Fetching 2 bytes at a time
-            byte address = addressTInput.read();
-            int data = arr[address];
+            byte address = tSelectorInput.read();
+            int data = registers[address];
             System.out.printf(" %d]", address);
             return data;
         };
         cycler.add(this);
     }
 
-    public RegisterBank setDSelectorInput(Output<Byte> addressDInput) {
-        this.addressDInput = addressDInput;
+    /**
+     * Setter for D selector input
+     * @param dSelectorInput D selector input
+     * @return register bank
+     */
+    public RegisterBank setDSelectorInput(Output<Byte> dSelectorInput) {
+        this.dSelectorInput = dSelectorInput;
         return this;
     }
 
+    /**
+     * Setter for S selector input
+     * @param addressSInput S selector input
+     * @return register bank
+     */
     public RegisterBank setSSelectorInput(Output<Byte> addressSInput) {
-        this.addressSInput = addressSInput;
+        this.sSelectorInput = addressSInput;
         return this;
     }
 
+    /**
+     * Setter for T selector input
+     * @param addressTInput T selector input
+     * @return
+     */
     public RegisterBank setTSelectorInput(Output<Byte> addressTInput) {
-        this.addressTInput = addressTInput;
+        this.tSelectorInput = addressTInput;
         return this;
     }
 
+    /**
+     * Setter for input to register
+     * @param dInput input to register
+     * @return register bank
+     */
     public RegisterBank setdInput(Output<Integer> dInput) {
         this.dInput = dInput;
         return this;
     }
 
+    /**
+     * Setter for enable input
+     * @param enableInput enable input
+     * @return register bank
+     */
     public RegisterBank setEnableInput(Output<Boolean> enableInput) {
         this.enableInput = enableInput;
         return this;
@@ -93,15 +113,15 @@ public class RegisterBank implements ICycle {
     @Override
     public void cycle() {
         if(tempEnable) {
-            arr[tempAddressD] = tempD;
-            System.out.printf("Store %d from %d%n", arr[tempAddressD], tempAddressD);
+            registers[tempDSelector] = tempD;
+            System.out.printf("Store %d from %d%n", registers[tempDSelector], tempDSelector);
         }
     }
 
     @Override
     public void sense() {
         tempD = dInput.read();
-        tempAddressD = addressDInput.read();
+        tempDSelector = dSelectorInput.read();
         tempEnable = enableInput.read();
     }
 
