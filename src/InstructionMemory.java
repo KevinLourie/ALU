@@ -37,7 +37,8 @@ public class InstructionMemory {
         return instructionOutput;
     }
 
-    public void initInstruction(Output<Integer> instructionAddressInput) {
+    public InstructionMemory setAddressInput(Output<Integer> instructionAddressInput) {
         this.instructionAddressInput = instructionAddressInput;
+        return this;
     }
 }

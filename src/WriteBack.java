@@ -12,8 +12,6 @@ public class WriteBack {
 
     /** Choose what to write back */
     private Multiplexer<Integer> wbMux;
-    private Output<Byte> wbSelectorOutput;
-    private Output<Boolean> wbEnableOutput;
 
     WriteBack(Cycler cycler) {
         wbMux = new Multiplexer<>();
@@ -24,23 +22,22 @@ public class WriteBack {
         wbMux.setInputs(wb0Latch.getOutput(), wb1Latch.getOutput());
     }
 
-    public WriteBack setWbDataInputs(Output<Integer> wb0Input, Output<Integer> wb1Input) {
-        wbMux.setInputs(wb0Input, wb1Input);
+    public WriteBack setWb0Input(Output<Integer> wb0Input) {
+        wb0Latch.setInput(wb0Input);
         return this;
     }
 
-    public Output<Byte> getWbSelectorOutput() {
-        return wbSelectorOutput;
+    public WriteBack setWb1Input(Output<Integer> wb1Input) {
+        wb1Latch.setInput(wb1Input);
+        return this;
     }
 
-    public Output<Boolean> getWbEnableLatch() {
-        return wbEnableOutput;
+    public Output<Integer> getWbOutput() {
+        return wbMux.getOutput();
     }
 
-    public WriteBack setWbControlInputs(WbLatches wbLatches) {
-        this.wbSelectorOutput = wbLatches.getWbSelectorOutput();
-        this.wbEnableOutput = wbLatches.getWbEnableOutput();
-        wbMux.setIndexInput(wbLatches.getWbMuxIndexOutput());
+    public WriteBack setMuxIndexInput(Output<Integer> muxIndexInput) {
+        wbMux.setIndexInput(muxIndexInput);
         return this;
     }
 }

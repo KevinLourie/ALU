@@ -66,6 +66,7 @@ public class Decoder {
         opcodeMicroInstructions[0].setWbEnable(false).setMemoryWriteEnable(false);
         opcodeMicroInstructions[35].setPcMuxIndex(1).setAluMuxIndex(1).setWbMuxIndex(0).setMemoryWriteEnable(false).setWbEnable(true);
         wbEnableOutput = () -> getMicroInstruction().isWbEnable();
+        opcodeInput = () -> (byte)(instructionInput.read() >>> 26);
         aluMuxIndexOutput = () -> getMicroInstruction().getAluMuxIndex();
         pcMuxIndexOutput = () -> getMicroInstruction().getPcMuxIndex();
         wbMuxIndexOutput = () -> getMicroInstruction().getWbMuxIndex();
@@ -77,7 +78,6 @@ public class Decoder {
         dSelectorOutput = () -> (byte)((instructionInput.read() >>> 11) & 0x1F);
         constantOutput = () -> (instructionInput.read() & 0xFFFF);
         functInput = () -> (byte)(instructionInput.read() & 0x3F);
-        opcodeInput = () -> (byte)(instructionInput.read() >>> 26);
         shamtOutput = () -> (byte)((instructionInput.read() >>> 6) & 0x1F);
     }
 

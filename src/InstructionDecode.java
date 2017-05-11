@@ -129,6 +129,10 @@ public class InstructionDecode {
         return adder.getOutput();
     }
 
+    public Output<Integer> getPcMuxSelector() {
+        return comparator.getOutput();
+    }
+
     /**
      * Setter for WB enable input in register bank. Comes from Write Back, so no latch is needed
      * @param wbEnableInput what to set WB enable input to

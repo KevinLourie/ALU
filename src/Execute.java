@@ -1,5 +1,3 @@
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
 /**
  * Created by kzlou on 4/22/2017.
  */
@@ -84,6 +82,10 @@ public class Execute {
         return this;
     }
 
+    public Output<Integer> getAluOutput() {
+        return alu.getOutput();
+    }
+
     /**
      * Initialize aluOpLatch
      * @param aluOpInput input to aluOpLatch
@@ -115,5 +117,9 @@ public class Execute {
 
     public Output<Integer> getD0Input() {
         return tLatch.getOutput();
+    }
+
+    public Output<Boolean> getMemoryWriteEnableOutput() {
+        return memoryWriteEnableLatch.getOutput();
     }
 }

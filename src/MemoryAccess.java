@@ -53,7 +53,7 @@ public class MemoryAccess {
     }
 
     public MemoryAccess setMemoryWriteEnableInput(Output<Boolean> memoryWriteEnableInput) {
-        memoryWriteEnableLatch.setEnableInput(memoryWriteEnableInput);
+        memoryWriteEnableLatch.setInput(memoryWriteEnableInput);
         return this;
     }
 

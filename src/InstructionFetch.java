@@ -28,7 +28,7 @@ public class InstructionFetch {
         // Internal wiring
         adder.init(pc.getOutput(), new ConstantOutput<Integer>(4));
         pc.setInput(pcMux.getOutput());
-
+        instructionMemory.setAddressInput(pc.getOutput());
     }
 
     /**

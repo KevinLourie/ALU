@@ -32,11 +32,11 @@ public class CPU {
     /** Cycle all registers */
     private Cycler cycler;
 
-    WbLatches executeWbLatches;
+    WbLatches wbLatches0;
 
-    WbLatches memoryAccessLatches;
+    WbLatches wbLatches1;
 
-    WbLatches writeBackWbLatches;
+    WbLatches wbLatches2;
 
     CPU() {
         cycler = new Cycler();
@@ -46,18 +46,22 @@ public class CPU {
         instructionDecode = new InstructionDecode(cycler);
         memoryAccess = new MemoryAccess(arr, cycler);
         writeBack = new WriteBack(cycler);
-        writeBackWbLatches = new WbLatches(cycler);
+        wbLatches0 = new WbLatches(cycler);
+        wbLatches1 = new WbLatches(cycler);
+        wbLatches2 = new WbLatches(cycler);
 
         // Internal Wiring
+        wbLatches1.setLatchInputs(wbLatches0);
+        wbLatches2.setLatchInputs(wbLatches1);
         instructionFetch
                 .setNextPcInput(instructionDecode.getNextPcOutput())
-                .setPcMuxIndexInput(instructionDecode.getNextPcOutput());
+                .setPcMuxIndexInput(instructionDecode.getPcMuxSelector());
         instructionDecode
                 .setInstructionInput(instructionFetch.getInstructionOutput())
-                .setNextPcInput(instructionFetch.getNextPcOutput())
-                .setWBEnableInput(writeBack.getWbEnableLatch())
-                .setWBInput(instructionDecode.getWbMuxIndexOutput())
-                .setWBSelectorInput(writeBack.getWbSelectorOutput());
+                .setWBSelectorInput(wbLatches2.getWbSelectorOutput())
+                .setWBInput(writeBack.getWbOutput())
+                .setWBEnableInput(wbLatches2.getWbEnableOutput())
+                .setNextPcInput(instructionFetch.getNextPcOutput());
         execute
                 .setSInput(instructionDecode.getSOutput())
                 .setTInput(instructionDecode.getTOutput())
@@ -66,13 +70,14 @@ public class CPU {
                 .setMemoryWriteEnableInput(instructionDecode.getMemoryWriteEnableOutput())
                 .setAluMuxIndexInput(instructionDecode.getAluMuxIndexOutput());
         memoryAccess
-                .setMemoryWriteEnableInput(instructionDecode.getMemoryWriteEnableOutput())
-                .setD0Input(instructionDecode.getTOutput())
-                .setD1Input(instructionDecode.getAluMuxIndexOutput())
+                .setMemoryWriteEnableInput(execute.getMemoryWriteEnableOutput())
+                .setD0Input(execute.getD0Input())
+                .setD1Input(execute.getAluOutput())
                 .setdAddressInput(instructionFetch.getInstructionOutput());
         writeBack
-                .setWbControlInputs(writeBackWbLatches)
-                .setWbDataInputs(memoryAccess.getWb0Output(), memoryAccess.getWb1Output());
+                .setMuxIndexInput(wbLatches2.getWbMuxIndexOutput())
+                .setWb0Input(memoryAccess.getWb0Output())
+                .setWb1Input(memoryAccess.getWb1Output());
     }
 
     public void test() throws IOException {
