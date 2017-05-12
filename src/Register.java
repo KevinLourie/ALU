@@ -29,7 +29,7 @@ public class Register<T> implements ICycle {
         this.name = name;
         data = initial;
         output = () -> {
-            System.out.print(name);
+            System.out.printf("%s -> %s%n", name, data);
             return data;
         };
         cycler.add(this);
@@ -62,7 +62,7 @@ public class Register<T> implements ICycle {
     public void cycle() {
         if (tempEnable) {
             data = tempData;
-            System.out.printf(" -> %s (%s)%n", name, data);
+            System.out.printf("%s <- %s from %s%n", name, data, input);
         }
     }
 

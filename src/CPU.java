@@ -51,6 +51,10 @@ public class CPU {
         wbLatches2 = new WbLatches(cycler);
 
         // Internal Wiring
+        wbLatches0
+                .setWbEnableInput(instructionDecode.getWbEnableOutput())
+                .setWbSelectorInput(instructionDecode.getWbSelectorMuxOutput())
+                .setWbMuxIndexInput(instructionDecode.getWbMuxIndexOutput());
         wbLatches1.setLatchInputs(wbLatches0);
         wbLatches2.setLatchInputs(wbLatches1);
         instructionFetch
@@ -71,8 +75,8 @@ public class CPU {
                 .setAluMuxIndexInput(instructionDecode.getAluMuxIndexOutput());
         memoryAccess
                 .setMemoryWriteEnableInput(execute.getMemoryWriteEnableOutput())
-                .setD0Input(execute.getD0Input())
-                .setD1Input(execute.getAluOutput())
+                .setD0Input(execute.getD0Output())
+                .setD1Input(execute.getD1Output())
                 .setdAddressInput(instructionFetch.getInstructionOutput());
         writeBack
                 .setMuxIndexInput(wbLatches2.getWbMuxIndexOutput())

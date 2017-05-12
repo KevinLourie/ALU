@@ -39,19 +39,17 @@ public class RegisterBank implements ICycle {
 
     RegisterBank(Cycler cycler) {
         sOutput = () -> {
-            System.out.print("[");
             // Fetching 2 bytes at a time
             byte address = sSelectorInput.read();
             int data = registers[address];
-            System.out.printf(" %d]", address);
+            System.out.printf("sOutput[%d] -> %d%n", address, data);
             return data;
         };
         tOutput = () -> {
-            System.out.print("[");
             // Fetching 2 bytes at a time
             byte address = tSelectorInput.read();
             int data = registers[address];
-            System.out.printf(" %d]", address);
+            System.out.printf("tOutput[%d] -> %d%n", address, data);
             return data;
         };
         cycler.add(this);

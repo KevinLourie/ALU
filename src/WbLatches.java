@@ -13,9 +13,9 @@ public class WbLatches {
     Register<Integer> wbMuxIndexLatch;
 
     WbLatches(Cycler cycler) {
-        wbSelectorLatch = new Register<>("Selector", (byte)0, cycler);
-        wbEnableLatch = new Register<>("Enable", true, cycler);
-        wbMuxIndexLatch = new Register<>("MuxIndex", 0, cycler);
+        wbSelectorLatch = new Register<>("WB Selector", (byte)0, cycler);
+        wbEnableLatch = new Register<>("WB Enable", true, cycler);
+        wbMuxIndexLatch = new Register<>("WB Mux Index", 0, cycler);
     }
 
     /**

@@ -24,11 +24,10 @@ public class InstructionMemory {
     InstructionMemory(Integer[] arr) {
         this.arr = arr;
         instructionOutput = () -> {
-            System.out.print("[");
             // Fetching 4 bytes at a time
             int address = instructionAddressInput.read();
             int data = arr[address / 4];
-            System.out.printf(" %d]", address);
+            System.out.printf("InstructionMemory[%d] -> %d%n", address, data);
             return data;
         };
     }

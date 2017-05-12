@@ -39,11 +39,10 @@ public class DataMemory implements ICycle {
     DataMemory(Cycler cycler, Integer[] arr) {
         this.arr = arr;
         dataOutput = () -> {
-            System.out.print("[");
             // Fetching 4 bytes at a time
             int address = dataAddressInput.read();
             int data = arr[address / 4];
-            System.out.printf(" %d]", address);
+            System.out.printf("DataMemory[%d] -> %d%n", address, data);
             return data;
         };
         cycler.add(this);
@@ -75,9 +74,8 @@ public class DataMemory implements ICycle {
     public void cycle() {
         if(tempEnable) {
             // Fetching 2 bytes at a time
-            int index = tempDataAddress / 4;
-            arr[index] = tempData;
-            System.out.printf("Store %d from %d %n", arr[index], index);
+            arr[tempDataAddress / 4] = tempData;
+            System.out.printf("DataMemory[%d] <- %d%n", tempDataAddress, tempData);
         }
     }
 

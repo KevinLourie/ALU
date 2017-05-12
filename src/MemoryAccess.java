@@ -22,8 +22,8 @@ public class MemoryAccess {
      */
     MemoryAccess(Integer[] arr, Cycler cycler) {
         dataMemory = new DataMemory(cycler, arr);
-        d0Latch = new Register<>("MemoryAcess.d0", 0, cycler);
-        d1Latch = new Register<>("MemoryAcess.d1", 0, cycler);
+        d0Latch = new Register<>("MemoryAccess.d0", 0, cycler);
+        d1Latch = new Register<>("MemoryAccess.d1", 0, cycler);
         memoryWriteEnableLatch = new Register<>("MemoryAccess.MemoryWriteEnable", true, cycler);
 
         dataMemory

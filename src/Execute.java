@@ -82,7 +82,7 @@ public class Execute {
         return this;
     }
 
-    public Output<Integer> getAluOutput() {
+    public Output<Integer> getD1Output() {
         return alu.getOutput();
     }
 
@@ -111,11 +111,7 @@ public class Execute {
         return this;
     }
 
-    public Output<Integer> getD1Output() {
-        return alu.getOutput();
-    }
-
-    public Output<Integer> getD0Input() {
+    public Output<Integer> getD0Output() {
         return tLatch.getOutput();
     }
 
