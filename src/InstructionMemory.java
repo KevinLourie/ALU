@@ -16,12 +16,12 @@ public class InstructionMemory {
     private Output<Integer> instructionOutput;
 
     /* Byte array */
-    private Integer[] arr;
+    private int[] arr;
 
     /** Address of instruction */
     private Output<Integer> instructionAddressInput;
 
-    InstructionMemory(Integer[] arr) {
+    InstructionMemory(int[] arr) {
         this.arr = arr;
         instructionOutput = () -> {
             // Fetching 4 bytes at a time

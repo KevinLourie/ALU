@@ -21,8 +21,8 @@ public class DataMemory implements ICycle {
     /** Temporary address */
     private int tempDataAddress;
 
-    /* Byte array */
-    private Integer[] arr;
+    /* Word array */
+    private int[] arr;
 
     /** Address of data */
     private Output<Integer> dataAddressInput;
@@ -36,7 +36,7 @@ public class DataMemory implements ICycle {
     /** Temporary enable */
     private boolean tempEnable;
 
-    DataMemory(Cycler cycler, Integer[] arr) {
+    DataMemory(Cycler cycler, int[] arr) {
         this.arr = arr;
         dataOutput = () -> {
             // Fetching 4 bytes at a time
@@ -81,8 +81,8 @@ public class DataMemory implements ICycle {
 
     @Override
     public void sense() {
-        tempData = dataInput.read();
-        tempDataAddress = dataAddressInput.read();
         tempEnable = enableInput.read();
+        tempData = tempEnable ? dataInput.read() : 0;
+        tempDataAddress = tempEnable ? dataAddressInput.read() : -1;
     }
 }

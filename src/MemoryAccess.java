@@ -20,7 +20,7 @@ public class MemoryAccess {
      * Constructor
      * @param arr integer array
      */
-    MemoryAccess(Integer[] arr, Cycler cycler) {
+    MemoryAccess(int[] arr, Cycler cycler) {
         dataMemory = new DataMemory(cycler, arr);
         d0Latch = new Register<>("MemoryAccess.d0", 0, cycler);
         d1Latch = new Register<>("MemoryAccess.d1", 0, cycler);
@@ -54,16 +54,6 @@ public class MemoryAccess {
 
     public MemoryAccess setMemoryWriteEnableInput(Output<Boolean> memoryWriteEnableInput) {
         memoryWriteEnableLatch.setInput(memoryWriteEnableInput);
-        return this;
-    }
-
-    /**
-     * Initialize wbSelectorLatch
-     * @param dAddressInput input to wbSelectorLatch
-     * @return Memory Access
-     */
-    public MemoryAccess setdAddressInput(Output<Integer> dAddressInput) {
-        d1Latch.setInput(dAddressInput);
         return this;
     }
 

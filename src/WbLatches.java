@@ -12,10 +12,10 @@ public class WbLatches {
     /** Latch for WB mux index */
     Register<Integer> wbMuxIndexLatch;
 
-    WbLatches(Cycler cycler) {
-        wbSelectorLatch = new Register<>("WB Selector", (byte)0, cycler);
-        wbEnableLatch = new Register<>("WB Enable", true, cycler);
-        wbMuxIndexLatch = new Register<>("WB Mux Index", 0, cycler);
+    WbLatches(Cycler cycler, String name) {
+        wbSelectorLatch = new Register<>(name + ".wbSelector", (byte)0, cycler);
+        wbEnableLatch = new Register<>(name + ".wbEnable", false, cycler);
+        wbMuxIndexLatch = new Register<>(name + ".wbMuxIndex", 0, cycler);
     }
 
     /**

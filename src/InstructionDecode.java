@@ -31,7 +31,7 @@ public class InstructionDecode {
         registerBank = new RegisterBank(cycler);
         comparator = new Comparator();
         decoder = new Decoder();
-        instructionRegister = new Register<>("InstructionDecode.Instruction", 0, cycler);
+        instructionRegister = new Register<>("InstructionDecode.instruction", 0, cycler);
         comparator.init(registerBank.getSOutput(), registerBank.getTOutput());
         registerBank
                 .setSSelectorInput(decoder.getSSelectorOutput())
@@ -106,8 +106,8 @@ public class InstructionDecode {
      * @param wbInput what to set D input to
      * @return Instruction Decode
      */
-    public InstructionDecode setWBInput(Output<Integer> wbInput) {
-        registerBank.setdInput(wbInput);
+    public InstructionDecode setWbInput(Output<Integer> wbInput) {
+        registerBank.setWbInput(wbInput);
         return this;
     }
 
@@ -117,7 +117,7 @@ public class InstructionDecode {
      * @return Instruction Decode
      */
     public InstructionDecode setWBSelectorInput(Output<Byte> wbSelectorInput) {
-        registerBank.setDSelectorInput(wbSelectorInput);
+        registerBank.setWbSelectorInput(wbSelectorInput);
         return this;
     }
 
@@ -139,7 +139,7 @@ public class InstructionDecode {
      * @return Instruction Decode
      */
     public InstructionDecode setWBEnableInput(Output<Boolean> wbEnableInput) {
-        registerBank.setEnableInput(wbEnableInput);
+        registerBank.setWbEnableInput(wbEnableInput);
         return this;
     }
 }

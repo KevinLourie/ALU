@@ -7,8 +7,8 @@ public class RegisterBank implements ICycle {
     // Register array
     private int[] registers = new int[32];
 
-    /** D register selector. Picks a register to be read */
-    private Output<Byte> dSelectorInput;
+    /** Write back register selector. Picks a register to be read */
+    private Output<Byte> wbSelectorInput;
 
     /** S register selector. Picks another register to be read */
     private Output<Byte> sSelectorInput;
@@ -16,8 +16,8 @@ public class RegisterBank implements ICycle {
     /** T register selector. Picks a register to write to */
     private Output<Byte> tSelectorInput;
 
-    /** D register input */
-    private Output<Integer> dInput;
+    /** Write back register input */
+    private Output<Integer> wbInput;
 
     /** S register output */
     private Output<Integer> sOutput;
@@ -25,17 +25,17 @@ public class RegisterBank implements ICycle {
     /** T register output */
     private Output<Integer> tOutput;
 
-    /** Temporary D */
-    private int tempD;
+    /** Temporary write back data */
+    private int tempWb;
 
-    /** Temporary selector of D register */
-    private byte tempDSelector;
+    /** Temporary selector of write back register */
+    private byte tempWbSelector;
 
     /** Controls whether register bank is written to */
-    private Output<Boolean> enableInput;
+    private Output<Boolean> wbEnableInput;
 
     /** Temporary enable */
-    private boolean tempEnable;
+    private boolean tempWbEnable;
 
     RegisterBank(Cycler cycler) {
         sOutput = () -> {
@@ -57,11 +57,11 @@ public class RegisterBank implements ICycle {
 
     /**
      * Setter for D selector input
-     * @param dSelectorInput D selector input
+     * @param wbSelectorInput Write back selector input
      * @return register bank
      */
-    public RegisterBank setDSelectorInput(Output<Byte> dSelectorInput) {
-        this.dSelectorInput = dSelectorInput;
+    public RegisterBank setWbSelectorInput(Output<Byte> wbSelectorInput) {
+        this.wbSelectorInput = wbSelectorInput;
         return this;
     }
 
@@ -87,21 +87,21 @@ public class RegisterBank implements ICycle {
 
     /**
      * Setter for input to register
-     * @param dInput input to register
+     * @param wbInput input to register
      * @return register bank
      */
-    public RegisterBank setdInput(Output<Integer> dInput) {
-        this.dInput = dInput;
+    public RegisterBank setWbInput(Output<Integer> wbInput) {
+        this.wbInput = wbInput;
         return this;
     }
 
     /**
      * Setter for enable input
-     * @param enableInput enable input
+     * @param wbEnableInput enable input
      * @return register bank
      */
-    public RegisterBank setEnableInput(Output<Boolean> enableInput) {
-        this.enableInput = enableInput;
+    public RegisterBank setWbEnableInput(Output<Boolean> wbEnableInput) {
+        this.wbEnableInput = wbEnableInput;
         return this;
     }
 
@@ -110,17 +110,17 @@ public class RegisterBank implements ICycle {
      */
     @Override
     public void cycle() {
-        if(tempEnable) {
-            registers[tempDSelector] = tempD;
-            System.out.printf("Store %d from %d%n", registers[tempDSelector], tempDSelector);
+        if(tempWbEnable) {
+            registers[tempWbSelector] = tempWb;
+            System.out.printf("RegisterBank[%d] <- %d from %s%n", tempWbSelector, tempWb, wbInput);
         }
     }
 
     @Override
     public void sense() {
-        tempD = dInput.read();
-        tempDSelector = dSelectorInput.read();
-        tempEnable = enableInput.read();
+        tempWbEnable = wbEnableInput.read();
+        tempWb = tempWbEnable ? wbInput.read() : 0;
+        tempWbSelector = tempWbEnable ? wbSelectorInput.read() : -1;
     }
 
     /**

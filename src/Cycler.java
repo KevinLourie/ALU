@@ -12,9 +12,11 @@ public class Cycler {
      * Sense all inputs. Cycle all registers
      */
     public void senseAndCycle() {
+        System.out.println("----- Sensing");
         for(ICycle cycle : cycles) {
             cycle.sense();
         }
+        System.out.println("----- Cycling");
         for(ICycle cycle : cycles) {
             cycle.cycle();
         }

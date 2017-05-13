@@ -11,7 +11,7 @@ public class CPU {
     /** Control store */
     private Decoder decoder;
 
-    private Integer[] arr = new Integer[2 ^ 22];
+    private int[] arr = new int[2 ^ 22];
 
     /** Second stage, where the instruction is broken down into its part */
     private InstructionDecode instructionDecode;
@@ -46,9 +46,9 @@ public class CPU {
         instructionDecode = new InstructionDecode(cycler);
         memoryAccess = new MemoryAccess(arr, cycler);
         writeBack = new WriteBack(cycler);
-        wbLatches0 = new WbLatches(cycler);
-        wbLatches1 = new WbLatches(cycler);
-        wbLatches2 = new WbLatches(cycler);
+        wbLatches0 = new WbLatches(cycler, "wbLatches0");
+        wbLatches1 = new WbLatches(cycler, "wbLatches1");
+        wbLatches2 = new WbLatches(cycler, "wbLatches2");
 
         // Internal Wiring
         wbLatches0
@@ -63,7 +63,7 @@ public class CPU {
         instructionDecode
                 .setInstructionInput(instructionFetch.getInstructionOutput())
                 .setWBSelectorInput(wbLatches2.getWbSelectorOutput())
-                .setWBInput(writeBack.getWbOutput())
+                .setWbInput(writeBack.getWbOutput())
                 .setWBEnableInput(wbLatches2.getWbEnableOutput())
                 .setNextPcInput(instructionFetch.getNextPcOutput());
         execute
@@ -76,8 +76,7 @@ public class CPU {
         memoryAccess
                 .setMemoryWriteEnableInput(execute.getMemoryWriteEnableOutput())
                 .setD0Input(execute.getD0Output())
-                .setD1Input(execute.getD1Output())
-                .setdAddressInput(instructionFetch.getInstructionOutput());
+                .setD1Input(execute.getD1Output());
         writeBack
                 .setMuxIndexInput(wbLatches2.getWbMuxIndexOutput())
                 .setWb0Input(memoryAccess.getWb0Output())
@@ -85,7 +84,7 @@ public class CPU {
     }
 
     public void test() throws IOException {
-        readFile("memoryInput3.txt");
+        readFile("memoryInput.txt");
         run();
     }
 
@@ -108,6 +107,7 @@ public class CPU {
      */
     public void run() {
         for (int i = 0; i < 5; i++) {
+            System.out.printf("========== Cycle %d%n", i);
             cycler.senseAndCycle();
         }
     }

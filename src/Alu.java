@@ -44,7 +44,6 @@ public class Alu {
                         // TODO: Fix by using shamt
                         d = t;
                 }
-                System.out.printf("%s%n", d);
                 return d;
             }
         };

@@ -33,10 +33,10 @@ public class Execute {
         alu = new Alu();
         aluMux = new Multiplexer<>();
         aluMuxIndexLatch = new Register<>("Execute.aluMuxIndex", 0, cycler);
-        sLatch = new Register<>("Execute.S", 0, cycler);
-        tLatch = new Register<>("Execute.T", 0, cycler);
-        cLatch = new Register<>("Execute.C", 0, cycler);
-        memoryWriteEnableLatch = new Register<>("Execute.Memory Write Enable", true, cycler);
+        sLatch = new Register<>("Execute.s", 0, cycler);
+        tLatch = new Register<>("Execute.t", 0, cycler);
+        cLatch = new Register<>("Execute.c", 0, cycler);
+        memoryWriteEnableLatch = new Register<>("Execute.memoryWriteEnable", true, cycler);
         aluOpLatch = new Register<>("Execute.aluOp", AluOp.Add, cycler);
 
         // Internal wire
@@ -46,7 +46,7 @@ public class Execute {
                 .setOperation(aluOpLatch.getOutput());
         aluMux
                 .setIndexInput(aluMuxIndexLatch.getOutput())
-                .setInputs(sLatch.getOutput(), tLatch.getOutput());
+                .setInputs(tLatch.getOutput(), cLatch.getOutput());
     }
 
     /**

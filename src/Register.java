@@ -51,6 +51,7 @@ public class Register<T> implements ICycle {
      * @param input input
      */
     public Register<T> setInput(Output<T> input) {
+        System.out.printf("%s.setInput(%s)%n", name, input);
         this.input = input;
         return this;
     }
@@ -68,8 +69,8 @@ public class Register<T> implements ICycle {
 
     @Override
     public void sense() {
-        tempData = input.read();
         tempEnable = enableInput.read();
+        tempData = tempEnable ? input.read() : null;
     }
 
     /**

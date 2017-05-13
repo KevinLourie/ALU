@@ -19,7 +19,7 @@ public class InstructionFetch {
      * Constructor
      * @param arr integer array
      */
-    InstructionFetch(Integer[] arr, Cycler cycler) {
+    InstructionFetch(int[] arr, Cycler cycler) {
         instructionMemory = new InstructionMemory(arr);
         adder = new Adder();
         pc = new Register<>("InstructionFetch.pc", 0, cycler);
