@@ -106,7 +106,7 @@ public class CPU {
      * Fetches microinstruction and executes it
      */
     public void run() {
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 9; i++) {
             System.out.printf("========== Cycle %d%n", i);
             cycler.senseAndCycle();
         }
