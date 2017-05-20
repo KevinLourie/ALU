@@ -59,13 +59,7 @@ public class Decoder {
      * Generate outputs for each of the fields in the microinstruction
      */
     Decoder() {
-        for(int i = 0; i < 64; i++) {
-            opcodeMicroInstructions[i] = new MicroInstruction();
-            functMicroInstructions[i] = new MicroInstruction();
-        }
-        opcodeMicroInstructions[0].setWbEnable(false).setMemoryWriteEnable(false);
-        opcodeMicroInstructions[0x23].setPcMuxIndex(1).setAluMuxIndex(1).setWbMuxIndex(0).setMemoryWriteEnable(false).setWbEnable(true);
-        opcodeMicroInstructions[0x2B].setPcMuxIndex(1).setAluMuxIndex(1).setWbMuxIndex(0).setMemoryWriteEnable(true).setWbEnable(false);
+        initMicrocode();
         wbEnableOutput = () -> getMicroInstruction().isWbEnable();
         opcodeInput = () -> (byte)(instructionInput.read() >>> 26);
         aluMuxIndexOutput = () -> getMicroInstruction().getAluMuxIndex();
@@ -80,6 +74,24 @@ public class Decoder {
         constantOutput = () -> (instructionInput.read() & 0xFFFF);
         functInput = () -> (byte)(instructionInput.read() & 0x3F);
         shamtOutput = () -> (byte)((instructionInput.read() >>> 6) & 0x1F);
+    }
+
+    private void initMicrocode() {
+        for(int i = 0; i < 64; i++) {
+            opcodeMicroInstructions[i] = new MicroInstruction();
+            functMicroInstructions[i] = new MicroInstruction();
+        }
+
+        // Load
+        opcodeMicroInstructions[0x23]
+                .setAluMuxIndex(1)
+                .setWbMuxIndex(0)
+                .setWbEnable(true);
+
+        // Store
+        opcodeMicroInstructions[0x2B]
+                .setAluMuxIndex(1)
+                .setMemoryWriteEnable(true);
     }
 
     /**

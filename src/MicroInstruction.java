@@ -14,7 +14,7 @@ public class MicroInstruction {
     private int aluMuxIndex = 0;
 
     /** Index of input to pc */
-    private int pcMuxIndex = 0;
+    private int pcMuxIndex = 1;
 
     /** Index of input to write back mux */
     private int wbMuxIndex = 0;
