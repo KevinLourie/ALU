@@ -8,43 +8,42 @@ import java.io.IOException;
  */
 public class CPU {
 
-    /** Control store */
-    private Decoder decoder;
+    WbLatches wbLatches0;
+    WbLatches wbLatches1;
+    WbLatches wbLatches2;
 
-    private int[] arr = new int[2 ^ 22];
-
-    /** Second stage, where the instruction is broken down into its part */
+    private int[] memory = new int[1 << 22];
+    /**
+     * Second stage, where the instruction is broken down into its part
+     */
     private InstructionDecode instructionDecode;
-
-    /** First stage, where the instruction is fetched */
+    /**
+     * First stage, where the instruction is fetched
+     */
     private InstructionFetch instructionFetch;
-
-    /** Third stage, where the ALU performs an operation */
+    /**
+     * Third stage, where the ALU performs an operation
+     */
     private Execute execute;
-
-    /** Fourth stage, where the data from a register is stored in memory */
+    /**
+     * Fourth stage, where the data from a register is stored in memory
+     */
     private MemoryAccess memoryAccess;
-
-    /** Fifth stage, where the data is either written to a register or to memory
+    /**
+     * Fifth stage, where the data is either written to a register or to memory
      */
     private WriteBack writeBack;
-
-    /** Cycle all registers */
+    /**
+     * Cycle all registers
+     */
     private Cycler cycler;
-
-    WbLatches wbLatches0;
-
-    WbLatches wbLatches1;
-
-    WbLatches wbLatches2;
 
     CPU() {
         cycler = new Cycler();
         execute = new Execute(cycler);
-        decoder = new Decoder();
-        instructionFetch = new InstructionFetch(arr, cycler);
+        instructionFetch = new InstructionFetch(memory, cycler);
         instructionDecode = new InstructionDecode(cycler);
-        memoryAccess = new MemoryAccess(arr, cycler);
+        memoryAccess = new MemoryAccess(memory, cycler);
         writeBack = new WriteBack(cycler);
         wbLatches0 = new WbLatches(cycler, "wbLatches0");
         wbLatches1 = new WbLatches(cycler, "wbLatches1");
@@ -112,12 +111,42 @@ public class CPU {
         }
     }
 
+    private int[] convertToIntegerArray(String line) {
+        String[] arr = line.split(",");
+        int[] parts = new int[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            parts[i] = Integer.parseUnsignedInt(arr[i], 16);
+        }
+        return parts;
+    }
+
     public void readFile(String path) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(path));
         String line;
+        int length;
+        int result = 0;
         int i = 0;
         while ((line = bufferedReader.readLine()) != null) {
-            arr[i] = Integer.parseUnsignedInt(line, 16);
+            if (line.compareTo(".data") == 0) {
+                i = 0x100;
+                continue;
+            }
+            int[] parts = convertToIntegerArray(line);
+            length = parts.length;
+            switch (length) {
+                case 1:
+                    result = parts[0];
+                    break;
+                case 2:
+                    result = (parts[0] << 26) + parts[1];
+                    break;
+                case 4:
+                    result = (parts[0] << 26) + (parts[1] << 21) + (parts[2] << 16) + parts[3];
+                    break;
+                case 6:
+                    result = (parts[0] << 26) + (parts[1] << 21) + (parts[2] << 16) + (parts[3] << 11) + (parts[4] << 6) + parts[5];
+            }
+            memory[i] = result;
             i++;
         }
     }
