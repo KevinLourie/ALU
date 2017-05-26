@@ -42,7 +42,7 @@ public class DataMemory implements ICycle {
             // Fetching 4 bytes at a time
             int address = dataAddressInput.read();
             int data = arr[address / 4];
-            System.out.printf("DataMemory[%d] -> %d%n", address, data);
+            System.out.printf("DataMemory[%d] -> ", address);
             return data;
         };
         cycler.add(this);
@@ -75,14 +75,19 @@ public class DataMemory implements ICycle {
         if(tempEnable) {
             // Fetching 2 bytes at a time
             arr[tempDataAddress / 4] = tempData;
-            System.out.printf("DataMemory[%d] <- %d%n", tempDataAddress, tempData);
         }
     }
 
     @Override
     public void sense() {
         tempEnable = enableInput.read();
-        tempData = tempEnable ? dataInput.read() : 0;
-        tempDataAddress = tempEnable ? dataAddressInput.read() : -1;
+        if(tempEnable) {
+            tempData = dataInput.read();
+            tempDataAddress = dataAddressInput.read();
+            System.out.printf("%x -> DataMemory[%d]%n", tempData, tempDataAddress);
+        } else {
+            tempData = 0;
+            tempDataAddress = -1;
+        }
     }
 }

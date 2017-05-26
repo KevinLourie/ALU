@@ -27,7 +27,7 @@ public class InstructionMemory {
             // Fetching 4 bytes at a time
             int address = instructionAddressInput.read();
             int data = arr[address / 4];
-            System.out.printf("InstructionMemory[%d] -> %d%n", address, data);
+            System.out.printf("InstructionMemory[%x] -> ", address);
             return data;
         };
     }

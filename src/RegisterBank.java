@@ -39,17 +39,17 @@ public class RegisterBank implements ICycle {
 
     RegisterBank(Cycler cycler) {
         sOutput = () -> {
-            // Fetching 2 bytes at a time
+            // Fetch S register
             byte address = sSelectorInput.read();
             int data = registers[address];
-            System.out.printf("sOutput[%d] -> %d%n", address, data);
+            System.out.printf("S[%d] -> ", address);
             return data;
         };
         tOutput = () -> {
-            // Fetching 2 bytes at a time
+            // Fetch T register
             byte address = tSelectorInput.read();
             int data = registers[address];
-            System.out.printf("tOutput[%d] -> %d%n", address, data);
+            System.out.printf("T[%d] -> ", address);
             return data;
         };
         cycler.add(this);
@@ -112,15 +112,20 @@ public class RegisterBank implements ICycle {
     public void cycle() {
         if(tempWbEnable) {
             registers[tempWbSelector] = tempWb;
-            System.out.printf("RegisterBank[%d] <- %d from %s%n", tempWbSelector, tempWb, wbInput);
         }
     }
 
     @Override
     public void sense() {
         tempWbEnable = wbEnableInput.read();
-        tempWb = tempWbEnable ? wbInput.read() : 0;
-        tempWbSelector = tempWbEnable ? wbSelectorInput.read() : -1;
+        if (tempWbEnable) {
+            tempWb = wbInput.read();
+            tempWbSelector = wbSelectorInput.read();
+            System.out.printf("%x -> WB[%d] from %s%n", tempWb, tempWbSelector, wbInput);
+        } else {
+            tempWb = 0;
+            tempWbSelector = -1;
+        }
     }
 
     /**

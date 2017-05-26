@@ -33,21 +33,21 @@ public class InstructionFetch {
 
     /**
      * Initialize adder, PC, and pcMux
-     * @param nextPCInput input to pcMux
+     * @param jumpAddressInput input to pcMux
      * @return Instruction Fetch
      */
-    public InstructionFetch setNextPcInput(Output<Integer> nextPCInput) {
-        pcMux.setInputs(nextPCInput, adder.getOutput());
+    public InstructionFetch setJumpAddressInput(Output<Integer> jumpAddressInput) {
+        pcMux.setInputs(adder.getOutput(), jumpAddressInput);
         return this;
     }
 
     /**
      * Setter for pcMux index
-     * @param pcMuxIndexInput index
+     * @param jumpEnableInput 1 to enable jump
      * @return Instruction Fetch
      */
-    public InstructionFetch setPcMuxIndexInput(Output<Integer> pcMuxIndexInput) {
-        pcMux.setIndexInput(pcMuxIndexInput);
+    public InstructionFetch setJumpEnableInput(Output<Integer> jumpEnableInput) {
+        pcMux.setIndexInput(jumpEnableInput);
         return this;
     }
 

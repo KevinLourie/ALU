@@ -13,8 +13,8 @@ public class MicroInstruction {
     /** Index of input to ALU mux */
     private int aluMuxIndex = 0;
 
-    /** Index of input to pc */
-    private int pcMuxIndex = 1;
+    /** If 0, go to next PC. Otherwise, jump */
+    private int jumpEnable = 0;
 
     /** Index of input to write back mux */
     private int wbMuxIndex = 0;
@@ -47,12 +47,12 @@ public class MicroInstruction {
         return this;
     }
 
-    public int getPcMuxIndex() {
-        return pcMuxIndex;
+    public int getJumpEnable() {
+        return jumpEnable;
     }
 
-    public MicroInstruction setPcMuxIndex(int pcMuxIndex) {
-        this.pcMuxIndex = pcMuxIndex;
+    public MicroInstruction setJumpEnable(int jumpEnable) {
+        this.jumpEnable = jumpEnable;
         return this;
     }
 

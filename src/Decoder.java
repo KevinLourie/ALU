@@ -23,7 +23,7 @@ public class Decoder {
     private Output<Integer> aluMuxIndexOutput;
 
     /** Index of PC mux */
-    private Output<Integer> pcMuxIndexOutput;
+    private Output<Integer> jumpEnableOutput;
 
     /** Index of write back mux */
     private Output<Integer> wbMuxIndexOutput;
@@ -63,7 +63,7 @@ public class Decoder {
         wbEnableOutput = () -> getMicroInstruction().isWbEnable();
         opcodeInput = () -> (byte)(instructionInput.read() >>> 26);
         aluMuxIndexOutput = () -> getMicroInstruction().getAluMuxIndex();
-        pcMuxIndexOutput = () -> getMicroInstruction().getPcMuxIndex();
+        jumpEnableOutput = () -> getMicroInstruction().getJumpEnable();
         wbMuxIndexOutput = () -> getMicroInstruction().getWbMuxIndex();
         memoryWriteEnableOutput = () -> getMicroInstruction().isMemoryWriteEnable();
         aluOpOutput = () -> getMicroInstruction().getAluOp();
@@ -92,6 +92,11 @@ public class Decoder {
         opcodeMicroInstructions[0x2B]
                 .setAluMuxIndex(1)
                 .setMemoryWriteEnable(true);
+
+        functMicroInstructions[0x20]
+                .setAluOp(AluOp.Add)
+                .setWbMuxIndex(1)
+                .setWbEnable(true);
     }
 
     /**
@@ -179,8 +184,8 @@ public class Decoder {
      * Getter for pc mux index output
      * @return pc mux index output
      */
-    public Output<Integer> getPcMuxIndexOutput() {
-        return pcMuxIndexOutput;
+    public Output<Integer> getJumpEnableOutput() {
+        return jumpEnableOutput;
     }
 
     /**

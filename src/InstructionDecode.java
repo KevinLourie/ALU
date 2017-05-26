@@ -11,8 +11,8 @@ public class InstructionDecode {
     /** Returns microcode for instruction */
     private Decoder decoder;
 
-    /**Determine if branch condition is true by comparing data in S and T */
-    private Comparator comparator;
+    /** Determine if branch condition is true by comparing data in S and T */
+    Output<Integer> jumpEnableOutput;
 
     /** Holds instruction */
     private Register<Integer> instructionRegister;
@@ -29,14 +29,26 @@ public class InstructionDecode {
     InstructionDecode(Cycler cycler) {
         adder = new Adder();
         registerBank = new RegisterBank(cycler);
-        comparator = new Comparator();
         decoder = new Decoder();
         instructionRegister = new Register<>("InstructionDecode.instruction", 0, cycler);
-        comparator.init(registerBank.getSOutput(), registerBank.getTOutput());
         registerBank
                 .setSSelectorInput(decoder.getSSelectorOutput())
                 .setTSelectorInput(decoder.getTSelectorOutput());
         nextPcLatch = new Register<>("InstructionDecode.nextPcLatch", 0, cycler);
+
+        // Determine if jump is enabled
+        jumpEnableOutput = () -> {
+            // Check if jump is enabled
+            if(decoder.getJumpEnableOutput().read() == 0) {
+                return 0;
+            }
+            // Compare S and T
+            if (registerBank.getSOutput().read() != registerBank.getTOutput().read()) {
+                return 0;
+            }
+            // Jump
+            return 1;
+        };
 
         // Internal wiring
         adder
@@ -129,8 +141,8 @@ public class InstructionDecode {
         return adder.getOutput();
     }
 
-    public Output<Integer> getPcMuxSelector() {
-        return comparator.getOutput();
+    public Output<Integer> getJumpEnableOutput() {
+        return jumpEnableOutput;
     }
 
     /**

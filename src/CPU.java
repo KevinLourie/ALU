@@ -57,8 +57,8 @@ public class CPU {
         wbLatches1.setLatchInputs(wbLatches0);
         wbLatches2.setLatchInputs(wbLatches1);
         instructionFetch
-                .setNextPcInput(instructionDecode.getNextPcOutput())
-                .setPcMuxIndexInput(instructionDecode.getPcMuxSelector());
+                .setJumpAddressInput(instructionDecode.getNextPcOutput())
+                .setJumpEnableInput(instructionDecode.getJumpEnableOutput());
         instructionDecode
                 .setInstructionInput(instructionFetch.getInstructionOutput())
                 .setWBSelectorInput(wbLatches2.getWbSelectorOutput())
@@ -105,7 +105,7 @@ public class CPU {
      * Fetches microinstruction and executes it
      */
     public void run() {
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 15; i++) {
             System.out.printf("========== Cycle %d%n", i);
             cycler.senseAndCycle();
         }
