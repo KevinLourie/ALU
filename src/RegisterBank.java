@@ -5,7 +5,7 @@
 public class RegisterBank implements ICycle {
 
     // Register array
-    private int[] registers = new int[32];
+    private int[] registers;
 
     /** Write back register selector. Picks a register to be read */
     private Output<Byte> wbSelectorInput;
@@ -37,7 +37,8 @@ public class RegisterBank implements ICycle {
     /** Temporary enable */
     private boolean tempWbEnable;
 
-    RegisterBank(Cycler cycler) {
+    RegisterBank(Cycler cycler, int[] registers) {
+        this.registers = registers;
         sOutput = () -> {
             // Fetch S register
             byte address = sSelectorInput.read();
@@ -125,6 +126,7 @@ public class RegisterBank implements ICycle {
         } else {
             tempWb = 0;
             tempWbSelector = -1;
+            System.out.println("WB write disabled");
         }
     }
 

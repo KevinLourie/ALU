@@ -26,9 +26,9 @@ public class InstructionDecode {
      * Constructor
      * @param cycler cycler
      */
-    InstructionDecode(Cycler cycler) {
+    InstructionDecode(Cycler cycler, int[] registers) {
         adder = new Adder();
-        registerBank = new RegisterBank(cycler);
+        registerBank = new RegisterBank(cycler, registers);
         decoder = new Decoder();
         instructionRegister = new Register<>("InstructionDecode.instruction", 0, cycler);
         registerBank

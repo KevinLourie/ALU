@@ -88,6 +88,7 @@ public class DataMemory implements ICycle {
         } else {
             tempData = 0;
             tempDataAddress = -1;
+            System.out.println("DataMemory write disabled");
         }
     }
 }

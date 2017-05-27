@@ -71,7 +71,7 @@ public class Register<T> implements ICycle {
         tempEnable = enableInput.read();
         if (tempEnable) {
             tempData = input.read();
-            System.out.printf("%s -> %s from %s%n", data, name, input);
+            System.out.printf("%s -> %s from %s%n", tempData, name, input);
         } else {
             tempData = null;
         }

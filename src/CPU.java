@@ -12,6 +12,8 @@ public class CPU {
     WbLatches wbLatches1;
     WbLatches wbLatches2;
 
+    private int[] registers = new int[32];
+
     private int[] memory = new int[1 << 22];
     /**
      * Second stage, where the instruction is broken down into its part
@@ -42,7 +44,7 @@ public class CPU {
         cycler = new Cycler();
         execute = new Execute(cycler);
         instructionFetch = new InstructionFetch(memory, cycler);
-        instructionDecode = new InstructionDecode(cycler);
+        instructionDecode = new InstructionDecode(cycler, registers);
         memoryAccess = new MemoryAccess(memory, cycler);
         writeBack = new WriteBack(cycler);
         wbLatches0 = new WbLatches(cycler, "wbLatches0");
@@ -108,6 +110,12 @@ public class CPU {
         for (int i = 0; i < 15; i++) {
             System.out.printf("========== Cycle %d%n", i);
             cycler.senseAndCycle();
+        }
+        for(int j = 0; j < registers.length; j++) {
+            System.out.println("R" + j + " = " + registers[j]);
+        }
+        for(int k = 0; k < 31; k++) {
+            System.out.println(1024 + (4*k) + " = " + memory[k+256]);
         }
     }
 
