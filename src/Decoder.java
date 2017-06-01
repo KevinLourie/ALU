@@ -93,6 +93,11 @@ public class Decoder {
                 .setAluMuxIndex(1)
                 .setMemoryWriteEnable(true);
 
+        // Branch on equal
+        opcodeMicroInstructions[0x04]
+                .setJumpEnable(1);
+
+        // Add
         functMicroInstructions[0x20]
                 .setAluOp(AluOp.Add)
                 .setWbMuxIndex(1)

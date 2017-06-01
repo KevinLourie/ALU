@@ -112,10 +112,10 @@ public class CPU {
             cycler.senseAndCycle();
         }
         for(int j = 0; j < registers.length; j++) {
-            System.out.println("R" + j + " = " + registers[j]);
+            System.out.printf("R%d : %x%n", j, registers[j]);
         }
         for(int k = 0; k < 31; k++) {
-            System.out.println(1024 + (4*k) + " = " + memory[k+256]);
+            System.out.printf("%x : %x%n", 1024 + (4*k), memory[k+256]);
         }
     }
 

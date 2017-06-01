@@ -10,6 +10,8 @@ public class WriteBack {
     /** Latch for WB 1 */
     Register<Integer> wb1Latch;
 
+    Register<Boolean> haltLatch;
+
     /** Choose what to write back */
     private Multiplexer<Integer> wbMux;
 
