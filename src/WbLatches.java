@@ -12,10 +12,21 @@ public class WbLatches {
     /** Latch for WB mux index */
     Register<Integer> wbMuxIndexLatch;
 
+    Register<Boolean> haltEnableLatch;
+
     WbLatches(Cycler cycler, String name) {
         wbSelectorLatch = new Register<>(name + ".wbSelector", (byte)0, cycler);
         wbEnableLatch = new Register<>(name + ".wbEnable", false, cycler);
         wbMuxIndexLatch = new Register<>(name + ".wbMuxIndex", 0, cycler);
+        haltEnableLatch = new Register<>(name + ".haltEnable", false, cycler);
+    }
+
+    public Output<Boolean> getHaltEnableLatch() {
+        return haltEnableLatch.getOutput();
+    }
+
+    public void setHaltEnableLatch(Output<Boolean> haltEnableInput) {
+        haltEnableLatch.setInput(haltEnableInput);
     }
 
     /**
@@ -80,6 +91,7 @@ public class WbLatches {
         setWbEnableInput(wbLatches.getWbEnableOutput());
         setWbMuxIndexInput(wbLatches.getWbMuxIndexOutput());
         setWbSelectorInput(wbLatches.getWbSelectorOutput());
+        setHaltEnableLatch(wbLatches.getHaltEnableLatch());
     }
 
 }

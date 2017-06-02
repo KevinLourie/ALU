@@ -55,12 +55,13 @@ public class CPU {
         wbLatches0
                 .setWbEnableInput(instructionDecode.getWbEnableOutput())
                 .setWbSelectorInput(instructionDecode.getWbSelectorMuxOutput())
-                .setWbMuxIndexInput(instructionDecode.getWbMuxIndexOutput());
+                .setWbMuxIndexInput(instructionDecode.getWbMuxIndexOutput())
+                .setHaltEnableLatch(instructionDecode.getHaltOutput());
         wbLatches1.setLatchInputs(wbLatches0);
         wbLatches2.setLatchInputs(wbLatches1);
         instructionFetch
                 .setJumpAddressInput(instructionDecode.getNextPcOutput())
-                .setJumpEnableInput(instructionDecode.getJumpEnableOutput());
+                .setJumpEnableInput(instructionDecode.getBranchConditionOutput());
         instructionDecode
                 .setInstructionInput(instructionFetch.getInstructionOutput())
                 .setWBSelectorInput(wbLatches2.getWbSelectorOutput())
@@ -107,10 +108,14 @@ public class CPU {
      * Fetches microinstruction and executes it
      */
     public void run() {
-        for (int i = 0; i < 15; i++) {
+        Output<Boolean> halt = wbLatches2.getHaltEnableLatch();
+        int i = 0;
+        do {
             System.out.printf("========== Cycle %d%n", i);
             cycler.senseAndCycle();
-        }
+            i++;
+        }  while(!halt.read());
+
         for(int j = 0; j < registers.length; j++) {
             System.out.printf("R%d : %x%n", j, registers[j]);
         }

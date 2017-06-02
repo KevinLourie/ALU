@@ -5,7 +5,7 @@
 public class MicroInstruction {
 
     /** True to halt the CPU */
-    private boolean halt;
+    private boolean halt = false;
 
     /** ALU operation */
     private byte aluOp = AluOp.Add;

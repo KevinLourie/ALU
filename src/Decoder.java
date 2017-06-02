@@ -55,6 +55,12 @@ public class Decoder {
     /** Shift amount output */
     private Output<Byte> shamtOutput;
 
+    public Output<Boolean> getHalt() {
+        return halt;
+    }
+
+    private Output<Boolean> halt;
+
     /**
      * Generate outputs for each of the fields in the microinstruction
      */
@@ -74,6 +80,7 @@ public class Decoder {
         constantOutput = () -> (instructionInput.read() & 0xFFFF);
         functInput = () -> (byte)(instructionInput.read() & 0x3F);
         shamtOutput = () -> (byte)((instructionInput.read() >>> 6) & 0x1F);
+        halt = () -> getMicroInstruction().isWait();
     }
 
     private void initMicrocode() {
@@ -96,6 +103,9 @@ public class Decoder {
         // Branch on equal
         opcodeMicroInstructions[0x04]
                 .setJumpEnable(1);
+
+        opcodeMicroInstructions[0x08]
+                .setHalt();
 
         // Add
         functMicroInstructions[0x20]

@@ -12,7 +12,7 @@ public class InstructionDecode {
     private Decoder decoder;
 
     /** Determine if branch condition is true by comparing data in S and T */
-    Output<Integer> jumpEnableOutput;
+    Output<Byte> branchConditionOutput;
 
     /** Holds instruction */
     private Register<Integer> instructionRegister;
@@ -37,17 +37,44 @@ public class InstructionDecode {
         nextPcLatch = new Register<>("InstructionDecode.nextPcLatch", 0, cycler);
 
         // Determine if jump is enabled
-        jumpEnableOutput = () -> {
+        branchConditionOutput = () -> {
             // Check if jump is enabled
             if(decoder.getJumpEnableOutput().read() == 0) {
-                return 0;
+                return (byte)0;
             }
-            // Compare S and T
-            if (registerBank.getSOutput().read() != registerBank.getTOutput().read()) {
-                return 0;
+            byte output = 0;
+            switch(decoder.getJumpEnableOutput().read()) {
+                case 1 : output = 1;
+                    break;
+                case 2: if(registerBank.getSOutput().read() != registerBank.getTOutput().read()) {
+                    output = 0;
+                }
+                else {
+                    output = 1;
+                }
+                    break;
+                case 3: if(registerBank.getSOutput().read() == registerBank.getTOutput().read()) {
+                    output = 0;
+                }
+                else {
+                    output = 1;
+                }
+                    break;
+                case 4: if(registerBank.getSOutput().read() > registerBank.getTOutput().read()) {
+                    output = 1;
+                }
+                else {
+                    output = 0;
+                }
+                    break;
+                case 5: if(registerBank.getSOutput().read() >= registerBank.getTOutput().read()) {
+                    output = 1;
+                }
+                else {
+                    output = 0;
+                }
             }
-            // Jump
-            return 1;
+            return output;
         };
 
         // Internal wiring
@@ -113,6 +140,10 @@ public class InstructionDecode {
         return decoder.getWbEnableOutput();
     }
 
+    public Output<Boolean> getHaltOutput() {
+        return decoder.getHalt();
+    }
+
     /**
      * Setter for D input in register bank. Comes from Write Back, so no latch is needed
      * @param wbInput what to set D input to
@@ -141,8 +172,8 @@ public class InstructionDecode {
         return adder.getOutput();
     }
 
-    public Output<Integer> getJumpEnableOutput() {
-        return jumpEnableOutput;
+    public Output<Byte> getBranchConditionOutput() {
+        return branchConditionOutput;
     }
 
     /**
