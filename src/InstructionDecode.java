@@ -12,7 +12,7 @@ public class InstructionDecode {
     private Decoder decoder;
 
     /** Determine if branch condition is true by comparing data in S and T */
-    Output<Byte> branchConditionOutput;
+    Output<Integer> jumpEnable;
 
     /** Holds instruction */
     private Register<Integer> instructionRegister;
@@ -37,12 +37,12 @@ public class InstructionDecode {
         nextPcLatch = new Register<>("InstructionDecode.nextPcLatch", 0, cycler);
 
         // Determine if jump is enabled
-        branchConditionOutput = () -> {
+        jumpEnable = () -> {
             // Check if jump is enabled
             if(decoder.getJumpEnableOutput().read() == 0) {
-                return (byte)0;
+                return 0;
             }
-            byte output = 0;
+            int output = 0;
             switch(decoder.getJumpEnableOutput().read()) {
                 case 1 : output = 1;
                     break;
@@ -172,8 +172,12 @@ public class InstructionDecode {
         return adder.getOutput();
     }
 
-    public Output<Byte> getBranchConditionOutput() {
-        return branchConditionOutput;
+    /**
+     * Getter for jump enable. It will return 0 if the branch will be done or 1 if it is
+     * @return
+     */
+    public Output<Integer> getJumpEnable() {
+        return jumpEnable;
     }
 
     /**

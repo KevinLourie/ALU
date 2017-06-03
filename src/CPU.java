@@ -61,7 +61,7 @@ public class CPU {
         wbLatches2.setLatchInputs(wbLatches1);
         instructionFetch
                 .setJumpAddressInput(instructionDecode.getNextPcOutput())
-                .setJumpEnableInput(instructionDecode.getBranchConditionOutput());
+                .setJumpEnableInput(instructionDecode.getJumpEnable());
         instructionDecode
                 .setInstructionInput(instructionFetch.getInstructionOutput())
                 .setWBSelectorInput(wbLatches2.getWbSelectorOutput())
