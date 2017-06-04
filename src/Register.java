@@ -29,7 +29,7 @@ public class Register<T extends Number> implements ICycle {
         this.name = name;
         data = initial;
         output = () -> {
-            System.out.printf("%s -> ", name);
+            System.out.printf("%s #%x -> ", name, data);
             return data;
         };
         cycler.add(this);
@@ -71,7 +71,7 @@ public class Register<T extends Number> implements ICycle {
         tempEnable = enableInput.read() != 0;
         if (tempEnable) {
             tempData = input.read();
-            System.out.printf("%x -> %s from %s%n", tempData, name, input);
+            System.out.printf("%s #%x from %s%n", name, tempData, input);
         } else {
             tempData = null;
         }

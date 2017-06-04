@@ -14,7 +14,7 @@ public class MicroInstruction {
     private int aluMuxIndex = 0;
 
     /** If 0, go to next PC. Otherwise, jump */
-    private int jumpEnable = 0;
+    private byte branchCondition = BranchCondition.never;
 
     /** Index of input to write back mux */
     private int wbMuxIndex = 0;
@@ -47,12 +47,12 @@ public class MicroInstruction {
         return this;
     }
 
-    public int getJumpEnable() {
-        return jumpEnable;
+    public byte getBranchCondition() {
+        return branchCondition;
     }
 
-    public MicroInstruction setJumpEnable(int jumpEnable) {
-        this.jumpEnable = jumpEnable;
+    public MicroInstruction setBranchCondition(byte branchCondition) {
+        this.branchCondition = branchCondition;
         return this;
     }
 

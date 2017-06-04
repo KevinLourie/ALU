@@ -3,27 +3,34 @@
  */
 public class InstructionDecode {
 
-    /** Register bank */
-    private RegisterBank registerBank;
-
-    private Adder adder;
-
-    /** Returns microcode for instruction */
-    private Decoder decoder;
-
-    /** Determine if branch condition is true by comparing data in S and T */
+    /**
+     * Determine if branch condition is true by comparing data in S and T
+     */
     Output<Integer> jumpEnable;
-
-    /** Holds instruction */
+    /**
+     * Register bank
+     */
+    private RegisterBank registerBank;
+    private Adder adder;
+    /**
+     * Returns microcode for instruction
+     */
+    private Decoder decoder;
+    /**
+     * Holds instruction
+     */
     private Register<Integer> instructionRegister;
 
-    /** Location of next instruction*/
+    /**
+     * Location of next instruction
+     */
     private Register<Integer> nextPcLatch;
 
     private Output<Byte> memoryWriteEnableOutput;
 
     /**
      * Constructor
+     *
      * @param cycler cycler
      */
     InstructionDecode(Cycler cycler, int[] registers) {
@@ -39,42 +46,33 @@ public class InstructionDecode {
         // Determine if jump is enabled
         jumpEnable = () -> {
             // Check if jump is enabled
-            if(decoder.getJumpEnableOutput().read() == 0) {
-                return 0;
+            switch (decoder.getBranchConditionOutput().read()) {
+                case BranchCondition.never:
+                    return 0;
+                case BranchCondition.always:
+                    return 1;
+                case BranchCondition.equal:
+                    if (registerBank.getSOutput().read() == registerBank.getTOutput().read()) {
+                        return 1;
+                    }
+                    return 0;
+                case BranchCondition.notEqual:
+                    if (registerBank.getSOutput().read() != registerBank.getTOutput().read()) {
+                        return 1;
+                    }
+                    return 0;
+                case BranchCondition.greaterThan:
+                    if (registerBank.getSOutput().read() > registerBank.getTOutput().read()) {
+                        return 1;
+                    }
+                    return 0;
+                case BranchCondition.greaterThanOrEqualTo:
+                    if (registerBank.getSOutput().read() >= registerBank.getTOutput().read()) {
+                        return 1;
+                    }
+                    return 0;
             }
-            int output = 0;
-            switch(decoder.getJumpEnableOutput().read()) {
-                case 1 : output = 1;
-                    break;
-                case 2: if(registerBank.getSOutput().read() != registerBank.getTOutput().read()) {
-                    output = 0;
-                }
-                else {
-                    output = 1;
-                }
-                    break;
-                case 3: if(registerBank.getSOutput().read() == registerBank.getTOutput().read()) {
-                    output = 0;
-                }
-                else {
-                    output = 1;
-                }
-                    break;
-                case 4: if(registerBank.getSOutput().read() > registerBank.getTOutput().read()) {
-                    output = 1;
-                }
-                else {
-                    output = 0;
-                }
-                    break;
-                case 5: if(registerBank.getSOutput().read() >= registerBank.getTOutput().read()) {
-                    output = 1;
-                }
-                else {
-                    output = 0;
-                }
-            }
-            return output;
+            return 0;
         };
 
         // Internal wiring
@@ -86,6 +84,7 @@ public class InstructionDecode {
 
     /**
      * Initialize instruction register
+     *
      * @param instructionInput input to instruction register
      * @return Instruction Decode
      */
@@ -96,6 +95,7 @@ public class InstructionDecode {
 
     /**
      * Initialize program counter
+     *
      * @param nextPCInput input to instruction register
      * @return Instruction Decode
      */
@@ -146,6 +146,7 @@ public class InstructionDecode {
 
     /**
      * Setter for D input in register bank. Comes from Write Back, so no latch is needed
+     *
      * @param wbInput what to set D input to
      * @return Instruction Decode
      */
@@ -156,6 +157,7 @@ public class InstructionDecode {
 
     /**
      * Setter for WB selector input in register bank. Comes from Write Back, so no latch is needed
+     *
      * @param wbSelectorInput what to set WB selector input to
      * @return Instruction Decode
      */
@@ -166,6 +168,7 @@ public class InstructionDecode {
 
     /**
      * Getter for the next program counter. This is an input to the InstructionFetch. It is used for jumps
+     *
      * @return next program counter
      */
     public Output<Integer> getNextPcOutput() {
@@ -174,6 +177,7 @@ public class InstructionDecode {
 
     /**
      * Getter for jump enable. It will return 0 if the branch will be done or 1 if it is
+     *
      * @return
      */
     public Output<Integer> getJumpEnable() {
@@ -182,6 +186,7 @@ public class InstructionDecode {
 
     /**
      * Setter for WB enable input in register bank. Comes from Write Back, so no latch is needed
+     *
      * @param wbEnableInput what to set WB enable input to
      * @return Instruction Decode
      */

@@ -23,7 +23,7 @@ public class Decoder {
     private Output<Integer> aluMuxIndexOutput;
 
     /** Index of PC mux */
-    private Output<Integer> jumpEnableOutput;
+    private Output<Byte> branchConditionOutput;
 
     /** Index of write back mux */
     private Output<Integer> wbMuxIndexOutput;
@@ -69,7 +69,7 @@ public class Decoder {
         wbEnableOutput = () -> getMicroInstruction().isWbEnable();
         opcodeInput = () -> (byte)(instructionInput.read() >>> 26);
         aluMuxIndexOutput = () -> getMicroInstruction().getAluMuxIndex();
-        jumpEnableOutput = () -> getMicroInstruction().getJumpEnable();
+        branchConditionOutput = () -> getMicroInstruction().getBranchCondition();
         wbMuxIndexOutput = () -> getMicroInstruction().getWbMuxIndex();
         memoryWriteEnableOutput = () -> getMicroInstruction().isMemoryWriteEnable();
         aluOpOutput = () -> getMicroInstruction().getAluOp();
@@ -102,7 +102,10 @@ public class Decoder {
 
         // Branch on equal
         opcodeMicroInstructions[0x04]
-                .setJumpEnable(1);
+                .setBranchCondition((byte)2);
+
+        opcodeMicroInstructions[0x05]
+                .setBranchCondition((byte)3);
 
         opcodeMicroInstructions[0x08]
                 .setHalt();
@@ -199,8 +202,8 @@ public class Decoder {
      * Getter for pc mux index output
      * @return pc mux index output
      */
-    public Output<Integer> getJumpEnableOutput() {
-        return jumpEnableOutput;
+    public Output<Byte> getBranchConditionOutput() {
+        return branchConditionOutput;
     }
 
     /**

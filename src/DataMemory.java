@@ -84,7 +84,7 @@ public class DataMemory implements ICycle {
         if(tempEnable) {
             tempData = dataInput.read();
             tempDataAddress = dataAddressInput.read();
-            System.out.printf("%x -> DataMemory[%d]%n", tempData, tempDataAddress);
+            System.out.printf("DataMemory[%d] #%x from %s%n", tempDataAddress, tempData, dataInput);
         } else {
             tempData = 0;
             tempDataAddress = -1;
