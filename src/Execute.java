@@ -24,7 +24,7 @@ public class Execute {
     /** Determines whether T or C is chosen */
     private Register<Integer> aluMuxIndexLatch;
 
-    private Register<Boolean> memoryWriteEnableLatch;
+    private Register<Byte> memoryWriteEnableLatch;
 
     /**
      * Construct ALU, ALU multiplexer, data registers, address register, and ALU operator register
@@ -36,7 +36,7 @@ public class Execute {
         sLatch = new Register<>("Execute.s", 0, cycler);
         tLatch = new Register<>("Execute.t", 0, cycler);
         cLatch = new Register<>("Execute.c", 0, cycler);
-        memoryWriteEnableLatch = new Register<>("Execute.memoryWriteEnable", true, cycler);
+        memoryWriteEnableLatch = new Register<>("Execute.memoryWriteEnable", (byte)1, cycler);
         aluOpLatch = new Register<>("Execute.aluOp", AluOp.Add, cycler);
 
         // Internal wire
@@ -106,7 +106,7 @@ public class Execute {
         return this;
     }
 
-    public Execute setMemoryWriteEnableInput(Output<Boolean> memoryWriteEnableInput) {
+    public Execute setMemoryWriteEnableInput(Output<Byte> memoryWriteEnableInput) {
         memoryWriteEnableLatch.setInput(memoryWriteEnableInput);
         return this;
     }
@@ -115,7 +115,7 @@ public class Execute {
         return tLatch.getOutput();
     }
 
-    public Output<Boolean> getMemoryWriteEnableOutput() {
+    public Output<Byte> getMemoryWriteEnableOutput() {
         return memoryWriteEnableLatch.getOutput();
     }
 }

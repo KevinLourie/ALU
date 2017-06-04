@@ -7,25 +7,25 @@ public class WbLatches {
     Register<Byte> wbSelectorLatch;
 
     /** Latch for WB enable */
-    Register<Boolean> wbEnableLatch;
+    Register<Byte> wbEnableLatch;
 
     /** Latch for WB mux index */
     Register<Integer> wbMuxIndexLatch;
 
-    Register<Boolean> haltEnableLatch;
+    Register<Byte> haltEnableLatch;
 
     WbLatches(Cycler cycler, String name) {
         wbSelectorLatch = new Register<>(name + ".wbSelector", (byte)0, cycler);
-        wbEnableLatch = new Register<>(name + ".wbEnable", false, cycler);
+        wbEnableLatch = new Register<>(name + ".wbEnable", (byte)0, cycler);
         wbMuxIndexLatch = new Register<>(name + ".wbMuxIndex", 0, cycler);
-        haltEnableLatch = new Register<>(name + ".haltEnable", false, cycler);
+        haltEnableLatch = new Register<>(name + ".haltEnable", (byte)0, cycler);
     }
 
-    public Output<Boolean> getHaltEnableLatch() {
+    public Output<Byte> getHaltEnableLatch() {
         return haltEnableLatch.getOutput();
     }
 
-    public void setHaltEnableLatch(Output<Boolean> haltEnableInput) {
+    public void setHaltEnableLatch(Output<Byte> haltEnableInput) {
         haltEnableLatch.setInput(haltEnableInput);
     }
 
@@ -34,7 +34,7 @@ public class WbLatches {
      * @param wbEnableInput wb enable latch input
      * @return WbLatches
      */
-    public WbLatches setWbEnableInput(Output<Boolean> wbEnableInput) {
+    public WbLatches setWbEnableInput(Output<Byte> wbEnableInput) {
         wbEnableLatch.setInput(wbEnableInput);
         return this;
     }
@@ -79,7 +79,7 @@ public class WbLatches {
      * Getter for wb enable output
      * @return wb enable output
      */
-    public Output<Boolean> getWbEnableOutput() {
+    public Output<Byte> getWbEnableOutput() {
         return wbEnableLatch.getOutput();
     }
 

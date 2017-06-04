@@ -20,7 +20,7 @@ public class InstructionDecode {
     /** Location of next instruction*/
     private Register<Integer> nextPcLatch;
 
-    private Output<Boolean> memoryWriteEnableOutput;
+    private Output<Byte> memoryWriteEnableOutput;
 
     /**
      * Constructor
@@ -124,7 +124,7 @@ public class InstructionDecode {
         return decoder.getAluOpOutput();
     }
 
-    public Output<Boolean> getMemoryWriteEnableOutput() {
+    public Output<Byte> getMemoryWriteEnableOutput() {
         return decoder.getMemoryWriteEnableOutput();
     }
 
@@ -136,11 +136,11 @@ public class InstructionDecode {
         return decoder.getWbSelectorOutput();
     }
 
-    public Output<Boolean> getWbEnableOutput() {
+    public Output<Byte> getWbEnableOutput() {
         return decoder.getWbEnableOutput();
     }
 
-    public Output<Boolean> getHaltOutput() {
+    public Output<Byte> getHaltOutput() {
         return decoder.getHalt();
     }
 
@@ -185,7 +185,7 @@ public class InstructionDecode {
      * @param wbEnableInput what to set WB enable input to
      * @return Instruction Decode
      */
-    public InstructionDecode setWBEnableInput(Output<Boolean> wbEnableInput) {
+    public InstructionDecode setWBEnableInput(Output<Byte> wbEnableInput) {
         registerBank.setWbEnableInput(wbEnableInput);
         return this;
     }

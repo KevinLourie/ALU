@@ -31,7 +31,7 @@ public class DataMemory implements ICycle {
     private Output<Integer> dataInput;
 
     /** Controls whether data is written to memory */
-    private Output<Boolean> enableInput;
+    private Output<Byte> enableInput;
 
     /** Temporary enable */
     private boolean tempEnable;
@@ -62,7 +62,7 @@ public class DataMemory implements ICycle {
         return this;
     }
 
-    public DataMemory setEnableInput(Output<Boolean> enableInput) {
+    public DataMemory setEnableInput(Output<Byte> enableInput) {
         this.enableInput = enableInput;
         return this;
     }
@@ -80,7 +80,7 @@ public class DataMemory implements ICycle {
 
     @Override
     public void sense() {
-        tempEnable = enableInput.read();
+        tempEnable = enableInput.read() != 0;
         if(tempEnable) {
             tempData = dataInput.read();
             tempDataAddress = dataAddressInput.read();

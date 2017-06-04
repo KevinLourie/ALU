@@ -108,13 +108,13 @@ public class CPU {
      * Fetches microinstruction and executes it
      */
     public void run() {
-        Output<Boolean> halt = wbLatches2.getHaltEnableLatch();
+        Output<Byte> halt = wbLatches2.getHaltEnableLatch();
         int i = 0;
         do {
             System.out.printf("========== Cycle %d%n", i);
             cycler.senseAndCycle();
             i++;
-        }  while(!halt.read());
+        }  while(halt.read()==0);
 
         for(int j = 0; j < registers.length; j++) {
             System.out.printf("R%d : %x%n", j, registers[j]);

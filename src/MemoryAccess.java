@@ -14,7 +14,7 @@ public class MemoryAccess {
     private Register<Integer> d1Latch;
 
     /** Memory write enable latch which decides whether the data in D0 is written to memory */
-    private Register<Boolean> memoryWriteEnableLatch;
+    private Register<Byte> memoryWriteEnableLatch;
 
     /**
      * Constructor
@@ -24,7 +24,7 @@ public class MemoryAccess {
         dataMemory = new DataMemory(cycler, arr);
         d0Latch = new Register<>("MemoryAccess.d0", 0, cycler);
         d1Latch = new Register<>("MemoryAccess.d1", 0, cycler);
-        memoryWriteEnableLatch = new Register<>("MemoryAccess.MemoryWriteEnable", true, cycler);
+        memoryWriteEnableLatch = new Register<>("MemoryAccess.MemoryWriteEnable", (byte)1, cycler);
 
         dataMemory
                 .setDataInput(d0Latch.getOutput())
@@ -52,7 +52,7 @@ public class MemoryAccess {
         return this;
     }
 
-    public MemoryAccess setMemoryWriteEnableInput(Output<Boolean> memoryWriteEnableInput) {
+    public MemoryAccess setMemoryWriteEnableInput(Output<Byte> memoryWriteEnableInput) {
         memoryWriteEnableLatch.setInput(memoryWriteEnableInput);
         return this;
     }

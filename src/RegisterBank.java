@@ -32,7 +32,7 @@ public class RegisterBank implements ICycle {
     private byte tempWbSelector;
 
     /** Controls whether register bank is written to */
-    private Output<Boolean> wbEnableInput;
+    private Output<Byte> wbEnableInput;
 
     /** Temporary enable */
     private boolean tempWbEnable;
@@ -101,7 +101,7 @@ public class RegisterBank implements ICycle {
      * @param wbEnableInput enable input
      * @return register bank
      */
-    public RegisterBank setWbEnableInput(Output<Boolean> wbEnableInput) {
+    public RegisterBank setWbEnableInput(Output<Byte> wbEnableInput) {
         this.wbEnableInput = wbEnableInput;
         return this;
     }
@@ -118,11 +118,11 @@ public class RegisterBank implements ICycle {
 
     @Override
     public void sense() {
-        tempWbEnable = wbEnableInput.read();
+        tempWbEnable = wbEnableInput.read() != 0;
         if (tempWbEnable) {
             tempWb = wbInput.read();
             tempWbSelector = wbSelectorInput.read();
-            System.out.printf("%x -> WB[%d] from %s%n", tempWb, tempWbSelector, wbInput);
+            System.out.printf("%x -> WB[%d] from %x%n", tempWb, tempWbSelector, tempWb);
         } else {
             tempWb = 0;
             tempWbSelector = -1;

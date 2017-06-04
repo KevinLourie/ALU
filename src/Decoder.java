@@ -5,7 +5,7 @@
 public class Decoder {
 
     /** Contains the microinstruction to be executed */
-    private Output<Boolean> wbEnableOutput;
+    private Output<Byte> wbEnableOutput;
 
     /** Contains the S register number */
     private Output<Byte> sSelectorOutput;
@@ -29,7 +29,7 @@ public class Decoder {
     private Output<Integer> wbMuxIndexOutput;
 
     /** True if data will be written to memory */
-    private Output<Boolean> memoryWriteEnableOutput;
+    private Output<Byte> memoryWriteEnableOutput;
 
     /** List of opcode microinstructions */
     private MicroInstruction[] opcodeMicroInstructions = new MicroInstruction[64];
@@ -55,11 +55,11 @@ public class Decoder {
     /** Shift amount output */
     private Output<Byte> shamtOutput;
 
-    public Output<Boolean> getHalt() {
+    public Output<Byte> getHalt() {
         return halt;
     }
 
-    private Output<Boolean> halt;
+    private Output<Byte> halt;
 
     /**
      * Generate outputs for each of the fields in the microinstruction
@@ -93,12 +93,12 @@ public class Decoder {
         opcodeMicroInstructions[0x23]
                 .setAluMuxIndex(1)
                 .setWbMuxIndex(0)
-                .setWbEnable(true);
+                .setWbEnable((byte)1);
 
         // Store
         opcodeMicroInstructions[0x2B]
                 .setAluMuxIndex(1)
-                .setMemoryWriteEnable(true);
+                .setMemoryWriteEnable((byte)1);
 
         // Branch on equal
         opcodeMicroInstructions[0x04]
@@ -111,7 +111,7 @@ public class Decoder {
         functMicroInstructions[0x20]
                 .setAluOp(AluOp.Add)
                 .setWbMuxIndex(1)
-                .setWbEnable(true);
+                .setWbEnable((byte)1);
     }
 
     /**
@@ -162,7 +162,7 @@ public class Decoder {
      * Getter for memory write enable
      * @return memory write enable
      */
-    public Output<Boolean> getMemoryWriteEnableOutput() {
+    public Output<Byte> getMemoryWriteEnableOutput() {
         return memoryWriteEnableOutput;
     }
 
@@ -183,7 +183,7 @@ public class Decoder {
      * Getter for write back enable
      * @return write back enable
      */
-    public Output<Boolean> getWbEnableOutput() {
+    public Output<Byte> getWbEnableOutput() {
         return wbEnableOutput;
     }
 
