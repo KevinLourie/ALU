@@ -77,7 +77,7 @@ public class Decoder {
         sSelectorOutput = () -> (byte)((instructionInput.read() >>> 21) & 0x1F);
         tSelectorOutput = () -> (byte)((instructionInput.read() >>> 16) & 0x1F);
         dSelectorOutput = () -> (byte)((instructionInput.read() >>> 11) & 0x1F);
-        constantOutput = () -> (instructionInput.read() & 0xFFFF);
+        constantOutput = () -> (int)(short)(instructionInput.read() & 0xFFFF);
         functInput = () -> (byte)(instructionInput.read() & 0x3F);
         shamtOutput = () -> (byte)((instructionInput.read() >>> 6) & 0x1F);
         halt = () -> getMicroInstruction().isWait();
@@ -102,10 +102,10 @@ public class Decoder {
 
         // Branch on equal
         opcodeMicroInstructions[0x04]
-                .setBranchCondition((byte)2);
+                .setBranchCondition(BranchCondition.equal);
 
         opcodeMicroInstructions[0x05]
-                .setBranchCondition((byte)3);
+                .setBranchCondition(BranchCondition.notEqual);
 
         opcodeMicroInstructions[0x08]
                 .setHalt();

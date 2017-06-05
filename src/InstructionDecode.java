@@ -7,6 +7,7 @@ public class InstructionDecode {
      * Determine if branch condition is true by comparing data in S and T
      */
     Output<Integer> jumpEnable;
+
     /**
      * Register bank
      */
@@ -25,8 +26,6 @@ public class InstructionDecode {
      * Location of next instruction
      */
     private Register<Integer> nextPcLatch;
-
-    private Output<Byte> memoryWriteEnableOutput;
 
     /**
      * Constructor
