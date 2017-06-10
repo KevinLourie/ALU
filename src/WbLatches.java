@@ -4,25 +4,25 @@
 public class WbLatches {
 
     /** Latch for WB Selector */
-    Register<Byte> wbSelectorLatch;
+    ShiftRegister<Byte> wbSelectorLatch;
 
     /** Latch for WB enable */
-    Register<Byte> wbEnableLatch;
+    ShiftRegister<Byte> wbEnableLatch;
 
     /** Latch for WB mux index */
-    Register<Integer> wbMuxIndexLatch;
+    ShiftRegister<Integer> wbMuxIndexLatch;
 
-    Register<Byte> haltEnableLatch;
+    ShiftRegister<Byte> haltEnableLatch;
 
     WbLatches(Cycler cycler, String name) {
-        wbSelectorLatch = new Register<>(name + ".wbSelector", (byte)0, cycler);
-        wbEnableLatch = new Register<>(name + ".wbEnable", (byte)0, cycler);
-        wbMuxIndexLatch = new Register<>(name + ".wbMuxIndex", 0, cycler);
-        haltEnableLatch = new Register<>(name + ".haltEnable", (byte)0, cycler);
+        wbSelectorLatch = new ShiftRegister<>(name + ".wbSelector", 2, (byte)0, cycler);
+        wbEnableLatch = new ShiftRegister<>(name + ".wbEnable", 2, (byte)0, cycler);
+        wbMuxIndexLatch = new ShiftRegister<>(name + ".wbMuxIndex", 2, 0, cycler);
+        haltEnableLatch = new ShiftRegister<>(name + ".haltEnable", 2, (byte)0, cycler);
     }
 
     public Output<Byte> getHaltEnableLatch() {
-        return haltEnableLatch.getOutput();
+        return haltEnableLatch.getOutput(1);
     }
 
     public void setHaltEnableLatch(Output<Byte> haltEnableInput) {
@@ -64,7 +64,7 @@ public class WbLatches {
      * @return wb mux index output
      */
     public Output<Integer> getWbMuxIndexOutput() {
-        return wbMuxIndexLatch.getOutput();
+        return wbMuxIndexLatch.getOutput(1);
     }
 
     /**
@@ -72,7 +72,7 @@ public class WbLatches {
      * @return wb selector output
      */
     public Output<Byte> getWbSelectorOutput() {
-        return wbSelectorLatch.getOutput();
+        return wbSelectorLatch.getOutput(1);
     }
 
     /**
@@ -80,7 +80,7 @@ public class WbLatches {
      * @return wb enable output
      */
     public Output<Byte> getWbEnableOutput() {
-        return wbEnableLatch.getOutput();
+        return wbEnableLatch.getOutput(1);
     }
 
     /**

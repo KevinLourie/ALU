@@ -8,8 +8,7 @@ import java.io.IOException;
  */
 public class CPU {
 
-    WbLatches wbLatches0;
-    WbLatches wbLatches1;
+    WbLatches wbLatches;
 
     private int[] registers = new int[32];
 
@@ -42,24 +41,22 @@ public class CPU {
         instructionFetch = new InstructionFetch(memory, cycler);
         instructionDecode = new InstructionDecode(cycler, registers);
         memoryAccess = new MemoryAccess(memory, cycler);
-        wbLatches0 = new WbLatches(cycler, "wbLatches0");
-        wbLatches1 = new WbLatches(cycler, "wbLatches1");
+        wbLatches = new WbLatches(cycler, "wbLatches");
 
         // Internal Wiring
-        wbLatches0
+        wbLatches
                 .setWbEnableInput(instructionDecode.getWbEnableOutput())
                 .setWbSelectorInput(instructionDecode.getWbSelectorMuxOutput())
                 .setWbMuxIndexInput(instructionDecode.getWbMuxIndexOutput())
                 .setHaltEnableLatch(instructionDecode.getHaltOutput());
-        wbLatches1.setLatchInputs(wbLatches0);
         instructionFetch
                 .setJumpAddressInput(instructionDecode.getNextPcOutput())
                 .setJumpEnableInput(instructionDecode.getJumpEnable());
         instructionDecode
                 .setInstructionInput(instructionFetch.getInstructionOutput())
-                .setWBSelectorInput(wbLatches1.getWbSelectorOutput())
+                .setWBSelectorInput(wbLatches.getWbSelectorOutput())
                 .setWbInput(memoryAccess.getWbOutput())
-                .setWBEnableInput(wbLatches1.getWbEnableOutput())
+                .setWBEnableInput(wbLatches.getWbEnableOutput())
                 .setNextPcInput(instructionFetch.getNextPcOutput());
         execute
                 .setSInput(instructionDecode.getSOutput())
@@ -72,7 +69,7 @@ public class CPU {
                 .setMemoryWriteEnableInput(execute.getMemoryWriteEnableOutput())
                 .setD0Input(execute.getD0Output())
                 .setD1Input(execute.getD1Output())
-                .setWbIndexInput(wbLatches1.getWbMuxIndexOutput());
+                .setWbIndexInput(wbLatches.getWbMuxIndexOutput());
     }
 
     public void test() throws IOException {
@@ -98,7 +95,7 @@ public class CPU {
      * Fetches microinstruction and executes it
      */
     public void run() {
-        Output<Byte> halt = wbLatches1.getHaltEnableLatch();
+        Output<Byte> halt = wbLatches.getHaltEnableLatch();
         int i = 0;
         byte isHalt;
         do {
