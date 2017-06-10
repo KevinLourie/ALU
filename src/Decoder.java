@@ -115,6 +115,11 @@ public class Decoder {
                 .setAluOp(AluOp.Add)
                 .setWbMuxIndex(1)
                 .setWbEnable((byte)1);
+
+        functMicroInstructions[0x22]
+                .setAluOp(AluOp.Subtract)
+                .setWbMuxIndex(1)
+                .setWbEnable((byte)1);
     }
 
     /**

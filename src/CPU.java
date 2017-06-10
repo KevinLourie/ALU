@@ -10,7 +10,6 @@ public class CPU {
 
     WbLatches wbLatches0;
     WbLatches wbLatches1;
-    WbLatches wbLatches2;
 
     private int[] registers = new int[32];
 
@@ -31,10 +30,7 @@ public class CPU {
      * Fourth stage, where the data from a register is stored in memory
      */
     private MemoryAccess memoryAccess;
-    /**
-     * Fifth stage, where the data is either written to a register or to memory
-     */
-    private WriteBack writeBack;
+
     /**
      * Cycle all registers
      */
@@ -46,10 +42,8 @@ public class CPU {
         instructionFetch = new InstructionFetch(memory, cycler);
         instructionDecode = new InstructionDecode(cycler, registers);
         memoryAccess = new MemoryAccess(memory, cycler);
-        writeBack = new WriteBack(cycler);
         wbLatches0 = new WbLatches(cycler, "wbLatches0");
         wbLatches1 = new WbLatches(cycler, "wbLatches1");
-        wbLatches2 = new WbLatches(cycler, "wbLatches2");
 
         // Internal Wiring
         wbLatches0
@@ -58,15 +52,14 @@ public class CPU {
                 .setWbMuxIndexInput(instructionDecode.getWbMuxIndexOutput())
                 .setHaltEnableLatch(instructionDecode.getHaltOutput());
         wbLatches1.setLatchInputs(wbLatches0);
-        wbLatches2.setLatchInputs(wbLatches1);
         instructionFetch
                 .setJumpAddressInput(instructionDecode.getNextPcOutput())
                 .setJumpEnableInput(instructionDecode.getJumpEnable());
         instructionDecode
                 .setInstructionInput(instructionFetch.getInstructionOutput())
-                .setWBSelectorInput(wbLatches2.getWbSelectorOutput())
-                .setWbInput(writeBack.getWbOutput())
-                .setWBEnableInput(wbLatches2.getWbEnableOutput())
+                .setWBSelectorInput(wbLatches1.getWbSelectorOutput())
+                .setWbInput(memoryAccess.getWbOutput())
+                .setWBEnableInput(wbLatches1.getWbEnableOutput())
                 .setNextPcInput(instructionFetch.getNextPcOutput());
         execute
                 .setSInput(instructionDecode.getSOutput())
@@ -78,11 +71,8 @@ public class CPU {
         memoryAccess
                 .setMemoryWriteEnableInput(execute.getMemoryWriteEnableOutput())
                 .setD0Input(execute.getD0Output())
-                .setD1Input(execute.getD1Output());
-        writeBack
-                .setMuxIndexInput(wbLatches2.getWbMuxIndexOutput())
-                .setWb0Input(memoryAccess.getWb0Output())
-                .setWb1Input(memoryAccess.getWb1Output());
+                .setD1Input(execute.getD1Output())
+                .setWbIndexInput(wbLatches1.getWbMuxIndexOutput());
     }
 
     public void test() throws IOException {
@@ -108,13 +98,16 @@ public class CPU {
      * Fetches microinstruction and executes it
      */
     public void run() {
-        Output<Byte> halt = wbLatches2.getHaltEnableLatch();
+        Output<Byte> halt = wbLatches1.getHaltEnableLatch();
         int i = 0;
+        byte isHalt;
         do {
-            System.out.printf("========== Cycle %d%n", i);
+            System.out.printf("%n========== Cycle %d%n", i);
             cycler.senseAndCycle();
             i++;
-        }  while(halt.read()==0);
+            isHalt = halt.read();
+            System.out.printf("-> check halt #%d%n", isHalt);
+        }  while(isHalt ==0);
 
         for(int j = 0; j < registers.length; j++) {
             System.out.printf("R%d : %x%n", j, registers[j]);
@@ -122,6 +115,7 @@ public class CPU {
         for(int k = 0; k < 31; k++) {
             System.out.printf("%x : %x%n", 1024 + (4*k), memory[k+256]);
         }
+        System.out.printf("Completed in %d cycles%n", i);
     }
 
     private int[] convertToIntegerArray(String line) {

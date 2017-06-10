@@ -6,6 +6,8 @@ public class MemoryAccess {
     /** Data is located here */
     private DataMemory dataMemory;
 
+    private Multiplexer<Integer> wbMux;
+
     /** D0 latch which connects to the data of the data memory */
     private Register<Integer> d0Latch;
 
@@ -21,6 +23,7 @@ public class MemoryAccess {
      * @param arr integer array
      */
     MemoryAccess(int[] arr, Cycler cycler) {
+        wbMux = new Multiplexer<>();
         dataMemory = new DataMemory(cycler, arr);
         d0Latch = new Register<>("MemoryAccess.d0", 0, cycler);
         d1Latch = new Register<>("MemoryAccess.d1", 0, cycler);
@@ -30,6 +33,13 @@ public class MemoryAccess {
                 .setDataInput(d0Latch.getOutput())
                 .setDataAddressInput(d1Latch.getOutput())
                 .setEnableInput(memoryWriteEnableLatch.getOutput());
+        wbMux.setInputs(dataMemory.getDataOutput(), d1Latch.getOutput());
+    }
+
+
+    public MemoryAccess setWbIndexInput(Output<Integer> wbMuxSelector) {
+        wbMux.setIndexInput(wbMuxSelector);
+        return this;
     }
 
     /**
@@ -63,5 +73,9 @@ public class MemoryAccess {
 
     public Output<Integer> getWb1Output() {
         return d1Latch.getOutput();
+    }
+
+    public Output<Integer> getWbOutput() {
+        return wbMux.getOutput();
     }
 }
