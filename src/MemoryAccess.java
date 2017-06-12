@@ -9,11 +9,11 @@ public class MemoryAccess {
     private Multiplexer<Integer> wbMux;
 
     /** D0 latch which connects to the data of the data memory */
-    private Register<Integer> d0Latch;
+    private Register<Integer> tLatch;
 
     /** D1 latch which is either the address of the data memory or the write back data. The type of instruction
      * determines how it's used */
-    private Register<Integer> d1Latch;
+    private Register<Integer> resultLatch;
 
     /** Memory write enable latch which decides whether the data in D0 is written to memory */
     private Register<Byte> memoryWriteEnableLatch;
@@ -25,15 +25,15 @@ public class MemoryAccess {
     MemoryAccess(int[] arr, Cycler cycler) {
         wbMux = new Multiplexer<>();
         dataMemory = new DataMemory(cycler, arr);
-        d0Latch = new Register<>("MemoryAccess.d0", 0, cycler);
-        d1Latch = new Register<>("MemoryAccess.d1", 0, cycler);
+        tLatch = new Register<>("MemoryAccess.T", 0, cycler);
+        resultLatch = new Register<>("MemoryAccess.Result", 0, cycler);
         memoryWriteEnableLatch = new Register<>("MemoryAccess.MemoryWriteEnable", (byte)1, cycler);
 
         dataMemory
-                .setDataInput(d0Latch.getOutput())
-                .setDataAddressInput(d1Latch.getOutput())
+                .setDataInput(tLatch.getOutput())
+                .setDataAddressInput(resultLatch.getOutput())
                 .setEnableInput(memoryWriteEnableLatch.getOutput());
-        wbMux.setInputs(dataMemory.getDataOutput(), d1Latch.getOutput());
+        wbMux.setInputs(dataMemory.getDataOutput(), resultLatch.getOutput());
     }
 
 
@@ -43,22 +43,22 @@ public class MemoryAccess {
     }
 
     /**
-     * Initialize d0Latch
-     * @param d0Input input to d0Latch
+     * Initialize tLatch
+     * @param tInput input to tLatch
      * @return Memory Access
      */
-    public MemoryAccess setD0Input(Output<Integer> d0Input) {
-        d0Latch.setInput(d0Input);
+    public MemoryAccess setTInput(Output<Integer> tInput) {
+        tLatch.setInput(tInput);
         return this;
     }
 
     /**
-     * Initialize d1Latch
-     * @param d1Input input to d1Latch
+     * Initialize resultLatch
+     * @param resultInput input to resultLatch
      * @return Memory Access
      */
-    public MemoryAccess setD1Input(Output<Integer> d1Input) {
-        d1Latch.setInput(d1Input);
+    public MemoryAccess setResultInput(Output<Integer> resultInput) {
+        resultLatch.setInput(resultInput);
         return this;
     }
 
@@ -72,7 +72,7 @@ public class MemoryAccess {
     }
 
     public Output<Integer> getWb1Output() {
-        return d1Latch.getOutput();
+        return resultLatch.getOutput();
     }
 
     public Output<Integer> getWbOutput() {

@@ -111,6 +111,14 @@ public class InstructionDecode {
         return registerBank.getTOutput();
     }
 
+    public Output<Byte> getSSelectorOutput() {
+        return decoder.getSSelectorOutput();
+    }
+
+    public Output<Byte> getTSelectorOutput() {
+        return decoder.getTSelectorOutput();
+    }
+
     public Output<Integer> getCOutput() {
         return decoder.getConstantOutput();
     }

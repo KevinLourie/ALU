@@ -1,7 +1,7 @@
 /**
  * Created by kzlou on 5/7/2017.
  */
-public class WbLatches {
+public class WbControlUnit {
 
     /** Latch for WB Selector */
     ShiftRegister<Byte> wbSelectorLatch;
@@ -14,11 +14,25 @@ public class WbLatches {
 
     ShiftRegister<Byte> haltEnableLatch;
 
-    WbLatches(Cycler cycler, String name) {
+    Output<Byte> sSelectorInput;
+
+    Output<Byte> tSelectorInput;
+
+    WbControlUnit(Cycler cycler, String name) {
         wbSelectorLatch = new ShiftRegister<>(name + ".wbSelector", 2, (byte)0, cycler);
         wbEnableLatch = new ShiftRegister<>(name + ".wbEnable", 2, (byte)0, cycler);
         wbMuxIndexLatch = new ShiftRegister<>(name + ".wbMuxIndex", 2, 0, cycler);
         haltEnableLatch = new ShiftRegister<>(name + ".haltEnable", 2, (byte)0, cycler);
+    }
+
+    public WbControlUnit setSSelectorInput(Output<Byte> sSelectorInput) {
+        this.sSelectorInput = sSelectorInput;
+        return this;
+    }
+
+    public WbControlUnit setTSelectorInput(Output<Byte> tSelectorInput) {
+        this.tSelectorInput = tSelectorInput;
+        return this;
     }
 
     public Output<Byte> getHaltEnableLatch() {
@@ -34,7 +48,7 @@ public class WbLatches {
      * @param wbEnableInput wb enable latch input
      * @return WbLatches
      */
-    public WbLatches setWbEnableInput(Output<Byte> wbEnableInput) {
+    public WbControlUnit setWbEnableInput(Output<Byte> wbEnableInput) {
         wbEnableLatch.setInput(wbEnableInput);
         return this;
     }
@@ -44,7 +58,7 @@ public class WbLatches {
      * @param wbSelectorInput wb selector latch input
      * @return WbLatches
      */
-    public WbLatches setWbSelectorInput(Output<Byte> wbSelectorInput) {
+    public WbControlUnit setWbSelectorInput(Output<Byte> wbSelectorInput) {
         wbSelectorLatch.setInput(wbSelectorInput);
         return this;
     }
@@ -54,7 +68,7 @@ public class WbLatches {
      * @param wbMuxIndexInput wb mux index latch input
      * @return WbLatches
      */
-    public WbLatches setWbMuxIndexInput(Output<Integer> wbMuxIndexInput) {
+    public WbControlUnit setWbMuxIndexInput(Output<Integer> wbMuxIndexInput) {
         wbMuxIndexLatch.setInput(wbMuxIndexInput);
         return this;
     }
@@ -85,13 +99,13 @@ public class WbLatches {
 
     /**
      * Setter for latch inputs
-     * @param wbLatches latch inputs
+     * @param wbControlUnit latch inputs
      */
-    public void setLatchInputs(WbLatches wbLatches) {
-        setWbEnableInput(wbLatches.getWbEnableOutput());
-        setWbMuxIndexInput(wbLatches.getWbMuxIndexOutput());
-        setWbSelectorInput(wbLatches.getWbSelectorOutput());
-        setHaltEnableLatch(wbLatches.getHaltEnableLatch());
+    public void setLatchInputs(WbControlUnit wbControlUnit) {
+        setWbEnableInput(wbControlUnit.getWbEnableOutput());
+        setWbMuxIndexInput(wbControlUnit.getWbMuxIndexOutput());
+        setWbSelectorInput(wbControlUnit.getWbSelectorOutput());
+        setHaltEnableLatch(wbControlUnit.getHaltEnableLatch());
     }
 
 }
