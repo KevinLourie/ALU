@@ -31,7 +31,7 @@ public class Execute {
      */
     Execute(Cycler cycler) {
         alu = new Alu();
-        aluMux = new Multiplexer<>();
+        aluMux = new Multiplexer<>(2);
         aluMuxIndexLatch = new Register<>("Execute.aluMuxIndex", 0, cycler);
         sLatch = new Register<>("Execute.s", 0, cycler);
         tLatch = new Register<>("Execute.t", 0, cycler);
@@ -46,7 +46,8 @@ public class Execute {
                 .setOperation(aluOpLatch.getOutput());
         aluMux
                 .setIndexInput(aluMuxIndexLatch.getOutput())
-                .setInputs(tLatch.getOutput(), cLatch.getOutput());
+                .setInput(0, tLatch.getOutput())
+                .setInput(1, cLatch.getOutput());
     }
 
     /**

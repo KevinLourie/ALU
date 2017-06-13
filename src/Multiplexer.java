@@ -13,11 +13,12 @@ public class Multiplexer<T> {
     /** Desired input */
     private Output<T> muxOutput;
 
-    Multiplexer() {
+    Multiplexer(int size) {
         /**
          * Return desired input
          * @return desired input
          */
+        inputArray = new Output[size];
         muxOutput = () -> inputArray[index.read()].read();
     }
 
@@ -30,12 +31,8 @@ public class Multiplexer<T> {
         return this;
     }
 
-    /**
-     * Initialize multiplexer inputs
-     * @param inputs inputs to multiplexer
-     */
-    public Multiplexer<T> setInputs(Output<T>... inputs) {
-        this.inputArray = inputs;
+    public Multiplexer<T> setInput(int index, Output<T> input) {
+        inputArray[index] = input;
         return this;
     }
 

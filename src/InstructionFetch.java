@@ -23,12 +23,13 @@ public class InstructionFetch {
         instructionMemory = new InstructionMemory(arr);
         adder = new Adder();
         pc = new Register<>("InstructionFetch.pc", 0, cycler);
-        pcMux = new Multiplexer<>();
+        pcMux = new Multiplexer<>(2);
 
         // Internal wiring
         adder.init(pc.getOutput(), new ConstantOutput<Integer>(4));
         pc.setInput(pcMux.getOutput());
         instructionMemory.setAddressInput(pc.getOutput());
+        pcMux.setInput(0, adder.getOutput());
     }
 
     /**
@@ -37,7 +38,7 @@ public class InstructionFetch {
      * @return Instruction Fetch
      */
     public InstructionFetch setJumpAddressInput(Output<Integer> jumpAddressInput) {
-        pcMux.setInputs(adder.getOutput(), jumpAddressInput);
+        pcMux.setInput(1, jumpAddressInput);
         return this;
     }
 

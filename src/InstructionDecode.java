@@ -27,6 +27,12 @@ public class InstructionDecode {
      */
     private Register<Integer> nextPcLatch;
 
+    private Multiplexer<Integer> sSelectorMux;
+
+    private Multiplexer<Integer> tSelectorMux;
+
+    private WbControlUnit wbControlUnit;
+
     /**
      * Constructor
      *
@@ -34,6 +40,9 @@ public class InstructionDecode {
      */
     InstructionDecode(Cycler cycler, int[] registers) {
         adder = new Adder();
+        wbControlUnit = new WbControlUnit(cycler, "Instruction Decode");
+        sSelectorMux = new Multiplexer<>(3);
+        tSelectorMux = new Multiplexer<>(3);
         registerBank = new RegisterBank(cycler, registers);
         decoder = new Decoder();
         instructionRegister = new Register<>("InstructionDecode.instruction", 0, cycler);
@@ -51,22 +60,22 @@ public class InstructionDecode {
                 case BranchCondition.always:
                     return 1;
                 case BranchCondition.equal:
-                    if (registerBank.getSOutput().read() == registerBank.getTOutput().read()) {
+                    if (getSOutput().read() == getTOutput().read()) {
                         return 1;
                     }
                     return 0;
                 case BranchCondition.notEqual:
-                    if (registerBank.getSOutput().read() != registerBank.getTOutput().read()) {
+                    if (getSOutput().read() != getTOutput().read()) {
                         return 1;
                     }
                     return 0;
                 case BranchCondition.greaterThan:
-                    if (registerBank.getSOutput().read() > registerBank.getTOutput().read()) {
+                    if (getSOutput().read() > getTOutput().read()) {
                         return 1;
                     }
                     return 0;
                 case BranchCondition.greaterThanOrEqualTo:
-                    if (registerBank.getSOutput().read() >= registerBank.getTOutput().read()) {
+                    if (getSOutput().read() >= getTOutput().read()) {
                         return 1;
                     }
                     return 0;
@@ -75,9 +84,13 @@ public class InstructionDecode {
         };
 
         // Internal wiring
+        sSelectorMux.setInput(0, registerBank.getSOutput());
+        tSelectorMux.setInput(0, registerBank.getTOutput());
+
         adder
                 .setInput1(nextPcLatch.getOutput())
                 .setInput2(decoder.getConstantOutput());
+
         decoder.setInstructionInput(instructionRegister.getOutput());
     }
 
@@ -89,6 +102,12 @@ public class InstructionDecode {
      */
     public InstructionDecode setInstructionInput(Output<Integer> instructionInput) {
         instructionRegister.setInput(instructionInput);
+        return this;
+    }
+
+    public InstructionDecode setResultInput(Output<Integer> input) {
+        sSelectorMux.setInput(1, input);
+        tSelectorMux.setInput(1, input);
         return this;
     }
 
@@ -104,11 +123,11 @@ public class InstructionDecode {
     }
 
     public Output<Integer> getSOutput() {
-        return registerBank.getSOutput();
+        return sSelectorMux.getOutput();
     }
 
     public Output<Integer> getTOutput() {
-        return registerBank.getTOutput();
+        return tSelectorMux.getOutput();
     }
 
     public Output<Byte> getSSelectorOutput() {
@@ -159,6 +178,8 @@ public class InstructionDecode {
      */
     public InstructionDecode setWbInput(Output<Integer> wbInput) {
         registerBank.setWbInput(wbInput);
+        sSelectorMux.setInput(2, wbInput);
+        tSelectorMux.setInput(2, wbInput);
         return this;
     }
 

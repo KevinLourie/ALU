@@ -23,7 +23,7 @@ public class MemoryAccess {
      * @param arr integer array
      */
     MemoryAccess(int[] arr, Cycler cycler) {
-        wbMux = new Multiplexer<>();
+        wbMux = new Multiplexer<>(2);
         dataMemory = new DataMemory(cycler, arr);
         tLatch = new Register<>("MemoryAccess.T", 0, cycler);
         resultLatch = new Register<>("MemoryAccess.Result", 0, cycler);
@@ -33,7 +33,9 @@ public class MemoryAccess {
                 .setDataInput(tLatch.getOutput())
                 .setDataAddressInput(resultLatch.getOutput())
                 .setEnableInput(memoryWriteEnableLatch.getOutput());
-        wbMux.setInputs(dataMemory.getDataOutput(), resultLatch.getOutput());
+        wbMux
+                .setInput(0, dataMemory.getDataOutput())
+                .setInput(1, resultLatch.getOutput());
     }
 
 
