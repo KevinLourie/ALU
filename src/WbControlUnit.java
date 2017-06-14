@@ -38,12 +38,18 @@ public class WbControlUnit {
         sMuxIndexOutput = new Output<Integer>() {
             @Override
             public Integer read() {
+                if(wbEnableLatch.getOutput(0).read() == (byte)1 && sSelectorInput.read() == wbSelectorLatch.getOutput(0).read()) {
+                    return 1;
+                }
                 return 0;
             }
         };
         tMuxIndexOutput = new Output<Integer>() {
             @Override
             public Integer read() {
+                if(wbEnableLatch.getOutput(0).read() == (byte)1 && tSelectorInput.read() == wbSelectorLatch.getOutput(0).read()) {
+                    return 1;
+                }
                 return 0;
             }
         };
