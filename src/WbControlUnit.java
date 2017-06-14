@@ -18,11 +18,36 @@ public class WbControlUnit {
 
     Output<Byte> tSelectorInput;
 
-    WbControlUnit(Cycler cycler, String name) {
-        wbSelectorLatch = new ShiftRegister<>(name + ".wbSelector", 2, (byte)0, cycler);
-        wbEnableLatch = new ShiftRegister<>(name + ".wbEnable", 2, (byte)0, cycler);
-        wbMuxIndexLatch = new ShiftRegister<>(name + ".wbMuxIndex", 2, 0, cycler);
-        haltEnableLatch = new ShiftRegister<>(name + ".haltEnable", 2, (byte)0, cycler);
+    Output<Integer> sMuxIndexOutput;
+
+    Output<Integer> tMuxIndexOutput;
+
+    public Output<Integer> getsMuxIndexOutput() {
+        return sMuxIndexOutput;
+    }
+
+    public Output<Integer> gettMuxIndexOutput() {
+        return tMuxIndexOutput;
+    }
+
+    WbControlUnit(Cycler cycler) {
+        wbSelectorLatch = new ShiftRegister<>("WbControlUnit.wbSelector", 2, (byte)0, cycler);
+        wbEnableLatch = new ShiftRegister<>("WbControlUnit.wbEnable", 2, (byte)0, cycler);
+        wbMuxIndexLatch = new ShiftRegister<>("WbControlUnit.wbMuxIndex", 2, 0, cycler);
+        haltEnableLatch = new ShiftRegister<>("WbControlUnit.haltEnable", 2, (byte)0, cycler);
+        sMuxIndexOutput = new Output<Integer>() {
+            @Override
+            public Integer read() {
+                return 0;
+            }
+        };
+        tMuxIndexOutput = new Output<Integer>() {
+            @Override
+            public Integer read() {
+                return 0;
+            }
+        };
+
     }
 
     public WbControlUnit setSSelectorInput(Output<Byte> sSelectorInput) {

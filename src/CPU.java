@@ -41,7 +41,7 @@ public class CPU {
         instructionFetch = new InstructionFetch(memory, cycler);
         instructionDecode = new InstructionDecode(cycler, registers);
         memoryAccess = new MemoryAccess(memory, cycler);
-        wbControlUnit = new WbControlUnit(cycler, "wbLatches");
+        wbControlUnit = new WbControlUnit(cycler);
 
         // Internal Wiring
         wbControlUnit
@@ -59,6 +59,9 @@ public class CPU {
                 .setWBSelectorInput(wbControlUnit.getWbSelectorOutput())
                 .setWbInput(memoryAccess.getWbOutput())
                 .setWBEnableInput(wbControlUnit.getWbEnableOutput())
+                .setResultInput(execute.getResultOutput())
+                .setSMuxIndex(wbControlUnit.getsMuxIndexOutput())
+                .setTMuxIndex(wbControlUnit.gettMuxIndexOutput())
                 .setNextPcInput(instructionFetch.getNextPcOutput());
         execute
                 .setSInput(instructionDecode.getSOutput())

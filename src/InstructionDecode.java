@@ -31,8 +31,6 @@ public class InstructionDecode {
 
     private Multiplexer<Integer> tSelectorMux;
 
-    private WbControlUnit wbControlUnit;
-
     /**
      * Constructor
      *
@@ -40,7 +38,6 @@ public class InstructionDecode {
      */
     InstructionDecode(Cycler cycler, int[] registers) {
         adder = new Adder();
-        wbControlUnit = new WbControlUnit(cycler, "Instruction Decode");
         sSelectorMux = new Multiplexer<>(3);
         tSelectorMux = new Multiplexer<>(3);
         registerBank = new RegisterBank(cycler, registers);
@@ -108,6 +105,16 @@ public class InstructionDecode {
     public InstructionDecode setResultInput(Output<Integer> input) {
         sSelectorMux.setInput(1, input);
         tSelectorMux.setInput(1, input);
+        return this;
+    }
+
+    public InstructionDecode setSMuxIndex(Output<Integer> sMuxIndex) {
+        sSelectorMux.setIndexInput(sMuxIndex);
+        return this;
+    }
+
+    public InstructionDecode setTMuxIndex(Output<Integer> tMuxIndex) {
+        tSelectorMux.setIndexInput(tMuxIndex);
         return this;
     }
 
