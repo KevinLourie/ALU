@@ -14,12 +14,16 @@ public class WbControlUnit {
 
     ShiftRegister<Byte> haltEnableLatch;
 
+    /** Selector of the S register */
     Output<Byte> sSelectorInput;
 
+    /** Selector of the T register */
     Output<Byte> tSelectorInput;
 
+    /** S mux index. 0 uses the register bank, 1 uses the result from the ALU, and 2 for the write back */
     Output<Integer> sMuxIndexOutput;
 
+    /** T mux index */
     Output<Integer> tMuxIndexOutput;
 
     public Output<Integer> getsMuxIndexOutput() {
@@ -38,8 +42,11 @@ public class WbControlUnit {
         sMuxIndexOutput = new Output<Integer>() {
             @Override
             public Integer read() {
-                if(wbEnableLatch.getOutput(0).read() == (byte)1 && sSelectorInput.read() == wbSelectorLatch.getOutput(0).read()) {
+                if(wbMuxIndexLatch.getOutput(0).read() == 1 && wbEnableLatch.getOutput(0).read() == (byte)1 && sSelectorInput.read() == wbSelectorLatch.getOutput(0).read()) {
                     return 1;
+                }
+                else if(wbEnableLatch.getOutput(1).read() == (byte)1 && sSelectorInput.read() == wbSelectorLatch.getOutput(1).read()) {
+                    return 2;
                 }
                 return 0;
             }
@@ -47,8 +54,11 @@ public class WbControlUnit {
         tMuxIndexOutput = new Output<Integer>() {
             @Override
             public Integer read() {
-                if(wbEnableLatch.getOutput(0).read() == (byte)1 && tSelectorInput.read() == wbSelectorLatch.getOutput(0).read()) {
+                if(wbMuxIndexLatch.getOutput(0).read() == 1 && wbEnableLatch.getOutput(0).read() == (byte)1 && tSelectorInput.read() == wbSelectorLatch.getOutput(0).read()) {
                     return 1;
+                }
+                else if(wbEnableLatch.getOutput(1).read() == (byte)1 && sSelectorInput.read() == wbSelectorLatch.getOutput(1).read()) {
+                    return 2;
                 }
                 return 0;
             }
