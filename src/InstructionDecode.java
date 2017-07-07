@@ -202,6 +202,16 @@ public class InstructionDecode {
     }
 
     /**
+     * Setter for go
+     * @param goInput what to set go to
+     * @return Instruction Decode
+     */
+    public InstructionDecode setGoInput(Output<Byte> goInput) {
+        decoder.setGo(goInput);
+        return this;
+    }
+
+    /**
      * Getter for the next program counter. This is an input to the InstructionFetch. It is used for jumps
      *
      * @return next program counter

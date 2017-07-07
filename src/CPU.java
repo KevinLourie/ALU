@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * The CPU fetches the machine code, translates it into microcode, then executes the microinstructions
@@ -9,6 +11,8 @@ import java.io.IOException;
 public class CPU {
 
     WbControlUnit wbControlUnit;
+
+    Loader loader;
 
     private int[] registers = new int[32];
 
@@ -30,6 +34,8 @@ public class CPU {
      */
     private MemoryAccess memoryAccess;
 
+    private Coprocessor coprocessor;
+
     /**
      * Cycle all registers
      */
@@ -37,6 +43,8 @@ public class CPU {
 
     CPU() {
         cycler = new Cycler();
+        coprocessor = new Coprocessor(cycler);
+        loader = new Loader("memoryInput.txt", memory);
         execute = new Execute(cycler);
         instructionFetch = new InstructionFetch(memory, cycler);
         instructionDecode = new InstructionDecode(cycler, registers);
@@ -44,6 +52,10 @@ public class CPU {
         wbControlUnit = new WbControlUnit(cycler);
 
         // Internal Wiring
+        coprocessor
+                .setSLatchInput(instructionDecode.getSOutput())
+                .setTLatchInput(instructionDecode.getTOutput())
+                .setCoprocessorOpInput(instructionDecode.getAluOpOutput());
         wbControlUnit
                 .setWbEnableInput(instructionDecode.getWbEnableOutput())
                 .setWbSelectorInput(instructionDecode.getWbSelectorMuxOutput())
@@ -62,7 +74,9 @@ public class CPU {
                 .setResultInput(execute.getResultOutput())
                 .setSMuxIndex(wbControlUnit.getsMuxIndexOutput())
                 .setTMuxIndex(wbControlUnit.gettMuxIndexOutput())
-                .setNextPcInput(instructionFetch.getNextPcOutput());
+                .setNextPcInput(instructionFetch.getNextPcOutput())
+                // TODO: set go input properly
+                .setGoInput(new ConstantOutput<>((byte)1));
         execute
                 .setSInput(instructionDecode.getSOutput())
                 .setTInput(instructionDecode.getTOutput())
@@ -78,7 +92,8 @@ public class CPU {
     }
 
     public void test() throws IOException {
-        readFile("memoryInput.txt");
+        loader.readFile("memoryInput.txt", 1);
+        loader.readFile("memoryInput.txt", 2);
         run();
     }
 
@@ -118,45 +133,5 @@ public class CPU {
             System.out.printf("%x : %x%n", 1024 + (4*k), memory[k+256]);
         }
         System.out.printf("Completed in %d cycles%n", i);
-    }
-
-    private int[] convertToIntegerArray(String line) {
-        String[] arr = line.split(",");
-        int[] parts = new int[arr.length];
-        for (int i = 0; i < arr.length; i++) {
-            parts[i] = Integer.parseUnsignedInt(arr[i], 16);
-        }
-        return parts;
-    }
-
-    public void readFile(String path) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(path));
-        String line;
-        int length;
-        int result = 0;
-        int i = 0;
-        while ((line = bufferedReader.readLine()) != null) {
-            if (line.compareTo(".data") == 0) {
-                i = 0x100;
-                continue;
-            }
-            int[] parts = convertToIntegerArray(line);
-            length = parts.length;
-            switch (length) {
-                case 1:
-                    result = parts[0];
-                    break;
-                case 2:
-                    result = (parts[0] << 26) + parts[1];
-                    break;
-                case 4:
-                    result = (parts[0] << 26) + (parts[1] << 21) + (parts[2] << 16) + parts[3];
-                    break;
-                case 6:
-                    result = (parts[0] << 26) + (parts[1] << 21) + (parts[2] << 16) + (parts[3] << 11) + (parts[4] << 6) + parts[5];
-            }
-            memory[i] = result;
-            i++;
-        }
     }
 }

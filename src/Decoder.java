@@ -41,10 +41,10 @@ public class Decoder {
     private Output<Integer> instructionInput;
 
     /** Opcode in instruction */
-    private Output<Byte> opcodeInput;
+    private Output<Byte> opcodeOutput;
 
     /** Type of operation in instruction */
-    private Output<Byte> functInput;
+    private Output<Byte> functOutput;
 
     /** ALU operation in instruction */
     private Output<Byte> aluOpOutput;
@@ -61,25 +61,32 @@ public class Decoder {
 
     private Output<Byte> halt;
 
+    Output<Byte> go;
+
     /**
-     * Generate outputs for each of the fields in the microinstruction
+     * Generate outputs for each of the fields in the microinstruction. If go is false, instruction must be a no op
      */
     Decoder() {
         initMicrocode();
-        wbEnableOutput = () -> getMicroInstruction().isWbEnable();
-        opcodeInput = () -> (byte)(instructionInput.read() >>> 26);
+
+                // If go is false, then turn off WB enable
+        wbEnableOutput = () -> (byte)(getMicroInstruction().isWbEnable() & go.read());
+        opcodeOutput = () -> (byte)(instructionInput.read() >>> 26);
         aluMuxIndexOutput = () -> getMicroInstruction().getAluMuxIndex();
-        branchConditionOutput = () -> getMicroInstruction().getBranchCondition();
+        // If go is false, do not branch
+        branchConditionOutput = () -> (byte)(getMicroInstruction().getBranchCondition() & go.read());
         wbMuxIndexOutput = () -> getMicroInstruction().getWbMuxIndex();
-        memoryWriteEnableOutput = () -> getMicroInstruction().isMemoryWriteEnable();
+        // If go is false, do not write to memory
+        memoryWriteEnableOutput = () -> (byte)(getMicroInstruction().isMemoryWriteEnable() & go.read());
         aluOpOutput = () -> getMicroInstruction().getAluOp();
-        wbSelectorOutput = () -> opcodeInput.read() == 0 ? dSelectorOutput.read() : tSelectorOutput.read();
+        wbSelectorOutput = () -> opcodeOutput.read() == 0 ? dSelectorOutput.read() : tSelectorOutput.read();
         sSelectorOutput = () -> (byte)((instructionInput.read() >>> 21) & 0x1F);
         tSelectorOutput = () -> (byte)((instructionInput.read() >>> 16) & 0x1F);
         dSelectorOutput = () -> (byte)((instructionInput.read() >>> 11) & 0x1F);
         constantOutput = () -> (int)(short)(instructionInput.read() & 0xFFFF);
-        functInput = () -> (byte)(instructionInput.read() & 0x3F);
+        functOutput = () -> (byte)(instructionInput.read() & 0x3F);
         shamtOutput = () -> (byte)((instructionInput.read() >>> 6) & 0x1F);
+        // Don't need to stall halt because it cannot have a data hazard
         halt = () -> getMicroInstruction().isWait();
     }
 
@@ -120,6 +127,12 @@ public class Decoder {
                 .setAluOp(AluOp.Subtract)
                 .setWbMuxIndex(1)
                 .setWbEnable((byte)1);
+
+        functMicroInstructions[0x18]
+                .setAluOp(AluOp.Multiply)
+                .setWbMuxIndex(1)
+                .setWbEnable((byte)1);
+
     }
 
     /**
@@ -128,6 +141,10 @@ public class Decoder {
      */
     public void setInstructionInput(Output<Integer> instructionInput) {
         this.instructionInput = instructionInput;
+    }
+
+    public void setGo(Output<Byte> go) {
+        this.go = go;
     }
 
     /**
@@ -160,10 +177,10 @@ public class Decoder {
      * @return microinstruction
      */
     public MicroInstruction getMicroInstruction() {
-        if (opcodeInput.read() == 0) {
-            return functMicroInstructions[functInput.read()];
+        if (opcodeOutput.read() == 0) {
+            return functMicroInstructions[functOutput.read()];
         }
-        return opcodeMicroInstructions[opcodeInput.read()];
+        return opcodeMicroInstructions[opcodeOutput.read()];
     }
 
     /**
@@ -183,8 +200,8 @@ public class Decoder {
     }
 
     public void init(Output<Byte> opcodeInput, Output<Byte> functInput) {
-        this.opcodeInput = opcodeInput;
-        this.functInput = functInput;
+        this.opcodeOutput = opcodeInput;
+        this.functOutput = functInput;
     }
 
     /**

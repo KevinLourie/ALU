@@ -15,6 +15,9 @@ public class InstructionFetch {
     /** Where to get next program from */
     private Multiplexer<Integer> pcMux;
 
+    /** Controls enable input for PC */
+    Output<Byte> go;
+
     /**
      * Constructor
      * @param arr integer array
@@ -52,6 +55,19 @@ public class InstructionFetch {
         return this;
     }
 
+    /**
+     * Setter for enable input for PC
+     * @return InstructionFetch
+     */
+    public InstructionFetch setPcEnable() {
+        pc.setEnableInput(go);
+        return this;
+    }
+
+    /**
+     * Getter for instruction
+     * @return instruction
+     */
     public Output<Integer> getInstructionOutput() {
         return instructionMemory.getInstructionOutput();
     }
