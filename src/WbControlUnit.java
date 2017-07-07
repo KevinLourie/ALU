@@ -26,6 +26,8 @@ public class WbControlUnit {
     /** T mux index */
     Output<Integer> tMuxIndexOutput;
 
+    Output<Byte> goOutput;
+
     public Output<Integer> getsMuxIndexOutput() {
         return sMuxIndexOutput;
     }
@@ -63,7 +65,12 @@ public class WbControlUnit {
                 return 0;
             }
         };
-
+        goOutput = new Output<Byte>() {
+            @Override
+            public Byte read() {
+                return (byte)1;
+            }
+        };
     }
 
     public WbControlUnit setSSelectorInput(Output<Byte> sSelectorInput) {
@@ -136,6 +143,10 @@ public class WbControlUnit {
      */
     public Output<Byte> getWbEnableOutput() {
         return wbEnableLatch.getOutput(1);
+    }
+
+    public Output<Byte> getGoOutput() {
+        return goOutput;
     }
 
     /**

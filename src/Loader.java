@@ -41,12 +41,12 @@ public class Loader {
                 address = 0x400;
                 continue;
             }
-            address+=4;
             if (pass == 1) {
                 line = storeSymbol(line, pass);
             } else if (pass == 2) {
                 decodeAndStoreInstruction(line);
             }
+            address+=4;
         }
     }
 
@@ -72,9 +72,8 @@ public class Loader {
     /**
      * Return number for type of instruction
      * @param line instruction
-     * @return 2 for jump, 4 for immediate, 6 for register
      */
-    private int decodeAndStoreInstruction(String line) {
+    private void decodeAndStoreInstruction(String line) {
         int length;
         int result = 0;
         int[] parts = convertToIntegerArray(line);
@@ -93,7 +92,6 @@ public class Loader {
                 result = (parts[0] << 26) + (parts[1] << 21) + (parts[2] << 16) + (parts[3] << 11) + (parts[4] << 6) + parts[5];
         }
         memory[address/4] = result;
-        return result;
     }
 
     private int[] convertToIntegerArray(String line) {

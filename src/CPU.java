@@ -76,7 +76,7 @@ public class CPU {
                 .setTMuxIndex(wbControlUnit.gettMuxIndexOutput())
                 .setNextPcInput(instructionFetch.getNextPcOutput())
                 // TODO: set go input properly
-                .setGoInput(new ConstantOutput<>((byte)1));
+                .setGoInput(wbControlUnit.getGoOutput());
         execute
                 .setSInput(instructionDecode.getSOutput())
                 .setTInput(instructionDecode.getTOutput())
@@ -95,20 +95,6 @@ public class CPU {
         loader.readFile("memoryInput.txt", 1);
         loader.readFile("memoryInput.txt", 2);
         run();
-    }
-
-    /**
-     * Instructs the CPU. The instructions are provided by the micro instruction
-     *
-     * @param microInstruction instructions
-     */
-    public void execute(MicroInstruction microInstruction) {
-    }
-
-    public void execute(MicroInstruction[] microInstructions) {
-        for (int i = 0; i < microInstructions.length; i++) {
-            execute(microInstructions[i]);
-        }
     }
 
     /**
