@@ -16,7 +16,7 @@ public class Execute {
     private Register<Integer> tLatch;
 
     /** Holds ALU operation */
-    private Register<Byte> aluOpLatch;
+    private Register<Number8> aluOpLatch;
 
     /** Holds constant from instruction */
     private Register<Integer> cLatch;
@@ -24,7 +24,7 @@ public class Execute {
     /** Determines whether T or C is chosen */
     private Register<Integer> aluMuxIndexLatch;
 
-    private Register<Byte> memoryWriteEnableLatch;
+    private Register<Number8> memoryWriteEnableLatch;
 
     /**
      * Construct ALU, ALU multiplexer, data registers, address register, and ALU operator register
@@ -36,8 +36,8 @@ public class Execute {
         sLatch = new Register<>("Execute.s", 0, cycler);
         tLatch = new Register<>("Execute.t", 0, cycler);
         cLatch = new Register<>("Execute.c", 0, cycler);
-        memoryWriteEnableLatch = new Register<>("Execute.memoryWriteEnable", (byte)1, cycler);
-        aluOpLatch = new Register<>("Execute.aluOp", AluOp.Add, cycler);
+        memoryWriteEnableLatch = new Register<>("Execute.memoryWriteEnable", new Number8(1, "Constant"), cycler);
+        aluOpLatch = new Register<>("Execute.aluOp", new Number8(AluOp.Add, "Constant"), cycler);
 
         // Internal wire
         alu
@@ -92,7 +92,7 @@ public class Execute {
      * @param aluOpInput input to aluOpLatch
      * @return Execute
      */
-    public Execute setAluOpInput(Output<Byte> aluOpInput) {
+    public Execute setAluOpInput(Output<Number8> aluOpInput) {
         aluOpLatch.setInput(aluOpInput);
         return this;
     }
@@ -107,7 +107,7 @@ public class Execute {
         return this;
     }
 
-    public Execute setMemoryWriteEnableInput(Output<Byte> memoryWriteEnableInput) {
+    public Execute setMemoryWriteEnableInput(Output<Number8> memoryWriteEnableInput) {
         memoryWriteEnableLatch.setInput(memoryWriteEnableInput);
         return this;
     }
@@ -116,7 +116,7 @@ public class Execute {
         return tLatch.getOutput();
     }
 
-    public Output<Byte> getMemoryWriteEnableOutput() {
+    public Output<Number8> getMemoryWriteEnableOutput() {
         return memoryWriteEnableLatch.getOutput();
     }
 }

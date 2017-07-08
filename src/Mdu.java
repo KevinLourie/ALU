@@ -14,7 +14,7 @@ public class Mdu {
     private Output<Long> output;
 
     /** MDU control */
-    private Output<Byte> mduOp;
+    private Output<Number8> mduOp;
 
     Mdu() {
         output = new Output<Long>() {
@@ -27,7 +27,7 @@ public class Mdu {
                 int s = input0.read();
                 int t = input1.read();
                 long d = 0;
-                switch (mduOp.read()) {
+                switch (mduOp.read().byteValue()) {
                     case AluOp.Multiply:
                         d = s * t;
                         break;

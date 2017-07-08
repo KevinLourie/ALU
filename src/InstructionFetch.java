@@ -16,7 +16,7 @@ public class InstructionFetch {
     private Multiplexer<Integer> pcMux;
 
     /** Controls enable input for PC */
-    Output<Byte> go;
+    Output<Number8> go;
 
     /**
      * Constructor

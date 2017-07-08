@@ -20,7 +20,7 @@ public class ShiftRegister<T extends Number> implements ICycle {
     private Output<T> input;
 
     /** Controls whehter data is written to register */
-    private Output<Byte> enableInput;
+    private Output<Number8> enableInput;
 
     /** Temporary enable */
     private boolean tempEnable;
@@ -36,12 +36,12 @@ public class ShiftRegister<T extends Number> implements ICycle {
         for(int i = 0; i < size; i++) {
             final int j = i;
             output[i] = () -> {
-                System.out.printf("%s #%x -> ", name, data[j]);
+                System.out.printf("%s %s -> ", name, data[j]);
                 return data[j];
             };
         }
         cycler.add(this);
-        this.enableInput = new ConstantOutput<>((byte)1);
+        this.enableInput = new ConstantOutput<>(new Number8(1, "Constant"));
     }
 
     /**
@@ -49,7 +49,7 @@ public class ShiftRegister<T extends Number> implements ICycle {
      * @param enableInput enable input
      * @return register
      */
-    public ShiftRegister<T> setEnableInput(Output<Byte> enableInput) {
+    public ShiftRegister<T> setEnableInput(Output<Number8> enableInput) {
         this.enableInput = enableInput;
         return this;
     }
@@ -76,15 +76,16 @@ public class ShiftRegister<T extends Number> implements ICycle {
 
     @Override
     public void sense() {
-        tempEnable = enableInput.read() != 0;
+        Number8 enableN = enableInput.read();
+        tempEnable = enableN.byteValue() != 0;
         if (tempEnable) {
             tempData[0] = input.read();
-            System.out.printf(" %s #%x", name, tempData[0]);
+            System.out.printf(" %s %s", name, tempData[0]);
             for(int i = 1; i < data.length; i++) {
                 tempData[i] = data[i-1];
-                System.out.printf(" #%x", tempData[i]);
+                System.out.printf(" %s", tempData[i]);
             }
-            System.out.printf(" from %s", input);
+            System.out.printf(" enable=%s%n", enableN);
         } else {
             tempData = null;
         }

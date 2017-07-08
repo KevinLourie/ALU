@@ -4,21 +4,21 @@
 public class WbControlUnit {
 
     /** Latch for WB Selector */
-    ShiftRegister<Byte> wbSelectorLatch;
+    ShiftRegister<Number8> wbSelectorLatch;
 
     /** Latch for WB enable */
-    ShiftRegister<Byte> wbEnableLatch;
+    ShiftRegister<Number8> wbEnableLatch;
 
     /** Latch for WB mux index */
     ShiftRegister<Integer> wbMuxIndexLatch;
 
-    ShiftRegister<Byte> haltEnableLatch;
+    ShiftRegister<Number8> haltEnableLatch;
 
     /** Selector of the S register */
-    Output<Byte> sSelectorInput;
+    Output<Number8> sSelectorInput;
 
     /** Selector of the T register */
-    Output<Byte> tSelectorInput;
+    Output<Number8> tSelectorInput;
 
     /** S mux index. 0 uses the register bank, 1 uses the result from the ALU, and 2 for the write back */
     Output<Integer> sMuxIndexOutput;
@@ -26,7 +26,7 @@ public class WbControlUnit {
     /** T mux index */
     Output<Integer> tMuxIndexOutput;
 
-    Output<Byte> goOutput;
+    Output<Number8> goOutput;
 
     public Output<Integer> getsMuxIndexOutput() {
         return sMuxIndexOutput;
@@ -37,17 +37,17 @@ public class WbControlUnit {
     }
 
     WbControlUnit(Cycler cycler) {
-        wbSelectorLatch = new ShiftRegister<>("WbControlUnit.wbSelector", 2, (byte)0, cycler);
-        wbEnableLatch = new ShiftRegister<>("WbControlUnit.wbEnable", 2, (byte)0, cycler);
+        wbSelectorLatch = new ShiftRegister<>("WbControlUnit.wbSelector", 2, new Number8(0, "Constant"), cycler);
+        wbEnableLatch = new ShiftRegister<>("WbControlUnit.wbEnable", 2, new Number8(0, "Constant"), cycler);
         wbMuxIndexLatch = new ShiftRegister<>("WbControlUnit.wbMuxIndex", 2, 0, cycler);
-        haltEnableLatch = new ShiftRegister<>("WbControlUnit.haltEnable", 2, (byte)0, cycler);
+        haltEnableLatch = new ShiftRegister<>("WbControlUnit.haltEnable", 2, new Number8(0, "Constant"), cycler);
         sMuxIndexOutput = new Output<Integer>() {
             @Override
             public Integer read() {
-                if(wbMuxIndexLatch.getOutput(0).read() == 1 && wbEnableLatch.getOutput(0).read() == (byte)1 && sSelectorInput.read() == wbSelectorLatch.getOutput(0).read()) {
+                if(wbMuxIndexLatch.getOutput(0).read() == 1 && wbEnableLatch.getOutput(0).read().byteValue() == (byte)1 && sSelectorInput.read() == wbSelectorLatch.getOutput(0).read()) {
                     return 1;
                 }
-                else if(wbEnableLatch.getOutput(1).read() == (byte)1 && sSelectorInput.read() == wbSelectorLatch.getOutput(1).read()) {
+                else if(wbEnableLatch.getOutput(1).read().byteValue() == (byte)1 && sSelectorInput.read() == wbSelectorLatch.getOutput(1).read()) {
                     return 2;
                 }
                 return 0;
@@ -56,38 +56,38 @@ public class WbControlUnit {
         tMuxIndexOutput = new Output<Integer>() {
             @Override
             public Integer read() {
-                if(wbMuxIndexLatch.getOutput(0).read() == 1 && wbEnableLatch.getOutput(0).read() == (byte)1 && tSelectorInput.read() == wbSelectorLatch.getOutput(0).read()) {
+                if(wbMuxIndexLatch.getOutput(0).read() == 1 && wbEnableLatch.getOutput(0).read().byteValue() == (byte)1 && tSelectorInput.read() == wbSelectorLatch.getOutput(0).read()) {
                     return 1;
                 }
-                else if(wbEnableLatch.getOutput(1).read() == (byte)1 && sSelectorInput.read() == wbSelectorLatch.getOutput(1).read()) {
+                else if(wbEnableLatch.getOutput(1).read().byteValue() == (byte)1 && sSelectorInput.read() == wbSelectorLatch.getOutput(1).read()) {
                     return 2;
                 }
                 return 0;
             }
         };
-        goOutput = new Output<Byte>() {
+        goOutput = new Output<Number8>() {
             @Override
-            public Byte read() {
-                return (byte)1;
+            public Number8 read() {
+                return new Number8(1, "Constant");
             }
         };
     }
 
-    public WbControlUnit setSSelectorInput(Output<Byte> sSelectorInput) {
+    public WbControlUnit setSSelectorInput(Output<Number8> sSelectorInput) {
         this.sSelectorInput = sSelectorInput;
         return this;
     }
 
-    public WbControlUnit setTSelectorInput(Output<Byte> tSelectorInput) {
+    public WbControlUnit setTSelectorInput(Output<Number8> tSelectorInput) {
         this.tSelectorInput = tSelectorInput;
         return this;
     }
 
-    public Output<Byte> getHaltEnableLatch() {
+    public Output<Number8> getHaltEnableLatch() {
         return haltEnableLatch.getOutput(1);
     }
 
-    public void setHaltEnableLatch(Output<Byte> haltEnableInput) {
+    public void setHaltEnableLatch(Output<Number8> haltEnableInput) {
         haltEnableLatch.setInput(haltEnableInput);
     }
 
@@ -96,7 +96,7 @@ public class WbControlUnit {
      * @param wbEnableInput wb enable latch input
      * @return WbLatches
      */
-    public WbControlUnit setWbEnableInput(Output<Byte> wbEnableInput) {
+    public WbControlUnit setWbEnableInput(Output<Number8> wbEnableInput) {
         wbEnableLatch.setInput(wbEnableInput);
         return this;
     }
@@ -106,7 +106,7 @@ public class WbControlUnit {
      * @param wbSelectorInput wb selector latch input
      * @return WbLatches
      */
-    public WbControlUnit setWbSelectorInput(Output<Byte> wbSelectorInput) {
+    public WbControlUnit setWbSelectorInput(Output<Number8> wbSelectorInput) {
         wbSelectorLatch.setInput(wbSelectorInput);
         return this;
     }
@@ -133,7 +133,7 @@ public class WbControlUnit {
      * Getter for wb selector output
      * @return wb selector output
      */
-    public Output<Byte> getWbSelectorOutput() {
+    public Output<Number8> getWbSelectorOutput() {
         return wbSelectorLatch.getOutput(1);
     }
 
@@ -141,11 +141,11 @@ public class WbControlUnit {
      * Getter for wb enable output
      * @return wb enable output
      */
-    public Output<Byte> getWbEnableOutput() {
+    public Output<Number8> getWbEnableOutput() {
         return wbEnableLatch.getOutput(1);
     }
 
-    public Output<Byte> getGoOutput() {
+    public Output<Number8> getGoOutput() {
         return goOutput;
     }
 

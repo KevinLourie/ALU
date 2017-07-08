@@ -9,7 +9,7 @@ public class Coprocessor {
 
     ShiftRegister<Long> hilo;
 
-    Register<Byte> coprocessorOpLatch;
+    Register<Number8> coprocessorOpLatch;
 
     Register<Integer> sLatch;
 
@@ -27,7 +27,7 @@ public class Coprocessor {
         mdu = new Mdu();
         sLatch = new Register<>("SLatch", 0, cycler);
         tLatch = new Register<>("SLatch", 0, cycler);
-        coprocessorOpLatch = new Register<>("Coprocessor Op", (byte)0, cycler);
+        coprocessorOpLatch = new Register<>("Coprocessor Op", new Number8(0, "Constant"), cycler);
         hilo = new ShiftRegister<>("HiLo", 2, (long)0, cycler);
 
         // Internal wiring
@@ -42,12 +42,12 @@ public class Coprocessor {
      * @param enableInput enable input for hilo register
      * @return coprocessor
      */
-    public Coprocessor setEnableInput(Output<Byte> enableInput) {
+    public Coprocessor setEnableInput(Output<Number8> enableInput) {
         hilo.setEnableInput(enableInput);
         return this;
     }
 
-    public Coprocessor setCoprocessorOpInput(Output<Byte> coprocessorOpInput) {
+    public Coprocessor setCoprocessorOpInput(Output<Number8> coprocessorOpInput) {
         coprocessorOpLatch.setInput(coprocessorOpInput);
         return this;
     }

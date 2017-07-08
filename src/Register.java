@@ -20,7 +20,7 @@ public class Register<T extends Number> implements ICycle {
     private Output<T> input;
 
     /** Controls whehter data is written to register */
-    private Output<Byte> enableInput;
+    private Output<Number8> enableInput;
 
     /** Temporary enable */
     private boolean tempEnable;
@@ -29,11 +29,11 @@ public class Register<T extends Number> implements ICycle {
         this.name = name;
         data = initial;
         output = () -> {
-            System.out.printf("%s #%x -> ", name, data);
+            System.out.printf("%s %s -> ", name, data);
             return data;
         };
         cycler.add(this);
-        this.enableInput = new ConstantOutput((byte)1);
+        this.enableInput = new ConstantOutput(new Number8(1, "Constant"));
     }
 
     /**
@@ -41,7 +41,7 @@ public class Register<T extends Number> implements ICycle {
      * @param enableInput enable input
      * @return register
      */
-    public Register<T> setEnableInput(Output<Byte> enableInput) {
+    public Register<T> setEnableInput(Output<Number8> enableInput) {
         this.enableInput = enableInput;
         return this;
     }
@@ -68,13 +68,16 @@ public class Register<T extends Number> implements ICycle {
 
     @Override
     public void sense() {
-        tempEnable = enableInput.read() != 0;
+        Number8 enableN = enableInput.read();
+        tempEnable = enableN.byteValue() != 0;
+        System.out.print(name);
         if (tempEnable) {
             tempData = input.read();
-            System.out.printf("%s #%x from %s%n", name, tempData, input);
+            System.out.printf(" %s", tempData);
         } else {
             tempData = null;
         }
+        System.out.printf(" enable=%s%n", enableN);
     }
 
     /**

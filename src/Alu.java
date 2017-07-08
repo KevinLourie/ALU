@@ -14,7 +14,7 @@ public class Alu {
     private Output<Integer> output;
 
     /** ALU control */
-    private Output<Byte> aluOp;
+    private Output<Number8> aluOp;
 
     Alu() {
         output = new Output<Integer>() {
@@ -24,10 +24,13 @@ public class Alu {
              */
             @Override
             public Integer read() {
+                // Number32 s32 = input0.read();
+                // int s = s32;
+
                 int s = input0.read();
                 int t = input1.read();
                 int d = 0;
-                switch (aluOp.read()) {
+                switch (aluOp.read().intValue()) {
                     case AluOp.Add:
                         d = s + t;
                         break;
@@ -44,6 +47,7 @@ public class Alu {
                         // TODO: Fix by using shamt
                         d = t;
                 }
+                // return new Number32(d, String.format("%d=Alu(%s, %s)", d, s32, t32));
                 return d;
             }
         };

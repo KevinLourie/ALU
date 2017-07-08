@@ -5,16 +5,16 @@
 public class Decoder {
 
     /** Contains the microinstruction to be executed */
-    private Output<Byte> wbEnableOutput;
+    private Output<Number8> wbEnableOutput;
 
     /** Contains the S register number */
-    private Output<Byte> sSelectorOutput;
+    private Output<Number8> sSelectorOutput;
 
     /** Contains the T register number*/
-    private Output<Byte> tSelectorOutput;
+    private Output<Number8> tSelectorOutput;
 
     /** Contains the D register number */
-    private Output<Byte> dSelectorOutput;
+    private Output<Number8> dSelectorOutput;
 
     /** Contains the constant */
     private Output<Integer> constantOutput;
@@ -23,13 +23,13 @@ public class Decoder {
     private Output<Integer> aluMuxIndexOutput;
 
     /** Index of PC mux */
-    private Output<Byte> branchConditionOutput;
+    private Output<Number8> branchConditionOutput;
 
     /** Index of write back mux */
     private Output<Integer> wbMuxIndexOutput;
 
     /** True if data will be written to memory */
-    private Output<Byte> memoryWriteEnableOutput;
+    private Output<Number8> memoryWriteEnableOutput;
 
     /** List of opcode microinstructions */
     private MicroInstruction[] opcodeMicroInstructions = new MicroInstruction[64];
@@ -41,27 +41,27 @@ public class Decoder {
     private Output<Integer> instructionInput;
 
     /** Opcode in instruction */
-    private Output<Byte> opcodeOutput;
+    private Output<Number8> opcodeOutput;
 
     /** Type of operation in instruction */
-    private Output<Byte> functOutput;
+    private Output<Number8> functOutput;
 
     /** ALU operation in instruction */
-    private Output<Byte> aluOpOutput;
+    private Output<Number8> aluOpOutput;
 
     /** Index of write back selector */
-    private Output<Byte> wbSelectorOutput;
+    private Output<Number8> wbSelectorOutput;
 
     /** Shift amount output */
-    private Output<Byte> shamtOutput;
+    private Output<Number8> shamtOutput;
 
-    public Output<Byte> getHalt() {
+    public Output<Number8> getHalt() {
         return halt;
     }
 
-    private Output<Byte> halt;
+    private Output<Number8> halt;
 
-    Output<Byte> go;
+    Output<Number8> go;
 
     /**
      * Generate outputs for each of the fields in the microinstruction. If go is false, instruction must be a no op
@@ -70,24 +70,25 @@ public class Decoder {
         initMicrocode();
 
                 // If go is false, then turn off WB enable
-        wbEnableOutput = () -> (byte)(getMicroInstruction().isWbEnable() & go.read());
-        opcodeOutput = () -> (byte)(instructionInput.read() >>> 26);
+        wbEnableOutput = () -> new Number8(getMicroInstruction().isWbEnable() & go.read().byteValue(), "wbEnable");
+        opcodeOutput = () -> new Number8(instructionInput.read() >>> 26, "opcode");
         aluMuxIndexOutput = () -> getMicroInstruction().getAluMuxIndex();
         // If go is false, do not branch
-        branchConditionOutput = () -> (byte)(getMicroInstruction().getBranchCondition() & go.read());
+        branchConditionOutput = () -> new Number8(getMicroInstruction().getBranchCondition() & go.read().byteValue(),
+                "branchCondition");
         wbMuxIndexOutput = () -> getMicroInstruction().getWbMuxIndex();
         // If go is false, do not write to memory
-        memoryWriteEnableOutput = () -> (byte)(getMicroInstruction().isMemoryWriteEnable() & go.read());
-        aluOpOutput = () -> getMicroInstruction().getAluOp();
-        wbSelectorOutput = () -> opcodeOutput.read() == 0 ? dSelectorOutput.read() : tSelectorOutput.read();
-        sSelectorOutput = () -> (byte)((instructionInput.read() >>> 21) & 0x1F);
-        tSelectorOutput = () -> (byte)((instructionInput.read() >>> 16) & 0x1F);
-        dSelectorOutput = () -> (byte)((instructionInput.read() >>> 11) & 0x1F);
+        memoryWriteEnableOutput = () -> new Number8(getMicroInstruction().isMemoryWriteEnable() & go.read().byteValue(), "memoryWriteEnable");
+        aluOpOutput = () -> new Number8(getMicroInstruction().getAluOp(), "aluOp");
+        wbSelectorOutput = () -> opcodeOutput.read().byteValue() == 0 ? dSelectorOutput.read() : tSelectorOutput.read();
+        sSelectorOutput = () -> new Number8((instructionInput.read() >>> 21) & 0x1F, "sSelector");
+        tSelectorOutput = () -> new Number8((instructionInput.read() >>> 16) & 0x1F, "tSelector");
+        dSelectorOutput = () -> new Number8((instructionInput.read() >>> 11) & 0x1F, "dSelector");
         constantOutput = () -> (int)(short)(instructionInput.read() & 0xFFFF);
-        functOutput = () -> (byte)(instructionInput.read() & 0x3F);
-        shamtOutput = () -> (byte)((instructionInput.read() >>> 6) & 0x1F);
+        functOutput = () -> new Number8(instructionInput.read() & 0x3F, "funct");
+        shamtOutput = () -> new Number8((instructionInput.read() >>> 6) & 0x1F, "shamt");
         // Don't need to stall halt because it cannot have a data hazard
-        halt = () -> getMicroInstruction().isWait();
+        halt = () -> new Number8(getMicroInstruction().isWait(), "halt");
     }
 
     private void initMicrocode() {
@@ -143,7 +144,7 @@ public class Decoder {
         this.instructionInput = instructionInput;
     }
 
-    public void setGo(Output<Byte> go) {
+    public void setGo(Output<Number8> go) {
         this.go = go;
     }
 
@@ -151,7 +152,7 @@ public class Decoder {
      * Getter for s output
      * @return s output
      */
-    public Output<Byte> getSSelectorOutput() {
+    public Output<Number8> getSSelectorOutput() {
         return sSelectorOutput;
     }
 
@@ -159,7 +160,7 @@ public class Decoder {
      * Getter for t output
      * @return t output
      */
-    public Output<Byte> getTSelectorOutput() {
+    public Output<Number8> getTSelectorOutput() {
         return tSelectorOutput;
     }
 
@@ -177,17 +178,17 @@ public class Decoder {
      * @return microinstruction
      */
     public MicroInstruction getMicroInstruction() {
-        if (opcodeOutput.read() == 0) {
-            return functMicroInstructions[functOutput.read()];
+        if (opcodeOutput.read().byteValue() == 0) {
+            return functMicroInstructions[functOutput.read().intValue()];
         }
-        return opcodeMicroInstructions[opcodeOutput.read()];
+        return opcodeMicroInstructions[opcodeOutput.read().intValue()];
     }
 
     /**
      * Getter for memory write enable
      * @return memory write enable
      */
-    public Output<Byte> getMemoryWriteEnableOutput() {
+    public Output<Number8> getMemoryWriteEnableOutput() {
         return memoryWriteEnableOutput;
     }
 
@@ -195,11 +196,11 @@ public class Decoder {
      * Getter for ALU operation
      * @return ALU operation
      */
-    public Output<Byte> getAluOpOutput() {
+    public Output<Number8> getAluOpOutput() {
         return aluOpOutput;
     }
 
-    public void init(Output<Byte> opcodeInput, Output<Byte> functInput) {
+    public void init(Output<Number8> opcodeInput, Output<Number8> functInput) {
         this.opcodeOutput = opcodeInput;
         this.functOutput = functInput;
     }
@@ -208,7 +209,7 @@ public class Decoder {
      * Getter for write back enable
      * @return write back enable
      */
-    public Output<Byte> getWbEnableOutput() {
+    public Output<Number8> getWbEnableOutput() {
         return wbEnableOutput;
     }
 
@@ -224,7 +225,7 @@ public class Decoder {
      * Getter for pc mux index output
      * @return pc mux index output
      */
-    public Output<Byte> getBranchConditionOutput() {
+    public Output<Number8> getBranchConditionOutput() {
         return branchConditionOutput;
     }
 
@@ -240,7 +241,7 @@ public class Decoder {
      * Getter for wb selector mux index
      * @return wb selector mux index
      */
-    public Output<Byte> getWbSelectorOutput() {
+    public Output<Number8> getWbSelectorOutput() {
         return wbSelectorOutput;
     }
 }

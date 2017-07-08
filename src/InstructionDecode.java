@@ -51,7 +51,7 @@ public class InstructionDecode {
         // Determine if jump is enabled
         jumpEnable = () -> {
             // Check if jump is enabled
-            switch (decoder.getBranchConditionOutput().read()) {
+            switch (decoder.getBranchConditionOutput().read().byteValue()) {
                 case BranchCondition.never:
                     return 0;
                 case BranchCondition.always:
@@ -137,11 +137,11 @@ public class InstructionDecode {
         return tSelectorMux.getOutput();
     }
 
-    public Output<Byte> getSSelectorOutput() {
+    public Output<Number8> getSSelectorOutput() {
         return decoder.getSSelectorOutput();
     }
 
-    public Output<Byte> getTSelectorOutput() {
+    public Output<Number8> getTSelectorOutput() {
         return decoder.getTSelectorOutput();
     }
 
@@ -153,11 +153,11 @@ public class InstructionDecode {
         return decoder.getAluMuxIndexOutput();
     }
 
-    public Output<Byte> getAluOpOutput() {
+    public Output<Number8> getAluOpOutput() {
         return decoder.getAluOpOutput();
     }
 
-    public Output<Byte> getMemoryWriteEnableOutput() {
+    public Output<Number8> getMemoryWriteEnableOutput() {
         return decoder.getMemoryWriteEnableOutput();
     }
 
@@ -165,15 +165,15 @@ public class InstructionDecode {
         return decoder.getWbMuxIndexOutput();
     }
 
-    public Output<Byte> getWbSelectorMuxOutput() {
+    public Output<Number8> getWbSelectorMuxOutput() {
         return decoder.getWbSelectorOutput();
     }
 
-    public Output<Byte> getWbEnableOutput() {
+    public Output<Number8> getWbEnableOutput() {
         return decoder.getWbEnableOutput();
     }
 
-    public Output<Byte> getHaltOutput() {
+    public Output<Number8> getHaltOutput() {
         return decoder.getHalt();
     }
 
@@ -196,7 +196,7 @@ public class InstructionDecode {
      * @param wbSelectorInput what to set WB selector input to
      * @return Instruction Decode
      */
-    public InstructionDecode setWBSelectorInput(Output<Byte> wbSelectorInput) {
+    public InstructionDecode setWBSelectorInput(Output<Number8> wbSelectorInput) {
         registerBank.setWbSelectorInput(wbSelectorInput);
         return this;
     }
@@ -206,7 +206,7 @@ public class InstructionDecode {
      * @param goInput what to set go to
      * @return Instruction Decode
      */
-    public InstructionDecode setGoInput(Output<Byte> goInput) {
+    public InstructionDecode setGoInput(Output<Number8> goInput) {
         decoder.setGo(goInput);
         return this;
     }
@@ -235,7 +235,7 @@ public class InstructionDecode {
      * @param wbEnableInput what to set WB enable input to
      * @return Instruction Decode
      */
-    public InstructionDecode setWBEnableInput(Output<Byte> wbEnableInput) {
+    public InstructionDecode setWBEnableInput(Output<Number8> wbEnableInput) {
         registerBank.setWbEnableInput(wbEnableInput);
         return this;
     }

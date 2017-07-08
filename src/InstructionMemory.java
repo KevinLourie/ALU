@@ -15,7 +15,7 @@ public class InstructionMemory {
     /** Instruction in memory */
     private Output<Integer> instructionOutput;
 
-    /* Byte array */
+    /* Number8 array */
     private int[] arr;
 
     /** Address of instruction */
