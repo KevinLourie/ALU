@@ -5,32 +5,35 @@
 public class Alu {
 
     /** First number */
-    private Output<Integer> input0;
+    private Output<Number32> input0;
 
     /** Second number */
-    private Output<Integer> input1;
+    private Output<Number32> input1;
 
     /** Result number */
-    private Output<Integer> output;
+    private Output<Number32> output;
 
     /** ALU control */
     private Output<Number8> aluOp;
 
     Alu() {
-        output = new Output<Integer>() {
+        output = new Output<Number32>() {
             /**
              * Read 2 numbers. Perform operation specified by the aluOp field.
              * @return output
              */
             @Override
-            public Integer read() {
+            public Number32 read() {
                 // Number32 s32 = input0.read();
                 // int s = s32;
 
-                int s = input0.read();
-                int t = input1.read();
+                Number32 sN = input0.read();
+                int s = sN.intValue();
+                Number32 tN = input1.read();
+                int t = tN.intValue();
                 int d = 0;
-                switch (aluOp.read().intValue()) {
+                Number8 opN = aluOp.read();
+                switch (opN.intValue()) {
                     case AluOp.Add:
                         d = s + t;
                         break;
@@ -48,7 +51,7 @@ public class Alu {
                         d = t;
                 }
                 // return new Number32(d, String.format("%d=Alu(%s, %s)", d, s32, t32));
-                return d;
+                return new Number32(d, String.format("Alu(%s, %s, %s)", sN, tN, opN));
             }
         };
     }
@@ -83,7 +86,7 @@ public class Alu {
         return this;
     }
 
-    public Output<Integer> getOutput() {
+    public Output<Number32> getOutput() {
         return output;
     }
 }

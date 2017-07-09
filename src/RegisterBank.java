@@ -17,25 +17,25 @@ public class RegisterBank implements ICycle {
     private Output<Number8> tSelectorInput;
 
     /** Write back register input */
-    private Output<Integer> wbInput;
+    private Output<Number32> wbInput;
 
     /** S register output */
-    private Output<Integer> sOutput;
+    private Output<Number32> sOutput;
 
     /** T register output */
-    private Output<Integer> tOutput;
+    private Output<Number32> tOutput;
 
     /** Temporary write back data */
-    private int tempWb;
+    private Number32 tempWb;
 
     /** Temporary selector of write back register */
-    private byte tempWbSelector;
+    private Number8 tempWbSelector;
 
     /** Controls whether register bank is written to */
     private Output<Number8> wbEnableInput;
 
     /** Temporary enable */
-    private boolean tempWbEnable;
+    private Number8 tempWbEnable;
 
     RegisterBank(Cycler cycler, int[] registers) {
         this.registers = registers;
@@ -43,15 +43,13 @@ public class RegisterBank implements ICycle {
             // Fetch S register
             Number8 address = sSelectorInput.read();
             int data = registers[address.byteValue()];
-            System.out.printf("%x=S(%s) -> ", data, address);
-            return data;
+            return new Number32(data, String.format("S(%s)", address));
         };
         tOutput = () -> {
             // Fetch T register
             Number8 address = tSelectorInput.read();
             int data = registers[address.byteValue()];
-            System.out.printf("%x=T(%s) -> ", data, address);
-            return data;
+            return new Number32(data, String.format("T(%s)", address));
         };
         cycler.add(this);
     }
@@ -91,7 +89,7 @@ public class RegisterBank implements ICycle {
      * @param wbInput input to register
      * @return register bank
      */
-    public RegisterBank setWbInput(Output<Integer> wbInput) {
+    public RegisterBank setWbInput(Output<Number32> wbInput) {
         this.wbInput = wbInput;
         return this;
     }
@@ -111,32 +109,31 @@ public class RegisterBank implements ICycle {
      */
     @Override
     public void cycle() {
-        if(tempWbEnable) {
-            registers[tempWbSelector] = tempWb;
+        if(tempWbEnable.booleanValue()) {
+            registers[tempWbSelector.intValue()] = tempWb.intValue();
         }
     }
 
     @Override
     public void sense() {
-        Number8 enableN = wbEnableInput.read();
-        tempWbEnable = enableN.byteValue() != 0;
+        tempWbEnable = wbEnableInput.read();
         System.out.print("WB");
-        if (tempWbEnable) {
+        if (tempWbEnable.booleanValue()) {
             tempWb = wbInput.read();
-            tempWbSelector = wbSelectorInput.read().byteValue();
-            System.out.printf("(%d) #%x", tempWbSelector, tempWb);
+            tempWbSelector = wbSelectorInput.read();
+            System.out.printf("(%s) <- %s", tempWbSelector, tempWb);
         } else {
-            tempWb = 0;
-            tempWbSelector = -1;
+            tempWb = null;
+            tempWbSelector = null;
         }
-        System.out.printf(" enable=%s%n", enableN);
+        System.out.printf(" enable(%s)%n", tempWbEnable);
     }
 
     /**
      * Getter for sOutput
      * @return sOutput
      */
-    public Output<Integer> getSOutput() {
+    public Output<Number32> getSOutput() {
         return sOutput;
     }
 
@@ -144,7 +141,7 @@ public class RegisterBank implements ICycle {
      * Getter for tOutput
      * @return tOutput
      */
-    public Output<Integer> getTOutput() {
+    public Output<Number32> getTOutput() {
         return tOutput;
     }
 }

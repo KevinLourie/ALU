@@ -6,7 +6,7 @@ public class InstructionDecode {
     /**
      * Determine if branch condition is true by comparing data in S and T
      */
-    Output<Integer> jumpEnable;
+    Output<Number8> jumpEnable;
 
     /**
      * Register bank
@@ -20,16 +20,16 @@ public class InstructionDecode {
     /**
      * Holds instruction
      */
-    private Register<Integer> instructionRegister;
+    private Register<Number32> instructionRegister;
 
     /**
      * Location of next instruction
      */
-    private Register<Integer> nextPcLatch;
+    private Register<Number32> nextPcLatch;
 
-    private Multiplexer<Integer> sSelectorMux;
+    private Multiplexer<Number32> sSelectorMux;
 
-    private Multiplexer<Integer> tSelectorMux;
+    private Multiplexer<Number32> tSelectorMux;
 
     /**
      * Constructor
@@ -42,42 +42,53 @@ public class InstructionDecode {
         tSelectorMux = new Multiplexer<>(3);
         registerBank = new RegisterBank(cycler, registers);
         decoder = new Decoder();
-        instructionRegister = new Register<>("InstructionDecode.instruction", 0, cycler);
+        instructionRegister = new Register<>("InstructionDecode.instruction", Number32.zero, cycler);
         registerBank
                 .setSSelectorInput(decoder.getSSelectorOutput())
                 .setTSelectorInput(decoder.getTSelectorOutput());
-        nextPcLatch = new Register<>("InstructionDecode.nextPcLatch", 0, cycler);
+        nextPcLatch = new Register<>("InstructionDecode.nextPcLatch", Number32.zero, cycler);
 
         // Determine if jump is enabled
         jumpEnable = () -> {
             // Check if jump is enabled
-            switch (decoder.getBranchConditionOutput().read().byteValue()) {
+            Number8 branchCondition = decoder.getBranchConditionOutput().read();
+            Number32 s = getSOutput().read();
+            Number32 t = getTOutput().read();
+            String srcFixed = String.format("JumpEnable(%s)", branchCondition);
+            String src = String.format("JumpEnable(%s, %s, %s)", branchCondition, s, t);
+            byte branch = 0;
+            switch (branchCondition.byteValue()) {
                 case BranchCondition.never:
-                    return 0;
+                    src = srcFixed;
+                    break;
                 case BranchCondition.always:
-                    return 1;
+                    src = srcFixed;
+                    branch = 1;
+                    break;
                 case BranchCondition.equal:
-                    if (getSOutput().read() == getTOutput().read()) {
-                        return 1;
+                    if (s.intValue() == t.intValue()) {
+                        branch = 1;
                     }
-                    return 0;
+                    break;
                 case BranchCondition.notEqual:
-                    if (getSOutput().read() != getTOutput().read()) {
-                        return 1;
+                    if (s.intValue() != t.intValue()) {
+                        branch = 1;
                     }
-                    return 0;
+                    break;
                 case BranchCondition.greaterThan:
-                    if (getSOutput().read() > getTOutput().read()) {
-                        return 1;
+                    if (s.intValue() > t.intValue()) {
+                        branch = 1;
                     }
-                    return 0;
+                    break;
                 case BranchCondition.greaterThanOrEqualTo:
-                    if (getSOutput().read() >= getTOutput().read()) {
-                        return 1;
+                    if (s.intValue() >= t.intValue()) {
+                        branch = 1;
                     }
-                    return 0;
+                    break;
+                default:
+                    throw new RuntimeException("Bad branch condition");
             }
-            return 0;
+            return new Number8(branch, src);
         };
 
         // Internal wiring
@@ -86,7 +97,7 @@ public class InstructionDecode {
 
         adder
                 .setInput1(nextPcLatch.getOutput())
-                .setInput2(decoder.getConstantOutput());
+                .setInput2(decoder.getImmediateOutput());
 
         decoder.setInstructionInput(instructionRegister.getOutput());
     }
@@ -97,23 +108,23 @@ public class InstructionDecode {
      * @param instructionInput input to instruction register
      * @return Instruction Decode
      */
-    public InstructionDecode setInstructionInput(Output<Integer> instructionInput) {
+    public InstructionDecode setInstructionInput(Output<Number32> instructionInput) {
         instructionRegister.setInput(instructionInput);
         return this;
     }
 
-    public InstructionDecode setResultInput(Output<Integer> input) {
+    public InstructionDecode setResultInput(Output<Number32> input) {
         sSelectorMux.setInput(1, input);
         tSelectorMux.setInput(1, input);
         return this;
     }
 
-    public InstructionDecode setSMuxIndex(Output<Integer> sMuxIndex) {
+    public InstructionDecode setSMuxIndex(Output<Number8> sMuxIndex) {
         sSelectorMux.setIndexInput(sMuxIndex);
         return this;
     }
 
-    public InstructionDecode setTMuxIndex(Output<Integer> tMuxIndex) {
+    public InstructionDecode setTMuxIndex(Output<Number8> tMuxIndex) {
         tSelectorMux.setIndexInput(tMuxIndex);
         return this;
     }
@@ -124,16 +135,16 @@ public class InstructionDecode {
      * @param nextPCInput input to instruction register
      * @return Instruction Decode
      */
-    public InstructionDecode setNextPcInput(Output<Integer> nextPCInput) {
+    public InstructionDecode setNextPcInput(Output<Number32> nextPCInput) {
         nextPcLatch.setInput(nextPCInput);
         return this;
     }
 
-    public Output<Integer> getSOutput() {
+    public Output<Number32> getSOutput() {
         return sSelectorMux.getOutput();
     }
 
-    public Output<Integer> getTOutput() {
+    public Output<Number32> getTOutput() {
         return tSelectorMux.getOutput();
     }
 
@@ -145,11 +156,11 @@ public class InstructionDecode {
         return decoder.getTSelectorOutput();
     }
 
-    public Output<Integer> getCOutput() {
-        return decoder.getConstantOutput();
+    public Output<Number32> getImmediateOutput() {
+        return decoder.getImmediateOutput();
     }
 
-    public Output<Integer> getAluMuxIndexOutput() {
+    public Output<Number8> getAluMuxIndexOutput() {
         return decoder.getAluMuxIndexOutput();
     }
 
@@ -161,7 +172,7 @@ public class InstructionDecode {
         return decoder.getMemoryWriteEnableOutput();
     }
 
-    public Output<Integer> getWbMuxIndexOutput() {
+    public Output<Number8> getWbMuxIndexOutput() {
         return decoder.getWbMuxIndexOutput();
     }
 
@@ -183,7 +194,7 @@ public class InstructionDecode {
      * @param wbInput what to set D input to
      * @return Instruction Decode
      */
-    public InstructionDecode setWbInput(Output<Integer> wbInput) {
+    public InstructionDecode setWbInput(Output<Number32> wbInput) {
         registerBank.setWbInput(wbInput);
         sSelectorMux.setInput(2, wbInput);
         tSelectorMux.setInput(2, wbInput);
@@ -216,7 +227,7 @@ public class InstructionDecode {
      *
      * @return next program counter
      */
-    public Output<Integer> getNextPcOutput() {
+    public Output<Number32> getNextPcOutput() {
         return adder.getOutput();
     }
 
@@ -225,7 +236,7 @@ public class InstructionDecode {
      *
      * @return
      */
-    public Output<Integer> getJumpEnable() {
+    public Output<Number8> getJumpEnable() {
         return jumpEnable;
     }
 

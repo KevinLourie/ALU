@@ -7,7 +7,7 @@ public class ConstantOutput<T> implements Output<T> {
     private T constant;
 
     /** True constant */
-    private static ConstantOutput<Number8> trueOutput = new ConstantOutput<>(new Number8(1, "Constant"));
+    private static ConstantOutput<Number8> trueOutput = new ConstantOutput<>(Number8.one);
 
     /**
      * Getter for true output

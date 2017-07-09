@@ -1,8 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
 
 /**
  * The CPU fetches the machine code, translates it into microcode, then executes the microinstructions
@@ -72,15 +68,15 @@ public class CPU {
                 .setWbInput(memoryAccess.getWbOutput())
                 .setWBEnableInput(wbControlUnit.getWbEnableOutput())
                 .setResultInput(execute.getResultOutput())
-                .setSMuxIndex(wbControlUnit.getsMuxIndexOutput())
-                .setTMuxIndex(wbControlUnit.gettMuxIndexOutput())
+                .setSMuxIndex(wbControlUnit.getSMuxIndexOutput())
+                .setTMuxIndex(wbControlUnit.getTMuxIndexOutput())
                 .setNextPcInput(instructionFetch.getNextPcOutput())
                 // TODO: set go input properly
                 .setGoInput(wbControlUnit.getGoOutput());
         execute
                 .setSInput(instructionDecode.getSOutput())
                 .setTInput(instructionDecode.getTOutput())
-                .setCInput(instructionDecode.getCOutput())
+                .setCInput(instructionDecode.getImmediateOutput())
                 .setAluOpInput(instructionDecode.getAluOpOutput())
                 .setMemoryWriteEnableInput(instructionDecode.getMemoryWriteEnableOutput())
                 .setAluMuxIndexInput(instructionDecode.getAluMuxIndexOutput());

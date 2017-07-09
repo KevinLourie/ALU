@@ -5,27 +5,27 @@
 public class Mdu {
 
     /** First number */
-    private Output<Integer> input0;
+    private Output<Number32> input0;
 
     /** Second number */
-    private Output<Integer> input1;
+    private Output<Number32> input1;
 
     /** Result number */
-    private Output<Long> output;
+    private Output<Number64> output;
 
     /** MDU control */
     private Output<Number8> mduOp;
 
     Mdu() {
-        output = new Output<Long>() {
+        output = new Output<Number64>() {
             /**
              * Read 2 numbers. Perform operation specified by the mduOp field.
              * @return output
              */
             @Override
-            public Long read() {
-                int s = input0.read();
-                int t = input1.read();
+            public Number64 read() {
+                int s = input0.read().intValue();
+                int t = input1.read().intValue();
                 long d = 0;
                 switch (mduOp.read().byteValue()) {
                     case AluOp.Multiply:
@@ -35,7 +35,7 @@ public class Mdu {
                         d = s / t;
                         break;
                 }
-                return d;
+                return new Number64(d, "Mdu");
             }
         };
     }
@@ -70,7 +70,7 @@ public class Mdu {
         return this;
     }
 
-    public Output<Long> getOutput() {
+    public Output<Number64> getOutput() {
         return output;
     }
 }

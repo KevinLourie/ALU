@@ -10,7 +10,7 @@ public class WbControlUnit {
     ShiftRegister<Number8> wbEnableLatch;
 
     /** Latch for WB mux index */
-    ShiftRegister<Integer> wbMuxIndexLatch;
+    ShiftRegister<Number8> wbMuxIndexLatch;
 
     ShiftRegister<Number8> haltEnableLatch;
 
@@ -21,57 +21,69 @@ public class WbControlUnit {
     Output<Number8> tSelectorInput;
 
     /** S mux index. 0 uses the register bank, 1 uses the result from the ALU, and 2 for the write back */
-    Output<Integer> sMuxIndexOutput;
+    Output<Number8> sMuxIndexOutput;
 
     /** T mux index */
-    Output<Integer> tMuxIndexOutput;
+    Output<Number8> tMuxIndexOutput;
 
     Output<Number8> goOutput;
 
-    public Output<Integer> getsMuxIndexOutput() {
+    public Output<Number8> getSMuxIndexOutput() {
         return sMuxIndexOutput;
     }
 
-    public Output<Integer> gettMuxIndexOutput() {
+    public Output<Number8> getTMuxIndexOutput() {
         return tMuxIndexOutput;
     }
 
     WbControlUnit(Cycler cycler) {
-        wbSelectorLatch = new ShiftRegister<>("WbControlUnit.wbSelector", 2, new Number8(0, "Constant"), cycler);
-        wbEnableLatch = new ShiftRegister<>("WbControlUnit.wbEnable", 2, new Number8(0, "Constant"), cycler);
-        wbMuxIndexLatch = new ShiftRegister<>("WbControlUnit.wbMuxIndex", 2, 0, cycler);
-        haltEnableLatch = new ShiftRegister<>("WbControlUnit.haltEnable", 2, new Number8(0, "Constant"), cycler);
-        sMuxIndexOutput = new Output<Integer>() {
+        wbSelectorLatch = new ShiftRegister<>("WbControlUnit.wbSelector", 2, Number8.zero, cycler);
+        wbEnableLatch = new ShiftRegister<>("WbControlUnit.wbEnable", 2, Number8.zero, cycler);
+        wbMuxIndexLatch = new ShiftRegister<>("WbControlUnit.wbMuxIndex", 2, Number8.zero, cycler);
+        haltEnableLatch = new ShiftRegister<>("WbControlUnit.haltEnable", 2, Number8.zero, cycler);
+        sMuxIndexOutput = new Output<Number8>() {
             @Override
-            public Integer read() {
-                if(wbMuxIndexLatch.getOutput(0).read() == 1 && wbEnableLatch.getOutput(0).read().byteValue() == (byte)1 && sSelectorInput.read() == wbSelectorLatch.getOutput(0).read()) {
-                    return 1;
-                }
-                else if(wbEnableLatch.getOutput(1).read().byteValue() == (byte)1 && sSelectorInput.read() == wbSelectorLatch.getOutput(1).read()) {
-                    return 2;
-                }
-                return 0;
+            public Number8 read() {
+                return computeMuxIndex(sSelectorInput.read(), "S");
             }
         };
-        tMuxIndexOutput = new Output<Integer>() {
+        tMuxIndexOutput = new Output<Number8>() {
             @Override
-            public Integer read() {
-                if(wbMuxIndexLatch.getOutput(0).read() == 1 && wbEnableLatch.getOutput(0).read().byteValue() == (byte)1 && tSelectorInput.read() == wbSelectorLatch.getOutput(0).read()) {
-                    return 1;
-                }
-                else if(wbEnableLatch.getOutput(1).read().byteValue() == (byte)1 && sSelectorInput.read() == wbSelectorLatch.getOutput(1).read()) {
-                    return 2;
-                }
-                return 0;
+            public Number8 read() {
+                return computeMuxIndex(tSelectorInput.read(), "T");
             }
         };
         goOutput = new Output<Number8>() {
             @Override
             public Number8 read() {
-                return new Number8(1, "Constant");
+                return Number8.one;
             }
         };
     }
+
+    /**
+     * Choose the correct value for S or T in case of data hazards
+     *
+     * @param selector either S or T selector
+     * @param name either S or T
+     * @return mux index for S or T
+     */
+    private Number8 computeMuxIndex(Number8 selector, String name) {
+        Number8 wbMuxIndex = wbMuxIndexLatch.getOutput(0).read();
+        Number8 wbEnable0 = wbEnableLatch.getOutput(0).read();
+        Number8 wbSelector0 = wbSelectorLatch.getOutput(0).read();
+        Number8 wbEnable1 = wbEnableLatch.getOutput(1).read();
+        Number8 wbSelector1 = wbSelectorLatch.getOutput(1).read();
+        String src = String.format("%sMuxIndex(%s, %s, %s, %s, %s, %s)", name, wbMuxIndex, selector, wbEnable0, wbSelector0, wbEnable1, wbSelector1);
+        if(wbMuxIndex.intValue() == 1 && wbEnable0.intValue() == 1 && selector == wbSelector0) {
+            return new Number8(1, src);
+        }
+        else if(wbEnable1.intValue() == 1 && selector == wbSelector1) {
+            return new Number8(2, src);
+        }
+        return new Number8(0, src);
+    }
+
 
     public WbControlUnit setSSelectorInput(Output<Number8> sSelectorInput) {
         this.sSelectorInput = sSelectorInput;
@@ -116,7 +128,7 @@ public class WbControlUnit {
      * @param wbMuxIndexInput wb mux index latch input
      * @return WbLatches
      */
-    public WbControlUnit setWbMuxIndexInput(Output<Integer> wbMuxIndexInput) {
+    public WbControlUnit setWbMuxIndexInput(Output<Number8> wbMuxIndexInput) {
         wbMuxIndexLatch.setInput(wbMuxIndexInput);
         return this;
     }
@@ -125,7 +137,7 @@ public class WbControlUnit {
      * Getter for wb mux index output
      * @return wb mux index output
      */
-    public Output<Integer> getWbMuxIndexOutput() {
+    public Output<Number8> getWbMuxIndexOutput() {
         return wbMuxIndexLatch.getOutput(1);
     }
 

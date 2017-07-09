@@ -102,13 +102,4 @@ public class Loader {
         }
         return parts;
     }
-
-    public HashMap<String, Integer> getSymbols() {
-        return symbols;
-    }
-
-    public Integer getSymbol(String key) {
-        return symbols.get(key);
-    }
-
 }

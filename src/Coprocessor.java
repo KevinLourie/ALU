@@ -7,28 +7,28 @@ public class Coprocessor {
 
     static public final byte divide = 1;
 
-    ShiftRegister<Long> hilo;
+    ShiftRegister<Number64> hilo;
 
     Register<Number8> coprocessorOpLatch;
 
-    Register<Integer> sLatch;
+    Register<Number32> sLatch;
 
-    Register<Integer> tLatch;
+    Register<Number32> tLatch;
 
     /** Contains the upper 32 bits of the hilo register */
-    Output<Integer> hiOutput;
+    Output<Number32> hiOutput;
 
     /** Contains the lower 32 bits of the hilo register */
-    Output<Integer> loOutput;
+    Output<Number32> loOutput;
 
     Mdu mdu;
 
     Coprocessor(Cycler cycler) {
         mdu = new Mdu();
-        sLatch = new Register<>("SLatch", 0, cycler);
-        tLatch = new Register<>("SLatch", 0, cycler);
-        coprocessorOpLatch = new Register<>("Coprocessor Op", new Number8(0, "Constant"), cycler);
-        hilo = new ShiftRegister<>("HiLo", 2, (long)0, cycler);
+        sLatch = new Register<>("Coprocessor.SLatch", Number32.zero, cycler);
+        tLatch = new Register<>("Coprocessor.TLatch", Number32.zero, cycler);
+        coprocessorOpLatch = new Register<>("Coprocessor Op", Number8.zero, cycler);
+        hilo = new ShiftRegister<>("Coprocessor.HiLo", 2, Number64.zero, cycler);
 
         // Internal wiring
         hilo.setInput(mdu.getOutput());
@@ -52,12 +52,12 @@ public class Coprocessor {
         return this;
     }
 
-    public Coprocessor setSLatchInput(Output<Integer> sLatchInput) {
+    public Coprocessor setSLatchInput(Output<Number32> sLatchInput) {
         sLatch.setInput(sLatchInput);
         return this;
     }
 
-    public Coprocessor setTLatchInput(Output<Integer> tLatchInput) {
+    public Coprocessor setTLatchInput(Output<Number32> tLatchInput) {
         tLatch.setInput(tLatchInput);
         return this;
     }

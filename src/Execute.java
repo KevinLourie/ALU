@@ -7,22 +7,22 @@ public class Execute {
     private Alu alu;
 
     /** Chooses either T or C */
-    private Multiplexer<Integer> aluMux;
+    private Multiplexer<Number32> aluMux;
 
     /** Holds S register output */
-    private Register<Integer> sLatch;
+    private Register<Number32> sLatch;
 
     /** Holds T register output */
-    private Register<Integer> tLatch;
+    private Register<Number32> tLatch;
 
     /** Holds ALU operation */
     private Register<Number8> aluOpLatch;
 
     /** Holds constant from instruction */
-    private Register<Integer> cLatch;
+    private Register<Number32> cLatch;
 
     /** Determines whether T or C is chosen */
-    private Register<Integer> aluMuxIndexLatch;
+    private Register<Number8> aluMuxIndexLatch;
 
     private Register<Number8> memoryWriteEnableLatch;
 
@@ -32,11 +32,11 @@ public class Execute {
     Execute(Cycler cycler) {
         alu = new Alu();
         aluMux = new Multiplexer<>(2);
-        aluMuxIndexLatch = new Register<>("Execute.aluMuxIndex", 0, cycler);
-        sLatch = new Register<>("Execute.s", 0, cycler);
-        tLatch = new Register<>("Execute.t", 0, cycler);
-        cLatch = new Register<>("Execute.c", 0, cycler);
-        memoryWriteEnableLatch = new Register<>("Execute.memoryWriteEnable", new Number8(1, "Constant"), cycler);
+        aluMuxIndexLatch = new Register<>("Execute.aluMuxIndex", Number8.zero, cycler);
+        sLatch = new Register<>("Execute.s", Number32.zero, cycler);
+        tLatch = new Register<>("Execute.t", Number32.zero, cycler);
+        cLatch = new Register<>("Execute.c", Number32.zero, cycler);
+        memoryWriteEnableLatch = new Register<>("Execute.memoryWriteEnable", Number8.one, cycler);
         aluOpLatch = new Register<>("Execute.aluOp", new Number8(AluOp.Add, "Constant"), cycler);
 
         // Internal wire
@@ -55,7 +55,7 @@ public class Execute {
      * @param sInput input to sLatch
      * @return Execute
      */
-    public Execute setSInput(Output<Integer> sInput) {
+    public Execute setSInput(Output<Number32> sInput) {
         // TODO: add correct enable inputs
         sLatch.setInput(sInput);
         return this;
@@ -66,7 +66,7 @@ public class Execute {
      * @param tInput input to tLatch
      * @return Execute
      */
-    public Execute setTInput(Output<Integer> tInput) {
+    public Execute setTInput(Output<Number32> tInput) {
         // TODO: add correct enable inputs
         tLatch.setInput(tInput);
         return this;
@@ -77,13 +77,13 @@ public class Execute {
      * @param cInput input to cLatch
      * @return Execute
      */
-    public Execute setCInput(Output<Integer> cInput) {
+    public Execute setCInput(Output<Number32> cInput) {
         // TODO: add correct enable inputs
         cLatch.setInput(cInput);
         return this;
     }
 
-    public Output<Integer> getResultOutput() {
+    public Output<Number32> getResultOutput() {
         return alu.getOutput();
     }
 
@@ -102,7 +102,7 @@ public class Execute {
      * @param muxIndexInput input to aluMux
      * @return Execute
      */
-    public Execute setAluMuxIndexInput(Output<Integer> muxIndexInput) {
+    public Execute setAluMuxIndexInput(Output<Number8> muxIndexInput) {
         aluMuxIndexLatch.setInput(muxIndexInput);
         return this;
     }
@@ -112,7 +112,7 @@ public class Execute {
         return this;
     }
 
-    public Output<Integer> getTOutput() {
+    public Output<Number32> getTOutput() {
         return tLatch.getOutput();
     }
 

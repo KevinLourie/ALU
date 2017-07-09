@@ -13,30 +13,29 @@ public class InstructionMemory {
     public final static Logger logger = Logger.getLogger(Register.class.getName());
 
     /** Instruction in memory */
-    private Output<Integer> instructionOutput;
+    private Output<Number32> instructionOutput;
 
     /* Number8 array */
     private int[] arr;
 
     /** Address of instruction */
-    private Output<Integer> instructionAddressInput;
+    private Output<Number32> instructionAddressInput;
 
     InstructionMemory(int[] arr) {
         this.arr = arr;
         instructionOutput = () -> {
             // Fetching 4 bytes at a time
-            int address = instructionAddressInput.read();
-            int data = arr[address / 4];
-            System.out.printf("InstructionMemory[%x] -> ", address);
-            return data;
+            Number32 address = instructionAddressInput.read();
+            int data = arr[address.intValue() / 4];
+            return new Number32(data, String.format("InstructionMemory(%s)", address));
         };
     }
 
-    public Output<Integer> getInstructionOutput() {
+    public Output<Number32> getInstructionOutput() {
         return instructionOutput;
     }
 
-    public InstructionMemory setAddressInput(Output<Integer> instructionAddressInput) {
+    public InstructionMemory setAddressInput(Output<Number32> instructionAddressInput) {
         this.instructionAddressInput = instructionAddressInput;
         return this;
     }

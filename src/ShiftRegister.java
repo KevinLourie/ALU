@@ -2,7 +2,7 @@
  * General register class.
  * Created by kzlou on 4/1/2017.
  */
-public class ShiftRegister<T extends Number> implements ICycle {
+public class ShiftRegister<T extends Value> implements ICycle {
 
     /** Name of register */
     private String name;
@@ -23,25 +23,24 @@ public class ShiftRegister<T extends Number> implements ICycle {
     private Output<Number8> enableInput;
 
     /** Temporary enable */
-    private boolean tempEnable;
+    private Number8 tempEnable;
 
     ShiftRegister(String name, int size, T initial, Cycler cycler) {
         this.name = name;
-        data = (T[]) new Number[size];
+        data = (T[]) new Value[size];
         for(int i = 0; i < size; i++) {
             data[i] = initial;
         }
-        tempData = (T[]) new Number[size];
+        tempData = (T[]) new Value[size];
         output = new Output[size];
         for(int i = 0; i < size; i++) {
             final int j = i;
             output[i] = () -> {
-                System.out.printf("%s %s -> ", name, data[j]);
                 return data[j];
             };
         }
         cycler.add(this);
-        this.enableInput = new ConstantOutput<>(new Number8(1, "Constant"));
+        this.enableInput = new ConstantOutput<>(Number8.one);
     }
 
     /**
@@ -69,23 +68,23 @@ public class ShiftRegister<T extends Number> implements ICycle {
      */
     @Override
     public void cycle() {
-        if (tempEnable) {
+        if (tempEnable.booleanValue()) {
             data = tempData.clone();
         }
     }
 
     @Override
     public void sense() {
-        Number8 enableN = enableInput.read();
-        tempEnable = enableN.byteValue() != 0;
-        if (tempEnable) {
-            tempData[0] = input.read();
-            System.out.printf(" %s %s", name, tempData[0]);
+        tempEnable = enableInput.read();
+        if (tempEnable.booleanValue()) {
+            T inputValue = input.read();
+            tempData[0] = (T)inputValue.clone(String.format("%s(0)", name));
+            System.out.printf("%s <- %s", name, inputValue);
             for(int i = 1; i < data.length; i++) {
-                tempData[i] = data[i-1];
-                System.out.printf(" %s", tempData[i]);
+                tempData[i] = (T)data[i-1].clone(String.format("%s(%d)", name, i));
+                System.out.printf(" %s", data[i-1]);
             }
-            System.out.printf(" enable=%s%n", enableN);
+            System.out.printf(" enable(%s)%n", tempEnable);
         } else {
             tempData = null;
         }

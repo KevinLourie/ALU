@@ -2,7 +2,7 @@
  * General register class.
  * Created by kzlou on 4/1/2017.
  */
-public class Register<T extends Number> implements ICycle {
+public class Register<T extends Value> implements ICycle {
 
     /** Name of register */
     private String name;
@@ -23,17 +23,16 @@ public class Register<T extends Number> implements ICycle {
     private Output<Number8> enableInput;
 
     /** Temporary enable */
-    private boolean tempEnable;
+    private Number8 tempEnable;
 
     Register(String name, T initial, Cycler cycler) {
         this.name = name;
         data = initial;
         output = () -> {
-            System.out.printf("%s %s -> ", name, data);
-            return data;
+            return (T)data.clone(name);
         };
         cycler.add(this);
-        this.enableInput = new ConstantOutput(new Number8(1, "Constant"));
+        this.enableInput = new ConstantOutput(Number8.one);
     }
 
     /**
@@ -61,23 +60,23 @@ public class Register<T extends Number> implements ICycle {
      */
     @Override
     public void cycle() {
-        if (tempEnable) {
-            data = tempData;
+        if (tempEnable.booleanValue()) {
+            data = (T)tempData.clone(name);
         }
     }
 
     @Override
     public void sense() {
-        Number8 enableN = enableInput.read();
-        tempEnable = enableN.byteValue() != 0;
+        tempEnable = enableInput.read();
         System.out.print(name);
-        if (tempEnable) {
-            tempData = input.read();
-            System.out.printf(" %s", tempData);
+        if (tempEnable.booleanValue()) {
+            T inputValue = input.read();
+            System.out.printf(" <- %s", inputValue);
+            tempData = inputValue;
         } else {
             tempData = null;
         }
-        System.out.printf(" enable=%s%n", enableN);
+        System.out.printf(" enable(%s)%n", tempEnable);
     }
 
     /**
