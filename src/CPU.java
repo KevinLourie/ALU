@@ -97,19 +97,16 @@ public class CPU {
      * Fetches microinstruction and executes it
      */
     public void run() {
-        Output<Number8> halt = wbControlUnit.getHaltEnableLatch();
+        Output<Value8> halt = wbControlUnit.getHaltEnableLatch();
         int i = 0;
-        Number8 isHalt;
+        Value8 isHalt;
         do {
             System.out.printf("%n========== Cycle %d%n", i);
             cycler.senseAndCycle();
             i++;
             isHalt = halt.read();
-            System.out.printf("-> check halt %s%n", isHalt);
-            // TODO: remove check
-            if (i > 300)
-                break;
-        }  while(isHalt.byteValue() ==0);
+            System.out.printf("CheckHalt %s%n", isHalt);
+        }  while(!isHalt.booleanValue());
 
         for(int j = 0; j < registers.length; j++) {
             System.out.printf("R%d : %x%n", j, registers[j]);

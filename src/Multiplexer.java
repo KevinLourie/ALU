@@ -1,5 +1,3 @@
-import com.sun.org.apache.xerces.internal.impl.dv.xs.TypeValidator;
-
 /**
  * Choose input for register.
  * Created by kzlou on 4/1/2017.
@@ -10,7 +8,7 @@ public class Multiplexer<T extends Value> {
     private Output<T>[] inputArray;
 
     /** Location of desired input */
-    private Output<Number8> index;
+    private Output<Value8> index;
 
     /** Desired input */
     private Output<T> muxOutput;
@@ -23,8 +21,9 @@ public class Multiplexer<T extends Value> {
         inputArray = new Output[size];
         // TODO: Fix logging
         muxOutput = () -> {
-            Number8 indexValue = index.read();
-            return (T)inputArray[indexValue.byteValue()].read().clone(String.format("Mux(%s)", indexValue));
+            Value8 indexValue = index.read();
+            T inputValue = inputArray[indexValue.byteValue()].read();
+            return (T)inputValue.clone(String.format("Mux(%s, %s)", inputValue, indexValue));
         };
     }
 
@@ -32,7 +31,7 @@ public class Multiplexer<T extends Value> {
      * Initialize multiplexer index
      * @param index multiplexer input
      */
-    public Multiplexer<T> setIndexInput(Output<Number8> index) {
+    public Multiplexer<T> setIndexInput(Output<Value8> index) {
         this.index = index;
         return this;
     }

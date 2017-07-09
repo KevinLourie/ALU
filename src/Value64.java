@@ -1,15 +1,15 @@
 /**
  * Created by kzlou on 7/7/2017.
  */
-public class Number32 extends Value {
+public class Value64 extends Value {
 
-    private int n;
+    private long n;
 
     private String src;
 
-    public static final Number32 zero = new Number32(0, "constant");
+    public static final Value64 zero = new Value64(0, "constant");
 
-    public Number32(int n, String src) {
+    public Value64(long n, String src) {
         this.n = n;
         this.src = String.format("%x=%s", this.n, src);
     }
@@ -20,13 +20,13 @@ public class Number32 extends Value {
     }
 
     @Override
-    Value clone(String newSrc) {
-        return new Number32(n, String.format("%x=%s", n, newSrc));
+    Value clone(String src) {
+        return new Value64(n, src);
     }
 
     @Override
     public int intValue() {
-        return n;
+        return (int)n;
     }
 
     @Override

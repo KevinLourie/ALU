@@ -20,19 +20,19 @@ public class Register<T extends Value> implements ICycle {
     private Output<T> input;
 
     /** Controls whehter data is written to register */
-    private Output<Number8> enableInput;
+    private Output<Value8> enableInput;
 
     /** Temporary enable */
-    private Number8 tempEnable;
+    private Value8 tempEnable;
 
     Register(String name, T initial, Cycler cycler) {
         this.name = name;
         data = initial;
         output = () -> {
-            return (T)data.clone(name);
+            return data;
         };
         cycler.add(this);
-        this.enableInput = new ConstantOutput(Number8.one);
+        this.enableInput = new ConstantOutput(Value8.one);
     }
 
     /**
@@ -40,7 +40,7 @@ public class Register<T extends Value> implements ICycle {
      * @param enableInput enable input
      * @return register
      */
-    public Register<T> setEnableInput(Output<Number8> enableInput) {
+    public Register<T> setEnableInput(Output<Value8> enableInput) {
         this.enableInput = enableInput;
         return this;
     }

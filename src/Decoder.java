@@ -5,31 +5,31 @@
 public class Decoder {
 
     /** Contains the microinstruction to be executed */
-    private Output<Number8> wbEnableOutput;
+    private Output<Value8> wbEnableOutput;
 
     /** Contains the S register number */
-    private Output<Number8> sSelectorOutput;
+    private Output<Value8> sSelectorOutput;
 
     /** Contains the T register number*/
-    private Output<Number8> tSelectorOutput;
+    private Output<Value8> tSelectorOutput;
 
     /** Contains the D register number */
-    private Output<Number8> dSelectorOutput;
+    private Output<Value8> dSelectorOutput;
 
     /** Contains the constant */
-    private Output<Number32> immediateOutput;
+    private Output<Value32> immediateOutput;
 
     /** Index of ALU mux */
-    private Output<Number8> aluMuxIndexOutput;
+    private Output<Value8> aluMuxIndexOutput;
 
     /** Index of PC mux */
-    private Output<Number8> branchConditionOutput;
+    private Output<Value8> branchConditionOutput;
 
     /** Index of write back mux */
-    private Output<Number8> wbMuxIndexOutput;
+    private Output<Value8> wbMuxIndexOutput;
 
     /** True if data will be written to memory */
-    private Output<Number8> memoryWriteEnableOutput;
+    private Output<Value8> memoryWriteEnableOutput;
 
     /** List of opcode microinstructions */
     private MicroInstruction[] opcodeMicroInstructions = new MicroInstruction[64];
@@ -38,30 +38,30 @@ public class Decoder {
     private MicroInstruction[] functMicroInstructions = new MicroInstruction[64];
 
     /** Instruction input */
-    private Output<Number32> instructionInput;
+    private Output<Value32> instructionInput;
 
     /** Opcode in instruction */
-    private Output<Number8> opcodeOutput;
+    private Output<Value8> opcodeOutput;
 
     /** Type of operation in instruction */
-    private Output<Number8> functOutput;
+    private Output<Value8> functOutput;
 
     /** ALU operation in instruction */
-    private Output<Number8> aluOpOutput;
+    private Output<Value8> aluOpOutput;
 
     /** Index of write back selector */
-    private Output<Number8> wbSelectorOutput;
+    private Output<Value8> wbSelectorOutput;
 
     /** Shift amount output */
-    private Output<Number8> shamtOutput;
+    private Output<Value8> shamtOutput;
 
-    public Output<Number8> getHalt() {
+    public Output<Value8> getHalt() {
         return halt;
     }
 
-    private Output<Number8> halt;
+    private Output<Value8> halt;
 
-    Output<Number8> go;
+    Output<Value8> go;
 
     /**
      * Generate outputs for each of the fields in the microinstruction. If go is false, instruction must be a no op
@@ -70,25 +70,29 @@ public class Decoder {
         initMicrocode();
 
                 // If go is false, then turn off WB enable
-        wbEnableOutput = () -> new Number8(getMicroInstruction().isWbEnable() & go.read().byteValue(), "wbEnable");
-        opcodeOutput = () -> new Number8(instructionInput.read().intValue() >>> 26, "opcode");
-        aluMuxIndexOutput = () -> new Number8(getMicroInstruction().getAluMuxIndex(), "aluMuxIndex");
+        wbEnableOutput = () -> new Value8(getMicroInstruction().isWbEnable() & go.read().byteValue(), "wbEnable");
+        opcodeOutput = () -> new Value8(instructionInput.read().intValue() >>> 26, "opcode");
+        aluMuxIndexOutput = () -> new Value8(getMicroInstruction().getAluMuxIndex(), "aluMuxIndex");
         // If go is false, do not branch
-        branchConditionOutput = () -> new Number8(getMicroInstruction().getBranchCondition() & go.read().byteValue(),
-                "branchCondition");
-        wbMuxIndexOutput = () -> new Number8(getMicroInstruction().getWbMuxIndex(), "wbMuxIndex");
+        branchConditionOutput = () -> {
+            if(go.read().booleanValue()) {
+                return new Value8(getMicroInstruction().getBranchCondition(), "branchCondition");
+            }
+            return new Value8(0, "stall");
+        };
+        wbMuxIndexOutput = () -> new Value8(getMicroInstruction().getWbMuxIndex(), "wbMuxIndex");
         // If go is false, do not write to memory
-        memoryWriteEnableOutput = () -> new Number8(getMicroInstruction().isMemoryWriteEnable() & go.read().byteValue(), "memoryWriteEnable");
-        aluOpOutput = () -> new Number8(getMicroInstruction().getAluOp(), "aluOp");
+        memoryWriteEnableOutput = () -> new Value8(getMicroInstruction().isMemoryWriteEnable() & go.read().byteValue(), "memoryWriteEnable");
+        aluOpOutput = () -> new Value8(getMicroInstruction().getAluOp(), "aluOp");
         wbSelectorOutput = () -> opcodeOutput.read().byteValue() == 0 ? dSelectorOutput.read() : tSelectorOutput.read();
-        sSelectorOutput = () -> new Number8((instructionInput.read().intValue() >>> 21) & 0x1F, "sSelector");
-        tSelectorOutput = () -> new Number8((instructionInput.read().intValue() >>> 16) & 0x1F, "tSelector");
-        dSelectorOutput = () -> new Number8((instructionInput.read().intValue() >>> 11) & 0x1F, "dSelector");
-        immediateOutput = () -> new Number32((short)(instructionInput.read().intValue() & 0xFFFF), "immediate");
-        functOutput = () -> new Number8(instructionInput.read().intValue() & 0x3F, "funct");
-        shamtOutput = () -> new Number8((instructionInput.read().intValue() >>> 6) & 0x1F, "shamt");
+        sSelectorOutput = () -> new Value8((instructionInput.read().intValue() >>> 21) & 0x1F, "sSelector");
+        tSelectorOutput = () -> new Value8((instructionInput.read().intValue() >>> 16) & 0x1F, "tSelector");
+        dSelectorOutput = () -> new Value8((instructionInput.read().intValue() >>> 11) & 0x1F, "dSelector");
+        immediateOutput = () -> new Value32((short)(instructionInput.read().intValue() & 0xFFFF), "immediate");
+        functOutput = () -> new Value8(instructionInput.read().intValue() & 0x3F, "funct");
+        shamtOutput = () -> new Value8((instructionInput.read().intValue() >>> 6) & 0x1F, "shamt");
         // Don't need to stall halt because it cannot have a data hazard
-        halt = () -> new Number8(getMicroInstruction().isWait(), "halt");
+        halt = () -> new Value8(getMicroInstruction().isWait(), "halt");
     }
 
     private void initMicrocode() {
@@ -140,11 +144,11 @@ public class Decoder {
      * Setter for instruction input
      * @param instructionInput instruction input
      */
-    public void setInstructionInput(Output<Number32> instructionInput) {
+    public void setInstructionInput(Output<Value32> instructionInput) {
         this.instructionInput = instructionInput;
     }
 
-    public void setGo(Output<Number8> go) {
+    public void setGo(Output<Value8> go) {
         this.go = go;
     }
 
@@ -152,7 +156,7 @@ public class Decoder {
      * Getter for s output
      * @return s output
      */
-    public Output<Number8> getSSelectorOutput() {
+    public Output<Value8> getSSelectorOutput() {
         return sSelectorOutput;
     }
 
@@ -160,7 +164,7 @@ public class Decoder {
      * Getter for t output
      * @return t output
      */
-    public Output<Number8> getTSelectorOutput() {
+    public Output<Value8> getTSelectorOutput() {
         return tSelectorOutput;
     }
 
@@ -168,7 +172,7 @@ public class Decoder {
      * Getter for constant output
      * @return constant output
      */
-    public Output<Number32> getImmediateOutput() {
+    public Output<Value32> getImmediateOutput() {
         return immediateOutput;
     }
 
@@ -188,7 +192,7 @@ public class Decoder {
      * Getter for memory write enable
      * @return memory write enable
      */
-    public Output<Number8> getMemoryWriteEnableOutput() {
+    public Output<Value8> getMemoryWriteEnableOutput() {
         return memoryWriteEnableOutput;
     }
 
@@ -196,11 +200,11 @@ public class Decoder {
      * Getter for ALU operation
      * @return ALU operation
      */
-    public Output<Number8> getAluOpOutput() {
+    public Output<Value8> getAluOpOutput() {
         return aluOpOutput;
     }
 
-    public void init(Output<Number8> opcodeInput, Output<Number8> functInput) {
+    public void init(Output<Value8> opcodeInput, Output<Value8> functInput) {
         this.opcodeOutput = opcodeInput;
         this.functOutput = functInput;
     }
@@ -209,7 +213,7 @@ public class Decoder {
      * Getter for write back enable
      * @return write back enable
      */
-    public Output<Number8> getWbEnableOutput() {
+    public Output<Value8> getWbEnableOutput() {
         return wbEnableOutput;
     }
 
@@ -217,7 +221,7 @@ public class Decoder {
      * Getter for ALU mux index
      * @return ALU mux index
      */
-    public Output<Number8> getAluMuxIndexOutput() {
+    public Output<Value8> getAluMuxIndexOutput() {
         return aluMuxIndexOutput;
     }
 
@@ -225,7 +229,7 @@ public class Decoder {
      * Getter for pc mux index output
      * @return pc mux index output
      */
-    public Output<Number8> getBranchConditionOutput() {
+    public Output<Value8> getBranchConditionOutput() {
         return branchConditionOutput;
     }
 
@@ -233,7 +237,7 @@ public class Decoder {
      * Getter for wb mux index output
      * @return wb mux index output
      */
-    public Output<Number8> getWbMuxIndexOutput() {
+    public Output<Value8> getWbMuxIndexOutput() {
         return wbMuxIndexOutput;
     }
 
@@ -241,7 +245,7 @@ public class Decoder {
      * Getter for wb selector mux index
      * @return wb selector mux index
      */
-    public Output<Number8> getWbSelectorOutput() {
+    public Output<Value8> getWbSelectorOutput() {
         return wbSelectorOutput;
     }
 }
