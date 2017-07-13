@@ -74,32 +74,49 @@ public class Loader {
      * @param line instruction
      */
     private void decodeAndStoreInstruction(String line) {
-        int length;
         int result = 0;
-        int[] parts = convertToIntegerArray(line);
-        length = parts.length;
-        switch (length) {
+        String[] arr = line.split(",");
+        int[] parts = new int[arr.length];
+        Opcode opcode = null;
+        if(parts.length == 1) {
+            parts[0] =  Integer.parseUnsignedInt(arr[0], 16);
+        }
+        else {
+            opcode = Opcode.valueOf(arr[0]);
+            parts[0] = opcode.getValue();
+            for (int i = 1; i < arr.length; i++) {
+                parts[i] = Integer.parseUnsignedInt(arr[i], 16);
+            }
+        }
+        switch (parts.length) {
             case 1:
                 result = parts[0];
                 break;
-            case 2:
-                result = (parts[0] << 26) + parts[1];
+            case 2: {
+                int jumpTarget = parts[1];
+                result = (opcode.getValue() << 26) + jumpTarget;
                 break;
-            case 4:
-                result = (parts[0] << 26) + (parts[1] << 21) + (parts[2] << 16) + parts[3];
+            }
+            case 4: {
+                int s = parts[1];
+                int t = parts[2];
+                int immediate = parts[3];
+                if(opcode.isBranch) {
+                    int offset = (immediate - address - 4) & Short.MAX_VALUE;
+                    result = (opcode.getValue() << 26) + (s << 21) + (t << 16) + offset;
+                }
+                else {
+                    result = (opcode.getValue() << 26) + (s << 21) + (t << 16) + immediate;
+                }
                 break;
-            case 6:
-                result = (parts[0] << 26) + (parts[1] << 21) + (parts[2] << 16) + (parts[3] << 11) + (parts[4] << 6) + parts[5];
+            }
+            case 6: {
+                int s = parts[1];
+                int t = parts[2];
+                result = (opcode.getValue() << 26) + (s << 21) + (t << 16) + (parts[3] << 11) + (parts[4] << 6) + parts[5];
+            }
         }
         memory[address/4] = result;
     }
 
-    private int[] convertToIntegerArray(String line) {
-        String[] arr = line.split(",");
-        int[] parts = new int[arr.length];
-        for (int i = 0; i < arr.length; i++) {
-            parts[i] = Integer.parseUnsignedInt(arr[i], 16);
-        }
-        return parts;
-    }
 }

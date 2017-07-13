@@ -5,25 +5,25 @@
 public class Mdu {
 
     /** First number */
-    private Output<Number32> input0;
+    private Output<Value32> input0;
 
     /** Second number */
-    private Output<Number32> input1;
+    private Output<Value32> input1;
 
     /** Result number */
-    private Output<Number64> output;
+    private Output<Value64> output;
 
     /** MDU control */
-    private Output<Number8> mduOp;
+    private Output<Value8> mduOp;
 
     Mdu() {
-        output = new Output<Number64>() {
+        output = new Output<Value64>() {
             /**
              * Read 2 numbers. Perform operation specified by the mduOp field.
              * @return output
              */
             @Override
-            public Number64 read() {
+            public Value64 read() {
                 int s = input0.read().intValue();
                 int t = input1.read().intValue();
                 long d = 0;
@@ -35,7 +35,7 @@ public class Mdu {
                         d = s / t;
                         break;
                 }
-                return new Number64(d, "Mdu");
+                return new Value64(d, "Mdu");
             }
         };
     }
@@ -70,7 +70,7 @@ public class Mdu {
         return this;
     }
 
-    public Output<Number64> getOutput() {
+    public Output<Value64> getOutput() {
         return output;
     }
 }

@@ -7,24 +7,24 @@ public class Execute {
     private Alu alu;
 
     /** Chooses either T or C */
-    private Multiplexer<Number32> aluMux;
+    private Multiplexer<Value32> aluMux;
 
     /** Holds S register output */
-    private Register<Number32> sLatch;
+    private Register<Value32> sLatch;
 
     /** Holds T register output */
-    private Register<Number32> tLatch;
+    private Register<Value32> tLatch;
 
     /** Holds ALU operation */
-    private Register<Number8> aluOpLatch;
+    private Register<Value8> aluOpLatch;
 
     /** Holds constant from instruction */
-    private Register<Number32> cLatch;
+    private Register<Value32> cLatch;
 
     /** Determines whether T or C is chosen */
-    private Register<Number8> aluMuxIndexLatch;
+    private Register<Value8> aluMuxIndexLatch;
 
-    private Register<Number8> memoryWriteEnableLatch;
+    private Register<Value8> memoryWriteEnableLatch;
 
     /**
      * Construct ALU, ALU multiplexer, data registers, address register, and ALU operator register
@@ -32,12 +32,12 @@ public class Execute {
     Execute(Cycler cycler) {
         alu = new Alu();
         aluMux = new Multiplexer<>(2);
-        aluMuxIndexLatch = new Register<>("Execute.aluMuxIndex", Number8.zero, cycler);
-        sLatch = new Register<>("Execute.s", Number32.zero, cycler);
-        tLatch = new Register<>("Execute.t", Number32.zero, cycler);
-        cLatch = new Register<>("Execute.c", Number32.zero, cycler);
-        memoryWriteEnableLatch = new Register<>("Execute.memoryWriteEnable", Number8.one, cycler);
-        aluOpLatch = new Register<>("Execute.aluOp", new Number8(AluOp.Add, "Constant"), cycler);
+        aluMuxIndexLatch = new Register<>("Execute.aluMuxIndex", Value8.zero, cycler);
+        sLatch = new Register<>("Execute.s", Value32.zero, cycler);
+        tLatch = new Register<>("Execute.t", Value32.zero, cycler);
+        cLatch = new Register<>("Execute.c", Value32.zero, cycler);
+        memoryWriteEnableLatch = new Register<>("Execute.memoryWriteEnable", Value8.one, cycler);
+        aluOpLatch = new Register<>("Execute.aluOp", new Value8(AluOp.Add, "Constant"), cycler);
 
         // Internal wire
         alu
@@ -55,7 +55,7 @@ public class Execute {
      * @param sInput input to sLatch
      * @return Execute
      */
-    public Execute setSInput(Output<Number32> sInput) {
+    public Execute setSInput(Output<Value32> sInput) {
         // TODO: add correct enable inputs
         sLatch.setInput(sInput);
         return this;
@@ -66,7 +66,7 @@ public class Execute {
      * @param tInput input to tLatch
      * @return Execute
      */
-    public Execute setTInput(Output<Number32> tInput) {
+    public Execute setTInput(Output<Value32> tInput) {
         // TODO: add correct enable inputs
         tLatch.setInput(tInput);
         return this;
@@ -77,13 +77,13 @@ public class Execute {
      * @param cInput input to cLatch
      * @return Execute
      */
-    public Execute setCInput(Output<Number32> cInput) {
+    public Execute setCInput(Output<Value32> cInput) {
         // TODO: add correct enable inputs
         cLatch.setInput(cInput);
         return this;
     }
 
-    public Output<Number32> getResultOutput() {
+    public Output<Value32> getResultOutput() {
         return alu.getOutput();
     }
 
@@ -92,7 +92,7 @@ public class Execute {
      * @param aluOpInput input to aluOpLatch
      * @return Execute
      */
-    public Execute setAluOpInput(Output<Number8> aluOpInput) {
+    public Execute setAluOpInput(Output<Value8> aluOpInput) {
         aluOpLatch.setInput(aluOpInput);
         return this;
     }
@@ -102,21 +102,21 @@ public class Execute {
      * @param muxIndexInput input to aluMux
      * @return Execute
      */
-    public Execute setAluMuxIndexInput(Output<Number8> muxIndexInput) {
+    public Execute setAluMuxIndexInput(Output<Value8> muxIndexInput) {
         aluMuxIndexLatch.setInput(muxIndexInput);
         return this;
     }
 
-    public Execute setMemoryWriteEnableInput(Output<Number8> memoryWriteEnableInput) {
+    public Execute setMemoryWriteEnableInput(Output<Value8> memoryWriteEnableInput) {
         memoryWriteEnableLatch.setInput(memoryWriteEnableInput);
         return this;
     }
 
-    public Output<Number32> getTOutput() {
+    public Output<Value32> getTOutput() {
         return tLatch.getOutput();
     }
 
-    public Output<Number8> getMemoryWriteEnableOutput() {
+    public Output<Value8> getMemoryWriteEnableOutput() {
         return memoryWriteEnableLatch.getOutput();
     }
 }

@@ -31,7 +31,7 @@ public class Decoder {
     /** True if data will be written to memory */
     private Output<Value8> memoryWriteEnableOutput;
 
-    /** List of opcode microinstructions */
+    /** List of value microinstructions */
     private MicroInstruction[] opcodeMicroInstructions = new MicroInstruction[64];
 
     /** List of funct microinstructions */
@@ -71,7 +71,7 @@ public class Decoder {
 
                 // If go is false, then turn off WB enable
         wbEnableOutput = () -> new Value8(getMicroInstruction().isWbEnable() & go.read().byteValue(), "wbEnable");
-        opcodeOutput = () -> new Value8(instructionInput.read().intValue() >>> 26, "opcode");
+        opcodeOutput = () -> new Value8(instructionInput.read().intValue() >>> 26, "value");
         aluMuxIndexOutput = () -> new Value8(getMicroInstruction().getAluMuxIndex(), "aluMuxIndex");
         // If go is false, do not branch
         branchConditionOutput = () -> {
@@ -177,8 +177,8 @@ public class Decoder {
     }
 
     /**
-     * Get microinstruction. If opcode is 0, it is a register instruction. Get microinstruction by using
-     * funct as index to functMicroInstructions. Otherwise, use opcode as index to opcodeMicroInstructions.
+     * Get microinstruction. If value is 0, it is a register instruction. Get microinstruction by using
+     * funct as index to functMicroInstructions. Otherwise, use value as index to opcodeMicroInstructions.
      * @return microinstruction
      */
     public MicroInstruction getMicroInstruction() {

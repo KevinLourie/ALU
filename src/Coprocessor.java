@@ -7,28 +7,28 @@ public class Coprocessor {
 
     static public final byte divide = 1;
 
-    ShiftRegister<Number64> hilo;
+    ShiftRegister<Value64> hilo;
 
-    Register<Number8> coprocessorOpLatch;
+    Register<Value8> coprocessorOpLatch;
 
-    Register<Number32> sLatch;
+    Register<Value32> sLatch;
 
-    Register<Number32> tLatch;
+    Register<Value32> tLatch;
 
     /** Contains the upper 32 bits of the hilo register */
-    Output<Number32> hiOutput;
+    Output<Value32> hiOutput;
 
     /** Contains the lower 32 bits of the hilo register */
-    Output<Number32> loOutput;
+    Output<Value32> loOutput;
 
     Mdu mdu;
 
     Coprocessor(Cycler cycler) {
         mdu = new Mdu();
-        sLatch = new Register<>("Coprocessor.SLatch", Number32.zero, cycler);
-        tLatch = new Register<>("Coprocessor.TLatch", Number32.zero, cycler);
-        coprocessorOpLatch = new Register<>("Coprocessor Op", Number8.zero, cycler);
-        hilo = new ShiftRegister<>("Coprocessor.HiLo", 2, Number64.zero, cycler);
+        sLatch = new Register<>("Coprocessor.SLatch", Value32.zero, cycler);
+        tLatch = new Register<>("Coprocessor.TLatch", Value32.zero, cycler);
+        coprocessorOpLatch = new Register<>("Coprocessor Op", Value8.zero, cycler);
+        hilo = new ShiftRegister<>("Coprocessor.HiLo", 2, Value64.zero, cycler);
 
         // Internal wiring
         hilo.setInput(mdu.getOutput());
@@ -42,22 +42,22 @@ public class Coprocessor {
      * @param enableInput enable input for hilo register
      * @return coprocessor
      */
-    public Coprocessor setEnableInput(Output<Number8> enableInput) {
+    public Coprocessor setEnableInput(Output<Value8> enableInput) {
         hilo.setEnableInput(enableInput);
         return this;
     }
 
-    public Coprocessor setCoprocessorOpInput(Output<Number8> coprocessorOpInput) {
+    public Coprocessor setCoprocessorOpInput(Output<Value8> coprocessorOpInput) {
         coprocessorOpLatch.setInput(coprocessorOpInput);
         return this;
     }
 
-    public Coprocessor setSLatchInput(Output<Number32> sLatchInput) {
+    public Coprocessor setSLatchInput(Output<Value32> sLatchInput) {
         sLatch.setInput(sLatchInput);
         return this;
     }
 
-    public Coprocessor setTLatchInput(Output<Number32> tLatchInput) {
+    public Coprocessor setTLatchInput(Output<Value32> tLatchInput) {
         tLatch.setInput(tLatchInput);
         return this;
     }

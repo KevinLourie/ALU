@@ -8,48 +8,48 @@ public class RegisterBank implements ICycle {
     private int[] registers;
 
     /** Write back register selector. Picks a register to be read */
-    private Output<Number8> wbSelectorInput;
+    private Output<Value8> wbSelectorInput;
 
     /** S register selector. Picks another register to be read */
-    private Output<Number8> sSelectorInput;
+    private Output<Value8> sSelectorInput;
 
     /** T register selector. Picks a register to write to */
-    private Output<Number8> tSelectorInput;
+    private Output<Value8> tSelectorInput;
 
     /** Write back register input */
-    private Output<Number32> wbInput;
+    private Output<Value32> wbInput;
 
     /** S register output */
-    private Output<Number32> sOutput;
+    private Output<Value32> sOutput;
 
     /** T register output */
-    private Output<Number32> tOutput;
+    private Output<Value32> tOutput;
 
     /** Temporary write back data */
-    private Number32 tempWb;
+    private Value32 tempWb;
 
     /** Temporary selector of write back register */
-    private Number8 tempWbSelector;
+    private Value8 tempWbSelector;
 
     /** Controls whether register bank is written to */
-    private Output<Number8> wbEnableInput;
+    private Output<Value8> wbEnableInput;
 
     /** Temporary enable */
-    private Number8 tempWbEnable;
+    private Value8 tempWbEnable;
 
     RegisterBank(Cycler cycler, int[] registers) {
         this.registers = registers;
         sOutput = () -> {
             // Fetch S register
-            Number8 address = sSelectorInput.read();
+            Value8 address = sSelectorInput.read();
             int data = registers[address.byteValue()];
-            return new Number32(data, String.format("S(%s)", address));
+            return new Value32(data, String.format("S(%s)", address));
         };
         tOutput = () -> {
             // Fetch T register
-            Number8 address = tSelectorInput.read();
+            Value8 address = tSelectorInput.read();
             int data = registers[address.byteValue()];
-            return new Number32(data, String.format("T(%s)", address));
+            return new Value32(data, String.format("T(%s)", address));
         };
         cycler.add(this);
     }
@@ -59,7 +59,7 @@ public class RegisterBank implements ICycle {
      * @param wbSelectorInput Write back selector input
      * @return register bank
      */
-    public RegisterBank setWbSelectorInput(Output<Number8> wbSelectorInput) {
+    public RegisterBank setWbSelectorInput(Output<Value8> wbSelectorInput) {
         this.wbSelectorInput = wbSelectorInput;
         return this;
     }
@@ -69,7 +69,7 @@ public class RegisterBank implements ICycle {
      * @param addressSInput S selector input
      * @return register bank
      */
-    public RegisterBank setSSelectorInput(Output<Number8> addressSInput) {
+    public RegisterBank setSSelectorInput(Output<Value8> addressSInput) {
         this.sSelectorInput = addressSInput;
         return this;
     }
@@ -79,7 +79,7 @@ public class RegisterBank implements ICycle {
      * @param addressTInput T selector input
      * @return
      */
-    public RegisterBank setTSelectorInput(Output<Number8> addressTInput) {
+    public RegisterBank setTSelectorInput(Output<Value8> addressTInput) {
         this.tSelectorInput = addressTInput;
         return this;
     }
@@ -89,7 +89,7 @@ public class RegisterBank implements ICycle {
      * @param wbInput input to register
      * @return register bank
      */
-    public RegisterBank setWbInput(Output<Number32> wbInput) {
+    public RegisterBank setWbInput(Output<Value32> wbInput) {
         this.wbInput = wbInput;
         return this;
     }
@@ -99,7 +99,7 @@ public class RegisterBank implements ICycle {
      * @param wbEnableInput enable input
      * @return register bank
      */
-    public RegisterBank setWbEnableInput(Output<Number8> wbEnableInput) {
+    public RegisterBank setWbEnableInput(Output<Value8> wbEnableInput) {
         this.wbEnableInput = wbEnableInput;
         return this;
     }
@@ -133,7 +133,7 @@ public class RegisterBank implements ICycle {
      * Getter for sOutput
      * @return sOutput
      */
-    public Output<Number32> getSOutput() {
+    public Output<Value32> getSOutput() {
         return sOutput;
     }
 
@@ -141,7 +141,7 @@ public class RegisterBank implements ICycle {
      * Getter for tOutput
      * @return tOutput
      */
-    public Output<Number32> getTOutput() {
+    public Output<Value32> getTOutput() {
         return tOutput;
     }
 }

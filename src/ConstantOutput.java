@@ -7,13 +7,13 @@ public class ConstantOutput<T> implements Output<T> {
     private T constant;
 
     /** True constant */
-    private static ConstantOutput<Number8> trueOutput = new ConstantOutput<>(Number8.one);
+    private static ConstantOutput<Value8> trueOutput = new ConstantOutput<>(Value8.one);
 
     /**
      * Getter for true output
      * @return true output
      */
-    public static ConstantOutput<Number8> getTrueOutput() {
+    public static ConstantOutput<Value8> getTrueOutput() {
         return trueOutput;
     }
 

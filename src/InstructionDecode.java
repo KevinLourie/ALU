@@ -6,7 +6,7 @@ public class InstructionDecode {
     /**
      * Determine if branch condition is true by comparing data in S and T
      */
-    Output<Number8> jumpEnable;
+    Output<Value8> jumpEnable;
 
     /**
      * Register bank
@@ -20,16 +20,16 @@ public class InstructionDecode {
     /**
      * Holds instruction
      */
-    private Register<Number32> instructionRegister;
+    private Register<Value32> instructionRegister;
 
     /**
      * Location of next instruction
      */
-    private Register<Number32> nextPcLatch;
+    private Register<Value32> nextPcLatch;
 
-    private Multiplexer<Number32> sSelectorMux;
+    private Multiplexer<Value32> sSelectorMux;
 
-    private Multiplexer<Number32> tSelectorMux;
+    private Multiplexer<Value32> tSelectorMux;
 
     /**
      * Constructor
@@ -42,18 +42,18 @@ public class InstructionDecode {
         tSelectorMux = new Multiplexer<>(3);
         registerBank = new RegisterBank(cycler, registers);
         decoder = new Decoder();
-        instructionRegister = new Register<>("InstructionDecode.instruction", Number32.zero, cycler);
+        instructionRegister = new Register<>("InstructionDecode.instruction", Value32.zero, cycler);
         registerBank
                 .setSSelectorInput(decoder.getSSelectorOutput())
                 .setTSelectorInput(decoder.getTSelectorOutput());
-        nextPcLatch = new Register<>("InstructionDecode.nextPcLatch", Number32.zero, cycler);
+        nextPcLatch = new Register<>("InstructionDecode.nextPcLatch", Value32.zero, cycler);
 
         // Determine if jump is enabled
         jumpEnable = () -> {
             // Check if jump is enabled
-            Number8 branchCondition = decoder.getBranchConditionOutput().read();
-            Number32 s = getSOutput().read();
-            Number32 t = getTOutput().read();
+            Value8 branchCondition = decoder.getBranchConditionOutput().read();
+            Value32 s = getSOutput().read();
+            Value32 t = getTOutput().read();
             String srcFixed = String.format("JumpEnable(%s)", branchCondition);
             String src = String.format("JumpEnable(%s, %s, %s)", branchCondition, s, t);
             byte branch = 0;
@@ -88,7 +88,7 @@ public class InstructionDecode {
                 default:
                     throw new RuntimeException("Bad branch condition");
             }
-            return new Number8(branch, src);
+            return new Value8(branch, src);
         };
 
         // Internal wiring
@@ -108,23 +108,23 @@ public class InstructionDecode {
      * @param instructionInput input to instruction register
      * @return Instruction Decode
      */
-    public InstructionDecode setInstructionInput(Output<Number32> instructionInput) {
+    public InstructionDecode setInstructionInput(Output<Value32> instructionInput) {
         instructionRegister.setInput(instructionInput);
         return this;
     }
 
-    public InstructionDecode setResultInput(Output<Number32> input) {
+    public InstructionDecode setResultInput(Output<Value32> input) {
         sSelectorMux.setInput(1, input);
         tSelectorMux.setInput(1, input);
         return this;
     }
 
-    public InstructionDecode setSMuxIndex(Output<Number8> sMuxIndex) {
+    public InstructionDecode setSMuxIndex(Output<Value8> sMuxIndex) {
         sSelectorMux.setIndexInput(sMuxIndex);
         return this;
     }
 
-    public InstructionDecode setTMuxIndex(Output<Number8> tMuxIndex) {
+    public InstructionDecode setTMuxIndex(Output<Value8> tMuxIndex) {
         tSelectorMux.setIndexInput(tMuxIndex);
         return this;
     }
@@ -135,56 +135,56 @@ public class InstructionDecode {
      * @param nextPCInput input to instruction register
      * @return Instruction Decode
      */
-    public InstructionDecode setNextPcInput(Output<Number32> nextPCInput) {
+    public InstructionDecode setNextPcInput(Output<Value32> nextPCInput) {
         nextPcLatch.setInput(nextPCInput);
         return this;
     }
 
-    public Output<Number32> getSOutput() {
+    public Output<Value32> getSOutput() {
         return sSelectorMux.getOutput();
     }
 
-    public Output<Number32> getTOutput() {
+    public Output<Value32> getTOutput() {
         return tSelectorMux.getOutput();
     }
 
-    public Output<Number8> getSSelectorOutput() {
+    public Output<Value8> getSSelectorOutput() {
         return decoder.getSSelectorOutput();
     }
 
-    public Output<Number8> getTSelectorOutput() {
+    public Output<Value8> getTSelectorOutput() {
         return decoder.getTSelectorOutput();
     }
 
-    public Output<Number32> getImmediateOutput() {
+    public Output<Value32> getImmediateOutput() {
         return decoder.getImmediateOutput();
     }
 
-    public Output<Number8> getAluMuxIndexOutput() {
+    public Output<Value8> getAluMuxIndexOutput() {
         return decoder.getAluMuxIndexOutput();
     }
 
-    public Output<Number8> getAluOpOutput() {
+    public Output<Value8> getAluOpOutput() {
         return decoder.getAluOpOutput();
     }
 
-    public Output<Number8> getMemoryWriteEnableOutput() {
+    public Output<Value8> getMemoryWriteEnableOutput() {
         return decoder.getMemoryWriteEnableOutput();
     }
 
-    public Output<Number8> getWbMuxIndexOutput() {
+    public Output<Value8> getWbMuxIndexOutput() {
         return decoder.getWbMuxIndexOutput();
     }
 
-    public Output<Number8> getWbSelectorMuxOutput() {
+    public Output<Value8> getWbSelectorMuxOutput() {
         return decoder.getWbSelectorOutput();
     }
 
-    public Output<Number8> getWbEnableOutput() {
+    public Output<Value8> getWbEnableOutput() {
         return decoder.getWbEnableOutput();
     }
 
-    public Output<Number8> getHaltOutput() {
+    public Output<Value8> getHaltOutput() {
         return decoder.getHalt();
     }
 
@@ -194,7 +194,7 @@ public class InstructionDecode {
      * @param wbInput what to set D input to
      * @return Instruction Decode
      */
-    public InstructionDecode setWbInput(Output<Number32> wbInput) {
+    public InstructionDecode setWbInput(Output<Value32> wbInput) {
         registerBank.setWbInput(wbInput);
         sSelectorMux.setInput(2, wbInput);
         tSelectorMux.setInput(2, wbInput);
@@ -207,7 +207,7 @@ public class InstructionDecode {
      * @param wbSelectorInput what to set WB selector input to
      * @return Instruction Decode
      */
-    public InstructionDecode setWBSelectorInput(Output<Number8> wbSelectorInput) {
+    public InstructionDecode setWBSelectorInput(Output<Value8> wbSelectorInput) {
         registerBank.setWbSelectorInput(wbSelectorInput);
         return this;
     }
@@ -217,7 +217,7 @@ public class InstructionDecode {
      * @param goInput what to set go to
      * @return Instruction Decode
      */
-    public InstructionDecode setGoInput(Output<Number8> goInput) {
+    public InstructionDecode setGoInput(Output<Value8> goInput) {
         decoder.setGo(goInput);
         return this;
     }
@@ -227,7 +227,7 @@ public class InstructionDecode {
      *
      * @return next program counter
      */
-    public Output<Number32> getNextPcOutput() {
+    public Output<Value32> getNextPcOutput() {
         return adder.getOutput();
     }
 
@@ -236,7 +236,7 @@ public class InstructionDecode {
      *
      * @return
      */
-    public Output<Number8> getJumpEnable() {
+    public Output<Value8> getJumpEnable() {
         return jumpEnable;
     }
 
@@ -246,7 +246,7 @@ public class InstructionDecode {
      * @param wbEnableInput what to set WB enable input to
      * @return Instruction Decode
      */
-    public InstructionDecode setWBEnableInput(Output<Number8> wbEnableInput) {
+    public InstructionDecode setWBEnableInput(Output<Value8> wbEnableInput) {
         registerBank.setWbEnableInput(wbEnableInput);
         return this;
     }
