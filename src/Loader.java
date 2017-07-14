@@ -78,6 +78,7 @@ public class Loader {
         String[] arr = line.split(",");
         int[] parts = new int[arr.length];
         Opcode opcode = null;
+        // Line contains data not an instruction
         if(parts.length == 1) {
             parts[0] =  Integer.parseUnsignedInt(arr[0], 16);
         }
@@ -101,10 +102,12 @@ public class Loader {
                 int s = parts[1];
                 int t = parts[2];
                 int immediate = parts[3];
+                // For branch instructions
                 if(opcode.isBranch) {
-                    int offset = (immediate - address - 4) & Short.MAX_VALUE;
+                    int offset = (immediate - address - 4) & 0xFFFF;
                     result = (opcode.getValue() << 26) + (s << 21) + (t << 16) + offset;
                 }
+                // For non-branch instructions
                 else {
                     result = (opcode.getValue() << 26) + (s << 21) + (t << 16) + immediate;
                 }

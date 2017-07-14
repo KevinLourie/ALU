@@ -90,7 +90,15 @@ public class CPU {
     public void test() throws IOException {
         loader.readFile("memoryInput.txt", 1);
         loader.readFile("memoryInput.txt", 2);
+        //TODO: Put in method to print out instructions
+        printInstructions();
         run();
+    }
+
+    public void printInstructions() {
+        for(int i = 0; i < 10; i++) {
+            System.out.printf("%x : %x%n", 4*i, memory[i]);
+        }
     }
 
     /**
@@ -106,7 +114,7 @@ public class CPU {
             i++;
             isHalt = halt.read();
             System.out.printf("CheckHalt %s%n", isHalt);
-        }  while(!isHalt.booleanValue());
+        }  while(!isHalt.booleanValue() && i < 85);
 
         for(int j = 0; j < registers.length; j++) {
             System.out.printf("R%d : %x%n", j, registers[j]);
