@@ -13,8 +13,10 @@ public enum Opcode {
     bltz(0x1, true),
     bne(0x5, true);
 
+    /** Opcode for instruction */
     public byte value;
 
+    /** For branch instructions */
     public boolean isBranch;
 
     Opcode(int value, boolean isBranch) {
@@ -29,5 +31,4 @@ public enum Opcode {
     public boolean isBranch() {
         return isBranch;
     }
-
 }
