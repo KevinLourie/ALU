@@ -31,12 +31,21 @@ public class InstructionDecode {
 
     private Multiplexer<Value32> tSelectorMux;
 
+    /** For turning off wbEnable and memoryWriteEnable if go is false */
+    Gate wbEnableGate;
+
+    /** For turning off memoryWriteEnable if go is false */
+    Gate memoryWriteEnableGate;
+
     /**
      * Constructor
      *
      * @param cycler cycler
      */
     InstructionDecode(Cycler cycler, int[] registers) {
+        wbEnableGate = new Gate(Gate.and2);
+        memoryWriteEnableGate = new Gate(Gate.and2);
+        // If go is false, then turn off WB enable
         adder = new Adder();
         sSelectorMux = new Multiplexer<>(3);
         tSelectorMux = new Multiplexer<>(3);
@@ -92,6 +101,10 @@ public class InstructionDecode {
         };
 
         // Internal wiring
+        // TODO: Fix method calls
+        wbEnableGate.setInput(1, decoder.getWbEnableOutput());
+        memoryWriteEnableGate.setInput(1, decoder.getMemoryWriteEnableOutput());
+
         sSelectorMux.setInput(0, registerBank.getSOutput());
         tSelectorMux.setInput(0, registerBank.getTOutput());
 
@@ -127,6 +140,11 @@ public class InstructionDecode {
     public InstructionDecode setTMuxIndex(Output<Value8> tMuxIndex) {
         tSelectorMux.setIndexInput(tMuxIndex);
         return this;
+    }
+
+    public void setGo(Output<Value8> goInput) {
+        wbEnableGate.setInput(0, goInput);
+        memoryWriteEnableGate.setInput(0, goInput);
     }
 
     /**
@@ -169,7 +187,7 @@ public class InstructionDecode {
     }
 
     public Output<Value8> getMemoryWriteEnableOutput() {
-        return decoder.getMemoryWriteEnableOutput();
+        return memoryWriteEnableGate.getOutput();
     }
 
     public Output<Value8> getWbMuxIndexOutput() {
@@ -181,7 +199,7 @@ public class InstructionDecode {
     }
 
     public Output<Value8> getWbEnableOutput() {
-        return decoder.getWbEnableOutput();
+        return wbEnableGate.getOutput();
     }
 
     public Output<Value8> getHaltOutput() {
@@ -209,16 +227,6 @@ public class InstructionDecode {
      */
     public InstructionDecode setWBSelectorInput(Output<Value8> wbSelectorInput) {
         registerBank.setWbSelectorInput(wbSelectorInput);
-        return this;
-    }
-
-    /**
-     * Setter for go
-     * @param goInput what to set go to
-     * @return Instruction Decode
-     */
-    public InstructionDecode setGoInput(Output<Value8> goInput) {
-        decoder.setGo(goInput);
         return this;
     }
 

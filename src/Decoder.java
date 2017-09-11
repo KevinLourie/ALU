@@ -61,8 +61,6 @@ public class Decoder {
 
     private Output<Value8> halt;
 
-    Output<Value8> go;
-
     /**
      * Generate outputs for each of the fields in the microinstruction. If go is false, instruction must be a no op
      */
@@ -70,19 +68,14 @@ public class Decoder {
         initMicrocode();
 
                 // If go is false, then turn off WB enable
-        wbEnableOutput = () -> new Value8(getMicroInstruction().isWbEnable() & go.read().byteValue(), "wbEnable");
+        wbEnableOutput = () -> new Value8(getMicroInstruction().isWbEnable(), "wbEnable");
         opcodeOutput = () -> new Value8(instructionInput.read().intValue() >>> 26, "value");
         aluMuxIndexOutput = () -> new Value8(getMicroInstruction().getAluMuxIndex(), "aluMuxIndex");
         // If go is false, do not branch
-        branchConditionOutput = () -> {
-            if(go.read().booleanValue()) {
-                return new Value8(getMicroInstruction().getBranchCondition(), "branchCondition");
-            }
-            return new Value8(0, "stall");
-        };
+        branchConditionOutput = () -> new Value8(getMicroInstruction().getBranchCondition(), "branchCondition");
         wbMuxIndexOutput = () -> new Value8(getMicroInstruction().getWbMuxIndex(), "wbMuxIndex");
         // If go is false, do not write to memory
-        memoryWriteEnableOutput = () -> new Value8(getMicroInstruction().isMemoryWriteEnable() & go.read().byteValue(), "memoryWriteEnable");
+        memoryWriteEnableOutput = () -> new Value8(getMicroInstruction().isMemoryWriteEnable(), "memoryWriteEnable");
         aluOpOutput = () -> new Value8(getMicroInstruction().getAluOp(), "aluOp");
         wbSelectorOutput = () -> opcodeOutput.read().byteValue() == 0 ? dSelectorOutput.read() : tSelectorOutput.read();
         sSelectorOutput = () -> new Value8((instructionInput.read().intValue() >>> 21) & 0x1F, "sSelector");
@@ -146,10 +139,6 @@ public class Decoder {
      */
     public void setInstructionInput(Output<Value32> instructionInput) {
         this.instructionInput = instructionInput;
-    }
-
-    public void setGo(Output<Value8> go) {
-        this.go = go;
     }
 
     /**

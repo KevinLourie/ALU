@@ -36,28 +36,25 @@ public class WbControlUnit {
         return tMuxIndexOutput;
     }
 
+    Decoder decoder = new Decoder();
+
     WbControlUnit(Cycler cycler) {
         wbSelectorLatch = new ShiftRegister<>("WbControlUnit.wbSelector", 2, Value8.zero, cycler);
         wbEnableLatch = new ShiftRegister<>("WbControlUnit.wbEnable", 2, Value8.zero, cycler);
         wbMuxIndexLatch = new ShiftRegister<>("WbControlUnit.wbMuxIndex", 2, Value8.zero, cycler);
         haltEnableLatch = new ShiftRegister<>("WbControlUnit.haltEnable", 2, Value8.zero, cycler);
-        sMuxIndexOutput = new Output<Value8>() {
-            @Override
-            public Value8 read() {
-                return computeMuxIndex(sSelectorInput.read(), "S");
-            }
-        };
-        tMuxIndexOutput = new Output<Value8>() {
-            @Override
-            public Value8 read() {
-                return computeMuxIndex(tSelectorInput.read(), "T");
-            }
-        };
-        goOutput = new Output<Value8>() {
-            @Override
-            public Value8 read() {
-                return Value8.one;
-            }
+        sMuxIndexOutput = () -> computeMuxIndex(sSelectorInput.read(), "S");
+        tMuxIndexOutput = () -> computeMuxIndex(tSelectorInput.read(), "T");
+        sSelectorInput = decoder.getSSelectorOutput();
+        tSelectorInput = decoder.getTSelectorOutput();
+        goOutput = () -> {
+            int sStall = determineGo(sSelectorInput.read());
+            int tStall = determineGo(tSelectorInput.read());
+            return new Value8(sStall == 0 && tStall == 0 ? 1 : 0, String.format("Go( %s, %s, %s, %s, %s)", sSelectorInput.read().intValue(),
+                    tSelectorInput.read().intValue(),
+                    wbMuxIndexLatch.getOutput(0).read().intValue(),
+                    wbSelectorLatch.getOutput(0).read().intValue(),
+                    wbEnableLatch.getOutput(1).read().intValue()));
         };
     }
 
@@ -75,13 +72,39 @@ public class WbControlUnit {
         Value8 wbEnable1 = wbEnableLatch.getOutput(1).read();
         Value8 wbSelector1 = wbSelectorLatch.getOutput(1).read();
         String src = String.format("%sMuxIndex(%s, %s, %s, %s, %s, %s)", name, wbMuxIndex, selector, wbEnable0, wbSelector0, wbEnable1, wbSelector1);
-        if(wbMuxIndex.intValue() == 1 && wbEnable0.intValue() == 1 && selector == wbSelector0) {
+        if(wbEnable0.intValue() == 1 && selector == wbSelector0) {
             return new Value8(1, src);
         }
         else if(wbEnable1.intValue() == 1 && selector == wbSelector1) {
             return new Value8(2, src);
         }
         return new Value8(0, src);
+    }
+
+    /**
+     * Determine if a stall needs to be done for load
+     * @param selector data being used in instruction
+     * @return stall or not stall
+     */
+    private int determineGo(Value8 selector) {
+        Value8 wbMuxIndex = wbMuxIndexLatch.getOutput(0).read();
+        Value8 wbSelector0 = wbSelectorLatch.getOutput(0).read();
+        Value8 wbEnable1 = wbEnableLatch.getOutput(1).read();
+        if(wbMuxIndex.intValue() == 0 && wbSelector0 == selector && wbEnable1.intValue() == 1) {
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Check if SSelector and/or TSelector are stall. If either or both are stall, do a stall
+     * @param selector SSelector or TSelector
+     */
+    private void checkStall(Value8 selector) {
+        if(determineGo(selector) == 1) {
+            // Do a stall and return
+        }
+        // Do not do a stall and return
     }
 
 
@@ -162,8 +185,8 @@ public class WbControlUnit {
     }
 
     /**
-     * Setter for latch inputs
-     * @param wbControlUnit latch inputs
+     * Setter for latch precomputedOutput
+     * @param wbControlUnit latch precomputedOutput
      */
     public void setLatchInputs(WbControlUnit wbControlUnit) {
         setWbEnableInput(wbControlUnit.getWbEnableOutput());

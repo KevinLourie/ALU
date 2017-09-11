@@ -4,60 +4,63 @@
  */
 public class Alu {
 
-    /** First number */
+    /**
+     * First number
+     */
     private Output<Value32> input0;
 
-    /** Second number */
+    /**
+     * Second number
+     */
     private Output<Value32> input1;
 
-    /** Result number */
+    /**
+     * Result number
+     */
     private Output<Value32> output;
 
-    /** ALU control */
+    /**
+     * ALU control
+     */
     private Output<Value8> aluOp;
 
     Alu() {
-        output = new Output<Value32>() {
-            /**
-             * Read 2 numbers. Perform operation specified by the aluOp field.
-             * @return output
-             */
-            @Override
-            public Value32 read() {
-                // Number32 s32 = input0.read();
-                // int s = s32;
-
-                Value32 sN = input0.read();
-                int s = sN.intValue();
-                Value32 tN = input1.read();
-                int t = tN.intValue();
-                int d = 0;
-                Value8 opN = aluOp.read();
-                switch (opN.intValue()) {
-                    case AluOp.Add:
-                        d = s + t;
-                        break;
-                    case AluOp.Subtract:
-                        d = s - t;
-                        break;
-                    case AluOp.Multiply:
-                        d = s * t;
-                        break;
-                    case AluOp.Divide:
-                        d = s / t;
-                        break;
-                    case AluOp.ShiftRightLogical:
-                        // TODO: Fix by using shamt
-                        d = t;
-                }
-                // return new Number32(d, String.format("%d=Alu(%s, %s)", d, s32, t32));
-                return new Value32(d, String.format("Alu(%s, %s, %s)", sN, tN, opN));
+        /**
+         * Read 2 numbers. Perform operation specified by the aluOp field.
+         * @return output
+         */
+        output = () -> {
+            Value32 sN = input0.read();
+            int s = sN.intValue();
+            Value32 tN = input1.read();
+            int t = tN.intValue();
+            int d = 0;
+            Value8 opN = aluOp.read();
+            switch (opN.intValue()) {
+                case AluOp.Add:
+                    d = s + t;
+                    break;
+                case AluOp.Subtract:
+                    d = s - t;
+                    break;
+                case AluOp.Multiply:
+                    d = s * t;
+                    break;
+                case AluOp.Divide:
+                    d = s / t;
+                    break;
+                case AluOp.ShiftRightLogical:
+                    // TODO: Fix by using shamt
+                    d = t;
             }
+            // return new Number32(d, String.format("%d=Alu(%s, %s)", d, s32, t32));
+            return new Value32(d, String.format("Alu(%s, %s, %s)", sN, tN, opN));
         };
     }
 
     /**
      * Initialize first input
+     *
      * @param input0 first input
      * @return Alu
      */
@@ -68,6 +71,7 @@ public class Alu {
 
     /**
      * Initialize second input
+     *
      * @param input1 second input
      * @return Alu
      */
@@ -78,6 +82,7 @@ public class Alu {
 
     /**
      * Initialize operator
+     *
      * @param operator operator
      * @return Alu
      */

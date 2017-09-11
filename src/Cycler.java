@@ -9,7 +9,7 @@ public class Cycler {
     private ArrayList<ICycle> cycles = new ArrayList<>();
 
     /**
-     * Sense all inputs. Cycle all registers
+     * Sense all precomputedOutput. Cycle all registers
      */
     public void senseAndCycle() {
         for(ICycle cycle : cycles) {

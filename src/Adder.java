@@ -27,7 +27,7 @@ public class Adder {
     }
 
     /**
-     * Initialize inputs
+     * Initialize precomputedOutput
      * @param input1 first input
      * @param input2 second input
      */

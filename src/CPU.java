@@ -72,7 +72,7 @@ public class CPU {
                 .setTMuxIndex(wbControlUnit.getTMuxIndexOutput())
                 .setNextPcInput(instructionFetch.getNextPcOutput())
                 // TODO: set go input properly
-                .setGoInput(wbControlUnit.getGoOutput());
+                .setGo(wbControlUnit.getGoOutput());
         execute
                 .setSInput(instructionDecode.getSOutput())
                 .setTInput(instructionDecode.getTOutput())

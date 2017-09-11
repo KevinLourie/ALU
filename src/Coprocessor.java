@@ -21,6 +21,7 @@ public class Coprocessor {
     /** Contains the lower 32 bits of the hilo register */
     Output<Value32> loOutput;
 
+    /** For multiplication and division */
     Mdu mdu;
 
     Coprocessor(Cycler cycler) {

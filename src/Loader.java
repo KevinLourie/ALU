@@ -79,6 +79,7 @@ public class Loader {
             parts[0] =  Integer.parseUnsignedInt(arr[0], 16);
         }
         else {
+            // Checking for symbol on line
             if(line.contains(":")) {
                 type = line.substring(line.indexOf(":")+1, line.indexOf(","));
                 opcode = Opcode.valueOf(type);
@@ -88,6 +89,7 @@ public class Loader {
             }
             parts[0] = opcode.getValue();
             for (int i = 1; i < arr.length; i++) {
+                // Checking for symbol as jump address
                 if (Character.isAlphabetic(arr[i].charAt(0))) {
                     parts[i] = symbols.get(arr[i]);
                 }

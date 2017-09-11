@@ -3,6 +3,7 @@
  */
 public abstract class Value extends Number {
 
+    /** Source of the value */
     protected String src;
 
     public String toString() {

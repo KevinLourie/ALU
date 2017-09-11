@@ -56,7 +56,7 @@ public class Execute {
      * @return Execute
      */
     public Execute setSInput(Output<Value32> sInput) {
-        // TODO: add correct enable inputs
+        // TODO: add correct enable precomputedOutput
         sLatch.setInput(sInput);
         return this;
     }
@@ -67,7 +67,7 @@ public class Execute {
      * @return Execute
      */
     public Execute setTInput(Output<Value32> tInput) {
-        // TODO: add correct enable inputs
+        // TODO: add correct enable precomputedOutput
         tLatch.setInput(tInput);
         return this;
     }
@@ -78,7 +78,7 @@ public class Execute {
      * @return Execute
      */
     public Execute setCInput(Output<Value32> cInput) {
-        // TODO: add correct enable inputs
+        // TODO: add correct enable precomputedOutput
         cLatch.setInput(cInput);
         return this;
     }
