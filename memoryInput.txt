@@ -1,12 +1,9 @@
 lda,0,1,400
 lda,0,2,404
 skip:lda,4,3,408
-0
-0
 reg,3,5,5,0,20
 reg,1,4,4,0,20
 bne,2,4,skip
-0
 halt,0
 .data
 4

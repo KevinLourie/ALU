@@ -4,14 +4,10 @@
  */
 public class Gate {
 
-    /**
-     * Constant for and of two precomputedOutput
-     */
+    /** Constant for and of two precomputedOutput */
     static int[] and2 = {0, 0, 0, 1};
 
-    /**
-     * Constant for or of two precomputedOutput
-     */
+    /** Constant for or of two precomputedOutput */
     static int[] or2 = {0, 1, 1, 1};
 
     /**
@@ -31,14 +27,10 @@ public class Gate {
      */
     int[] precomputedOutput;
 
-    /**
-     * Input array
-     */
+    /** Input array */
     Output<Value8>[] inputs;
 
-    /**
-     * Either 1 or 2 for output
-     */
+    /** Either 0 or 1 for output*/
     Output<Value8> gateOutput;
 
     /**
@@ -60,10 +52,19 @@ public class Gate {
         };
     }
 
+    /**
+     * Setter for inputs
+     * @param index index for input
+     * @param input what to put at index
+     */
     public void setInput(int index, Output<Value8> input) {
         inputs[index] = input;
     }
 
+    /**
+     * Getter for gate output
+     * @return gate output
+     */
     public Output<Value8> getOutput() {
         return gateOutput;
     }
