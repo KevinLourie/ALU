@@ -48,10 +48,13 @@ public class WbControlUnit {
         sSelectorInput = decoder.getSSelectorOutput();
         tSelectorInput = decoder.getTSelectorOutput();
         goOutput = () -> {
-            int sStall = determineGo(sSelectorInput.read());
-            int tStall = determineGo(tSelectorInput.read());
-            return new Value8(sStall == 0 && tStall == 0 ? 1 : 0, String.format("Go( %s, %s, %s, %s, %s)", sSelectorInput.read().intValue(),
-                    tSelectorInput.read().intValue(),
+            final int sSelectorInputValue = sSelectorInput.read().intValue();
+            int sStall = determineGo(sSelectorInputValue);
+            final int tSelectorInputValue = tSelectorInput.read().intValue();
+            int tStall = determineGo(tSelectorInputValue);
+            return new Value8(sStall == 0 && tStall == 0 ? 1 : 0, String.format("Go( %s, %s, %s, %s, %s)",
+                    sSelectorInputValue,
+                    tSelectorInputValue,
                     wbMuxIndexLatch.getOutput(0).read().intValue(),
                     wbSelectorLatch.getOutput(0).read().intValue(),
                     wbEnableLatch.getOutput(1).read().intValue()));
@@ -86,27 +89,26 @@ public class WbControlUnit {
      * @param selector data being used in instruction
      * @return stall or not stall
      */
-    private int determineGo(Value8 selector) {
-        Value8 wbMuxIndex = wbMuxIndexLatch.getOutput(0).read();
-        Value8 wbSelector0 = wbSelectorLatch.getOutput(0).read();
-        Value8 wbEnable1 = wbEnableLatch.getOutput(1).read();
-        if(wbMuxIndex.intValue() == 0 && wbSelector0 == selector && wbEnable1.intValue() == 1) {
+    private int determineGo(int selector) {
+        // This means that the data has not yet been fetched from memory. If the
+        // next instruction uses the data loaded from memory, it will not have the correct value.
+        int wbMuxIndex = wbMuxIndexLatch.getOutput(0).read().intValue();
+        boolean notYetFetched = wbMuxIndex == 0;
+
+        // This will check if the data being used in the load is the same as the data being used in the next
+        // instruction.
+        int wbSelector0 = wbSelectorLatch.getOutput(0).read().intValue();
+        boolean dataIsSame = wbSelector0 == selector;
+
+        // This means a write back will occur, but not yet.
+        int wbEnable1 = wbEnableLatch.getOutput(1).read().intValue();
+        boolean willWriteBack = wbEnable1 == 1;
+
+        if(notYetFetched && dataIsSame && willWriteBack) {
             return 1;
         }
         return 0;
     }
-
-    /**
-     * Check if SSelector and/or TSelector are stall. If either or both are stall, do a stall
-     * @param selector SSelector or TSelector
-     */
-    private void checkStall(Value8 selector) {
-        if(determineGo(selector) == 1) {
-            // Do a stall and return
-        }
-        // Do not do a stall and return
-    }
-
 
     public WbControlUnit setSSelectorInput(Output<Value8> sSelectorInput) {
         this.sSelectorInput = sSelectorInput;

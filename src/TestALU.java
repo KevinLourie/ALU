@@ -6,8 +6,9 @@ import java.util.logging.*;
  */
 public class TestALU {
 
+    static public CPU cpu = new CPU();
+
     public static void main(String[] args) throws IOException {
-        CPU cpu = new CPU();
         cpu.test();
     }
 
