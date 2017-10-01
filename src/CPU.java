@@ -61,7 +61,8 @@ public class CPU {
                 .setHaltEnableLatch(instructionDecode.getHaltOutput());
         instructionFetch
                 .setJumpAddressInput(instructionDecode.getNextPcOutput())
-                .setJumpEnableInput(instructionDecode.getJumpEnable());
+                .setJumpEnableInput(instructionDecode.getJumpEnable())
+                .setGo(wbControlUnit.getGoOutput());
         instructionDecode
                 .setInstructionInput(instructionFetch.getInstructionOutput())
                 .setWBSelectorInput(wbControlUnit.getWbSelectorOutput())
@@ -71,7 +72,6 @@ public class CPU {
                 .setSMuxIndex(wbControlUnit.getSMuxIndexOutput())
                 .setTMuxIndex(wbControlUnit.getTMuxIndexOutput())
                 .setNextPcInput(instructionFetch.getNextPcOutput())
-                // TODO: set go input properly
                 .setGo(wbControlUnit.getGoOutput());
         execute
                 .setSInput(instructionDecode.getSOutput())

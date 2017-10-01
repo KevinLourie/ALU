@@ -37,9 +37,6 @@ public class InstructionDecode {
     /** For turning off memoryWriteEnable if go is false */
     Gate memoryWriteEnableGate;
 
-    /** For controlling whether a branch is done or not */
-    Gate jumpEnableGate;
-
     /**
      * Constructor
      *
@@ -48,7 +45,7 @@ public class InstructionDecode {
     InstructionDecode(Cycler cycler, int[] registers) {
         wbEnableGate = new Gate(Gate.and2);
         memoryWriteEnableGate = new Gate(Gate.and2);
-        jumpEnableGate = new Gate(Gate.and2);
+
         // If go is false, then turn off WB enable
         adder = new Adder();
         sSelectorMux = new Multiplexer<>(3);
@@ -56,12 +53,14 @@ public class InstructionDecode {
         registerBank = new RegisterBank(cycler, registers);
         decoder = new Decoder();
         instructionRegister = new Register<>("InstructionDecode.instruction", Value32.zero, cycler);
+
         registerBank
                 .setSSelectorInput(decoder.getSSelectorOutput())
                 .setTSelectorInput(decoder.getTSelectorOutput());
+
         nextPcLatch = new Register<>("InstructionDecode.nextPcLatch", Value32.zero, cycler);
 
-        // Determine if jump is enabled
+        // Determine if a jump should be made
         jumpEnable = () -> {
             // Check if jump is enabled
             Value8 branchCondition = decoder.getBranchConditionOutput().read();
@@ -107,7 +106,6 @@ public class InstructionDecode {
         // Internal wiring
         wbEnableGate.setInput(1, decoder.getWbEnableOutput());
         memoryWriteEnableGate.setInput(1, decoder.getMemoryWriteEnableOutput());
-        jumpEnableGate.setInput(1, jumpEnable);
 
         sSelectorMux.setInput(0, registerBank.getSOutput());
         tSelectorMux.setInput(0, registerBank.getTOutput());
@@ -146,9 +144,9 @@ public class InstructionDecode {
     }
 
     public void setGo(Output<Value8> goInput) {
+        nextPcLatch.setEnableInput(goInput);
         wbEnableGate.setInput(0, goInput);
         memoryWriteEnableGate.setInput(0, goInput);
-        jumpEnableGate.setInput(0, goInput);
     }
 
     /**
@@ -249,7 +247,7 @@ public class InstructionDecode {
      * @return
      */
     public Output<Value8> getJumpEnable() {
-        return jumpEnableGate.getOutput();
+        return jumpEnable;
     }
 
     /**

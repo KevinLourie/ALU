@@ -52,7 +52,8 @@ public class WbControlUnit {
             int sStall = determineGo(sSelectorInputValue);
             final int tSelectorInputValue = tSelectorInput.read().intValue();
             int tStall = determineGo(tSelectorInputValue);
-            return new Value8(sStall == 0 && tStall == 0 ? 1 : 0, String.format("Go( %s, %s, %s, %s, %s)",
+            int go = sStall == 0 && tStall == 0 ? 1 : 0;
+            return new Value8(go, String.format("Go( %s, %s, %s, %s, %s)",
                     sSelectorInputValue,
                     tSelectorInputValue,
                     wbMuxIndexLatch.getOutput(0).read().intValue(),

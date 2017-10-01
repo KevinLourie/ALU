@@ -19,7 +19,7 @@ public class Register<T extends Value> implements ICycle {
     /** Input to register */
     private Output<T> input;
 
-    /** Controls whehter data is written to register */
+    /** Controls whether data is written to register */
     private Output<Value8> enableInput;
 
     /** Temporary enable */
@@ -32,6 +32,7 @@ public class Register<T extends Value> implements ICycle {
             return data;
         };
         cycler.add(this);
+        // By default, the register is always enabled
         this.enableInput = new ConstantOutput(Value8.one);
     }
 
