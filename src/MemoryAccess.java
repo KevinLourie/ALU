@@ -44,6 +44,14 @@ public class MemoryAccess {
         return this;
     }
 
+    public String toStringDelta() {
+        Joiner j = new Joiner(" ", "MemoryAccess(", ")");
+        j.add(resultLatch.toStringDelta());
+        j.add(tLatch.toStringDelta());
+        j.add(memoryWriteEnableLatch.toStringDelta());
+        return j.toString();
+    }
+
     /**
      * Initialize tLatch
      * @param tInput input to tLatch

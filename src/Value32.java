@@ -5,32 +5,19 @@ public class Value32 extends Value {
 
     private int n;
 
-    private String src;
+    public static final Value32 zero = new Value32(0);
 
-    public static final Value32 zero = new Value32(0, "constant");
-
-    public Value32(int n, String src) {
+    public Value32(int n) {
         this.n = n;
-        this.src = String.format("%x=%s", this.n, src);
     }
 
     @Override
-    public String toString() {
-        return src;
-    }
-
-    @Override
-    Value clone(String src) {
-        return new Value32(n, src);
-    }
-
-    @Override
-    public int intValue() {
-        return n;
+    public Value clone() {
+        return new Value32(n);
     }
 
     @Override
     public long longValue() {
-        return n;
+        return 0xffffffffL & (long)n;
     }
 }

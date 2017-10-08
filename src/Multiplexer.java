@@ -23,7 +23,7 @@ public class Multiplexer<T extends Value> {
         muxOutput = () -> {
             Value8 indexValue = index.read();
             T inputValue = inputArray[indexValue.byteValue()].read();
-            return (T)inputValue.clone(String.format("Mux(%s, %s)", inputValue, indexValue));
+            return (T)inputValue.clone();
         };
     }
 

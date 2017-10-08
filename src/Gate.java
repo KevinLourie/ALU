@@ -48,7 +48,7 @@ public class Gate {
                 index = (index << 1) + inputs[i].read().intValue();
                 name += inputs[i] + (i==0 ? ")" : ",");
             }
-            return new Value8(precomputedOutput[index], name);
+            return new Value8(precomputedOutput[index]);
         };
     }
 

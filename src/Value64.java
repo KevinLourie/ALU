@@ -5,28 +5,15 @@ public class Value64 extends Value {
 
     private long n;
 
-    private String src;
+    public static final Value64 zero = new Value64(0);
 
-    public static final Value64 zero = new Value64(0, "constant");
-
-    public Value64(long n, String src) {
+    public Value64(long n) {
         this.n = n;
-        this.src = String.format("%x=%s", this.n, src);
     }
 
     @Override
-    public String toString() {
-        return src;
-    }
-
-    @Override
-    Value clone(String src) {
-        return new Value64(n, src);
-    }
-
-    @Override
-    public int intValue() {
-        return (int)n;
+    public Value clone() {
+        return new Value64(n);
     }
 
     @Override

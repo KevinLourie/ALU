@@ -9,12 +9,18 @@ public class Cycler {
     private ArrayList<ICycle> cycles = new ArrayList<>();
 
     /**
-     * Sense all precomputedOutput. Cycle all registers
+     * Sense all precomputedOutput
      */
-    public void senseAndCycle() {
+    public void sense() {
         for(ICycle cycle : cycles) {
             cycle.sense();
         }
+    }
+
+    /**
+     * Cycle all registers.
+     */
+    public void cycle() {
         for(ICycle cycle : cycles) {
             cycle.cycle();
         }

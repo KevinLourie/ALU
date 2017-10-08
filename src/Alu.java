@@ -54,7 +54,7 @@ public class Alu {
                     d = t;
             }
             // return new Number32(d, String.format("%d=Alu(%s, %s)", d, s32, t32));
-            return new Value32(d, String.format("Alu(%s, %s, %s)", sN, tN, opN));
+            return new Value32(d);
         };
     }
 

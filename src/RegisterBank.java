@@ -43,13 +43,13 @@ public class RegisterBank implements ICycle {
             // Fetch S register
             Value8 address = sSelectorInput.read();
             int data = registers[address.byteValue()];
-            return new Value32(data, String.format("S(%s)", address));
+            return new Value32(data);
         };
         tOutput = () -> {
             // Fetch T register
             Value8 address = tSelectorInput.read();
             int data = registers[address.byteValue()];
-            return new Value32(data, String.format("T(%s)", address));
+            return new Value32(data);
         };
         cycler.add(this);
     }
@@ -104,6 +104,18 @@ public class RegisterBank implements ICycle {
         return this;
     }
 
+    public String toStringDelta() {
+        // Nothing has been written back
+        if(tempWb == null) {
+            return null;
+        }
+        final int wbSelectorValue = tempWbSelector.intValue();
+        if(tempWb.equals(registers[wbSelectorValue])) {
+            return null;
+        }
+        return "R" + wbSelectorValue + ":" + String.format("%x", tempWb.intValue());
+    }
+
     /**
      * Write data to memory
      */
@@ -117,16 +129,13 @@ public class RegisterBank implements ICycle {
     @Override
     public void sense() {
         tempWbEnable = wbEnableInput.read();
-        System.out.print("WB");
         if (tempWbEnable.booleanValue()) {
             tempWb = wbInput.read();
             tempWbSelector = wbSelectorInput.read();
-            System.out.printf("(%s) <- %s", tempWbSelector, tempWb);
         } else {
             tempWb = null;
             tempWbSelector = null;
         }
-        System.out.printf(" enable(%s)%n", tempWbEnable);
     }
 
     /**

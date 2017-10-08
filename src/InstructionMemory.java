@@ -24,7 +24,7 @@ public class InstructionMemory {
             // Fetching 4 bytes at a time
             Value32 address = instructionAddressInput.read();
             int data = arr[address.intValue() / 4];
-            return new Value32(data, String.format("InstructionMemory(%s)", address));
+            return new Value32(data);
         };
     }
 

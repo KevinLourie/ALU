@@ -10,6 +10,7 @@ public class CPU {
 
     Loader loader;
 
+    /** Collection of registers */
     private int[] registers = new int[32];
 
     private int[] memory = new int[1 << 22];
@@ -110,18 +111,40 @@ public class CPU {
         Value8 isHalt;
         do {
             System.out.printf("%n========== Cycle %d%n", i);
-            cycler.senseAndCycle();
+            cycler.sense();
+            toStringDelta();
+            cycler.cycle();
             i++;
             isHalt = halt.read();
             System.out.printf("CheckHalt %s%n", isHalt);
         }  while(!isHalt.booleanValue() && i < 85);
 
-        for(int j = 0; j < registers.length; j++) {
-            System.out.printf("R%d : %x%n", j, registers[j]);
-        }
         for(int k = 0; k < 31; k++) {
             System.out.printf("%x : %x%n", 1024 + (4*k), memory[k+256]);
         }
         System.out.printf("Completed in %d cycles%n", i);
+    }
+
+    public void toStringDelta() {
+        String instructionFetchString = instructionFetch.toStringDelta();
+        if(instructionFetchString != null) {
+            System.out.println(instructionFetchString);
+        }
+        String instructionDecodeString = instructionDecode.toStringDelta();
+        if(instructionDecodeString != null) {
+            System.out.println(instructionDecodeString);
+        }
+        String executeString = execute.toStringDelta();
+        if(executeString != null) {
+            System.out.println(executeString);
+        }
+        String memoryAccessString = memoryAccess.toStringDelta();
+        if(memoryAccessString != null) {
+            System.out.println(memoryAccessString);
+        }
+        String wbControlUnitString = wbControlUnit.toStringDelta();
+        if(wbControlUnitString != null) {
+            System.out.println(wbControlUnitString);
+        }
     }
 }

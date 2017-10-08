@@ -39,7 +39,7 @@ public class DataMemory implements ICycle {
             // Fetching 4 bytes at a time
             Value32 address = dataAddressInput.read();
             int data = arr[address.intValue() / 4];
-            return new Value32(data, String.format("DataMemory(%s)", address));
+            return new Value32(data);
         };
         cycler.add(this);
     }
@@ -77,15 +77,12 @@ public class DataMemory implements ICycle {
     @Override
     public void sense() {
         tempEnable = enableInput.read();
-        System.out.print("DataMemory");
         if(tempEnable.booleanValue()) {
             tempData = dataInput.read();
             tempDataAddress = dataAddressInput.read();
-            System.out.printf("(%s) write %s", tempDataAddress, tempData);
         } else {
             tempData = null;
             tempDataAddress = null;
         }
-        System.out.printf(" enable(%s)%n", tempEnable);
     }
 }

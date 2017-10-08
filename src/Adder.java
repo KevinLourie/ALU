@@ -21,7 +21,7 @@ public class Adder {
             public Value32 read() {
                 Value32 i1 = input1.read();
                 Value32 i2 = input2.read();
-                return new Value32(i1.intValue() + i2.intValue(), String.format("Adder(%s, %s)", i1, i2));
+                return new Value32(i1.intValue() + i2.intValue());
             }
         };
     }

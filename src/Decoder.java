@@ -68,24 +68,24 @@ public class Decoder {
         initMicrocode();
 
                 // If go is false, then turn off WB enable
-        wbEnableOutput = () -> new Value8(getMicroInstruction().isWbEnable(), "wbEnable");
-        opcodeOutput = () -> new Value8(instructionInput.read().intValue() >>> 26, "value");
-        aluMuxIndexOutput = () -> new Value8(getMicroInstruction().getAluMuxIndex(), "aluMuxIndex");
+        wbEnableOutput = () -> new Value8(getMicroInstruction().isWbEnable());
+        opcodeOutput = () -> new Value8(instructionInput.read().intValue() >>> 26);
+        aluMuxIndexOutput = () -> new Value8(getMicroInstruction().getAluMuxIndex());
         // If go is false, do not branch
-        branchConditionOutput = () -> new Value8(getMicroInstruction().getBranchCondition(), "branchCondition");
-        wbMuxIndexOutput = () -> new Value8(getMicroInstruction().getWbMuxIndex(), "wbMuxIndex");
+        branchConditionOutput = () -> new Value8(getMicroInstruction().getBranchCondition());
+        wbMuxIndexOutput = () -> new Value8(getMicroInstruction().getWbMuxIndex());
         // If go is false, do not write to memory
-        memoryWriteEnableOutput = () -> new Value8(getMicroInstruction().isMemoryWriteEnable(), "memoryWriteEnable");
-        aluOpOutput = () -> new Value8(getMicroInstruction().getAluOp(), "aluOp");
+        memoryWriteEnableOutput = () -> new Value8(getMicroInstruction().isMemoryWriteEnable());
+        aluOpOutput = () -> new Value8(getMicroInstruction().getAluOp());
         wbSelectorOutput = () -> opcodeOutput.read().byteValue() == 0 ? dSelectorOutput.read() : tSelectorOutput.read();
-        sSelectorOutput = () -> new Value8((instructionInput.read().intValue() >>> 21) & 0x1F, "sSelector");
-        tSelectorOutput = () -> new Value8((instructionInput.read().intValue() >>> 16) & 0x1F, "tSelector");
-        dSelectorOutput = () -> new Value8((instructionInput.read().intValue() >>> 11) & 0x1F, "dSelector");
-        immediateOutput = () -> new Value32((short)(instructionInput.read().intValue() & 0xFFFF), "immediate");
-        functOutput = () -> new Value8(instructionInput.read().intValue() & 0x3F, "funct");
-        shamtOutput = () -> new Value8((instructionInput.read().intValue() >>> 6) & 0x1F, "shamt");
+        sSelectorOutput = () -> new Value8((instructionInput.read().intValue() >>> 21) & 0x1F);
+        tSelectorOutput = () -> new Value8((instructionInput.read().intValue() >>> 16) & 0x1F);
+        dSelectorOutput = () -> new Value8((instructionInput.read().intValue() >>> 11) & 0x1F);
+        immediateOutput = () -> new Value32((short)(instructionInput.read().intValue() & 0xFFFF));
+        functOutput = () -> new Value8(instructionInput.read().intValue() & 0x3F);
+        shamtOutput = () -> new Value8((instructionInput.read().intValue() >>> 6) & 0x1F);
         // Don't need to stall halt because it cannot have a data hazard
-        halt = () -> new Value8(getMicroInstruction().isWait(), "halt");
+        halt = () -> new Value8(getMicroInstruction().isWait());
     }
 
     private void initMicrocode() {

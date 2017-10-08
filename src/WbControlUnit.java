@@ -53,12 +53,7 @@ public class WbControlUnit {
             final int tSelectorInputValue = tSelectorInput.read().intValue();
             int tStall = determineGo(tSelectorInputValue);
             int go = sStall == 0 && tStall == 0 ? 1 : 0;
-            return new Value8(go, String.format("Go( %s, %s, %s, %s, %s)",
-                    sSelectorInputValue,
-                    tSelectorInputValue,
-                    wbMuxIndexLatch.getOutput(0).read().intValue(),
-                    wbSelectorLatch.getOutput(0).read().intValue(),
-                    wbEnableLatch.getOutput(1).read().intValue()));
+            return new Value8(go);
         };
     }
 
@@ -77,12 +72,12 @@ public class WbControlUnit {
         Value8 wbSelector1 = wbSelectorLatch.getOutput(1).read();
         String src = String.format("%sMuxIndex(%s, %s, %s, %s, %s, %s)", name, wbMuxIndex, selector, wbEnable0, wbSelector0, wbEnable1, wbSelector1);
         if(wbEnable0.intValue() == 1 && selector == wbSelector0) {
-            return new Value8(1, src);
+            return new Value8(1);
         }
         else if(wbEnable1.intValue() == 1 && selector == wbSelector1) {
-            return new Value8(2, src);
+            return new Value8(2);
         }
-        return new Value8(0, src);
+        return new Value8(0);
     }
 
     /**
@@ -96,12 +91,12 @@ public class WbControlUnit {
         int wbMuxIndex = wbMuxIndexLatch.getOutput(0).read().intValue();
         boolean notYetFetched = wbMuxIndex == 0;
 
-        // This will check if the data being used in the load is the same as the data being used in the next
-        // instruction.
+        // Check if the data being used in the load is the same as the data being used in the next instruction.
         int wbSelector0 = wbSelectorLatch.getOutput(0).read().intValue();
         boolean dataIsSame = wbSelector0 == selector;
 
-        // This means a write back will occur, but not yet.
+        // Check if a write back will occur, but not yet.
+        // TODO: It seems like this should be wbEnable0, not wbEnable1. However, then R5 is never written.
         int wbEnable1 = wbEnableLatch.getOutput(1).read().intValue();
         boolean willWriteBack = wbEnable1 == 1;
 
@@ -114,6 +109,15 @@ public class WbControlUnit {
     public WbControlUnit setSSelectorInput(Output<Value8> sSelectorInput) {
         this.sSelectorInput = sSelectorInput;
         return this;
+    }
+
+    public String toStringDelta() {
+        Joiner j = new Joiner(" ", "Execute(", ")");
+        j.add(haltEnableLatch.toStringDelta());
+        j.add(wbEnableLatch.toStringDelta());
+        j.add(wbMuxIndexLatch.toStringDelta());
+        j.add(wbSelectorLatch.toStringDelta());
+        return j.toString();
     }
 
     public WbControlUnit setTSelectorInput(Output<Value8> tSelectorInput) {

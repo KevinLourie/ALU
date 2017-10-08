@@ -37,7 +37,7 @@ public class Execute {
         tLatch = new Register<>("Execute.t", Value32.zero, cycler);
         cLatch = new Register<>("Execute.c", Value32.zero, cycler);
         memoryWriteEnableLatch = new Register<>("Execute.memoryWriteEnable", Value8.one, cycler);
-        aluOpLatch = new Register<>("Execute.aluOp", new Value8(AluOp.Add, "Constant"), cycler);
+        aluOpLatch = new Register<>("Execute.aluOp", new Value8(AluOp.Add), cycler);
 
         // Internal wire
         alu
@@ -48,6 +48,17 @@ public class Execute {
                 .setIndexInput(aluMuxIndexLatch.getOutput())
                 .setInput(0, tLatch.getOutput())
                 .setInput(1, cLatch.getOutput());
+    }
+
+    public String toStringDelta() {
+        Joiner j = new Joiner(" ", "Execute(", ")");
+        j.add(sLatch.toStringDelta());
+        j.add(tLatch.toStringDelta());
+        j.add(aluOpLatch.toStringDelta());
+        j.add(cLatch.toStringDelta());
+        j.add(memoryWriteEnableLatch.toStringDelta());
+        j.add(aluMuxIndexLatch.toStringDelta());
+        return j.toString();
     }
 
     /**

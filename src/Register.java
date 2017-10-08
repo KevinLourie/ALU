@@ -7,7 +7,7 @@ public class Register<T extends Value> implements ICycle {
     /** Name of register */
     private String name;
 
-    /** Data type of register */
+    /** Data in register */
     private T data;
 
     /** Temporary data */
@@ -37,6 +37,19 @@ public class Register<T extends Value> implements ICycle {
     }
 
     /**
+     * Check if a register's data has changed between cycles
+     * @return true if it has changed, false is not
+     */
+    public String toStringDelta() {
+        return tempData == null || tempData.equals(data) ? null : toString();
+    }
+
+    @Override
+    public String toString() {
+        return name + ":" + tempData.toString();
+    }
+
+    /**
      * Setter for enable input
      * @param enableInput enable input
      * @return register
@@ -62,22 +75,19 @@ public class Register<T extends Value> implements ICycle {
     @Override
     public void cycle() {
         if (tempEnable.booleanValue()) {
-            data = (T)tempData.clone(name);
+            data = (T)tempData.clone();
         }
     }
 
     @Override
     public void sense() {
         tempEnable = enableInput.read();
-        System.out.print(name);
         if (tempEnable.booleanValue()) {
             T inputValue = input.read();
-            System.out.printf(" <- %s", inputValue);
             tempData = inputValue;
         } else {
             tempData = null;
         }
-        System.out.printf(" enable(%s)%n", tempEnable);
     }
 
     /**

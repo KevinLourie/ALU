@@ -26,7 +26,7 @@ public class InstructionFetch {
         pcMux = new Multiplexer<>(2);
 
         // Internal wiring
-        adder.init(pc.getOutput(), new ConstantOutput<Value32>(new Value32(4, "constant")));
+        adder.init(pc.getOutput(), new ConstantOutput<Value32>(new Value32(4)));
         pc.setInput(pcMux.getOutput());
         instructionMemory.setAddressInput(pc.getOutput());
         pcMux.setInput(0, adder.getOutput());
@@ -50,6 +50,12 @@ public class InstructionFetch {
     public InstructionFetch setJumpEnableInput(Output<Value8> jumpEnableInput) {
         pcMux.setIndexInput(jumpEnableInput);
         return this;
+    }
+
+    public String toStringDelta() {
+        Joiner j = new Joiner(" ", "InstructionFetch(", ")");
+        j.add(pc.toStringDelta());
+        return j.toString();
     }
 
     /**

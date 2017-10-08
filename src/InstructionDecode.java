@@ -100,7 +100,7 @@ public class InstructionDecode {
                 default:
                     throw new RuntimeException("Bad branch condition");
             }
-            return new Value8(branch, src);
+            return new Value8(branch);
         };
 
         // Internal wiring
@@ -114,6 +114,14 @@ public class InstructionDecode {
                 .setInput2(decoder.getImmediateOutput());
 
         decoder.setInstructionInput(instructionRegister.getOutput());
+    }
+
+    public String toStringDelta() {
+        Joiner j = new Joiner(" ", "InstructionDecode(", ")");
+        j.add(registerBank.toStringDelta());
+        j.add(nextPcLatch.toStringDelta());
+        j.add(instructionRegister.toStringDelta());
+        return j.toString();
     }
 
     /**

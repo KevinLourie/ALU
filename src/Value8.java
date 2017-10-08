@@ -5,28 +5,22 @@ public class Value8 extends Value {
 
     private byte n;
 
-    public static final Value8 zero = new Value8(0, "constant");
+    public static final Value8 zero = new Value8(0);
 
-    public static final Value8 one = new Value8(1, "constant");
+    public static final Value8 one = new Value8(1);
 
-    public Value8(int n, String src) {
+    public Value8(int n) {
         this.n = (byte)n;
-        this.src = String.format("%x=%s", this.n, src);
-    }
-
-    @Override
-    public int intValue() {
-        return n;
     }
 
     @Override
     public long longValue() {
-        return n;
+        return 0xffL & (long)n;
     }
 
 
     @Override
-    Value clone(String src) {
-        return new Value8(n, src);
+    public Value clone() {
+        return new Value8(n);
     }
 }

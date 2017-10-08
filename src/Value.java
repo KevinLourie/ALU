@@ -3,16 +3,18 @@
  */
 public abstract class Value extends Number {
 
-    /** Source of the value */
-    protected String src;
-
     public String toString() {
-        return src;
+        return String.format("%x", longValue());
     }
 
     @Override
     public float floatValue() {
         return intValue();
+    }
+
+    @Override
+    public int intValue() {
+        return (int)longValue();
     }
 
     @Override
@@ -24,5 +26,10 @@ public abstract class Value extends Number {
         return intValue() != 0;
     }
 
-    abstract Value clone(String newSrc);
+    @Override
+    public boolean equals(Object obj) {
+        return longValue() == ((Number)obj).longValue();
+    }
+
+    public abstract Value clone();
 }

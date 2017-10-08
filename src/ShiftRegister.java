@@ -78,16 +78,17 @@ public class ShiftRegister<T extends Value> implements ICycle {
         tempEnable = enableInput.read();
         if (tempEnable.booleanValue()) {
             T inputValue = input.read();
-            tempData[0] = (T)inputValue.clone(String.format("%s(0)", name));
-            System.out.printf("%s <- %s", name, inputValue);
+            tempData[0] = (T)inputValue.clone();
             for(int i = 1; i < data.length; i++) {
-                tempData[i] = (T)data[i-1].clone(String.format("%s(%d)", name, i));
-                System.out.printf(" %s", data[i-1]);
+                tempData[i] = (T)data[i-1].clone();
             }
-            System.out.printf(" enable(%s)%n", tempEnable);
         } else {
             tempData = null;
         }
+    }
+
+    public String toStringDelta() {
+        return tempData == null || tempData.equals(data) ? "" : toString();
     }
 
     /**

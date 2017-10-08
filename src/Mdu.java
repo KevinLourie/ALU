@@ -35,7 +35,7 @@ public class Mdu {
                         d = s / t;
                         break;
                 }
-                return new Value64(d, "Mdu");
+                return new Value64(d);
             }
         };
     }
