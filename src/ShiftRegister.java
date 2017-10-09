@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 /**
  * General register class.
  * Created by kzlou on 4/1/2017.
@@ -87,8 +89,16 @@ public class ShiftRegister<T extends Value> implements ICycle {
         }
     }
 
+    public String toString() {
+        Joiner joiner = new Joiner(" ", name + "(", ")");
+        for(int i = 0; i < tempData.length; i++) {
+            joiner.add(tempData[i].toString());
+        }
+        return joiner.toString();
+    }
+
     public String toStringDelta() {
-        return tempData == null || tempData.equals(data) ? "" : toString();
+        return tempData == null || Arrays.equals(tempData, data) ? null : toString();
     }
 
     /**

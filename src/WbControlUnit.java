@@ -43,8 +43,8 @@ public class WbControlUnit {
         wbEnableLatch = new ShiftRegister<>("WbControlUnit.wbEnable", 2, Value8.zero, cycler);
         wbMuxIndexLatch = new ShiftRegister<>("WbControlUnit.wbMuxIndex", 2, Value8.zero, cycler);
         haltEnableLatch = new ShiftRegister<>("WbControlUnit.haltEnable", 2, Value8.zero, cycler);
-        sMuxIndexOutput = () -> computeMuxIndex(sSelectorInput.read(), "S");
-        tMuxIndexOutput = () -> computeMuxIndex(tSelectorInput.read(), "T");
+        sMuxIndexOutput = () -> computeMuxIndex(sSelectorInput.read());
+        tMuxIndexOutput = () -> computeMuxIndex(tSelectorInput.read());
         sSelectorInput = decoder.getSSelectorOutput();
         tSelectorInput = decoder.getTSelectorOutput();
         goOutput = () -> {
@@ -61,16 +61,14 @@ public class WbControlUnit {
      * Choose the correct value for S or T in case of data hazards
      *
      * @param selector either S or T selector
-     * @param name either S or T
      * @return mux index for S or T
      */
-    private Value8 computeMuxIndex(Value8 selector, String name) {
+    private Value8 computeMuxIndex(Value8 selector) {
         Value8 wbMuxIndex = wbMuxIndexLatch.getOutput(0).read();
         Value8 wbEnable0 = wbEnableLatch.getOutput(0).read();
         Value8 wbSelector0 = wbSelectorLatch.getOutput(0).read();
         Value8 wbEnable1 = wbEnableLatch.getOutput(1).read();
         Value8 wbSelector1 = wbSelectorLatch.getOutput(1).read();
-        String src = String.format("%sMuxIndex(%s, %s, %s, %s, %s, %s)", name, wbMuxIndex, selector, wbEnable0, wbSelector0, wbEnable1, wbSelector1);
         if(wbEnable0.intValue() == 1 && selector == wbSelector0) {
             return new Value8(1);
         }
@@ -112,7 +110,7 @@ public class WbControlUnit {
     }
 
     public String toStringDelta() {
-        Joiner j = new Joiner(" ", "Execute(", ")");
+        Joiner j = new Joiner(" ", "WbControlUnit(", ")");
         j.add(haltEnableLatch.toStringDelta());
         j.add(wbEnableLatch.toStringDelta());
         j.add(wbMuxIndexLatch.toStringDelta());
