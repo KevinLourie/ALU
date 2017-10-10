@@ -38,6 +38,8 @@ public class CPU {
      */
     private Cycler cycler;
 
+    private int cycle = 0;
+
     CPU() {
         cycler = new Cycler();
         coprocessor = new Coprocessor(cycler);
@@ -107,22 +109,21 @@ public class CPU {
      */
     public void run() {
         Output<Value8> halt = wbControlUnit.getHaltEnableLatch();
-        int i = 0;
         Value8 isHalt;
         do {
-            System.out.printf("%n========== Cycle %d%n", i);
+            System.out.printf("%n========== Cycle %d%n", cycle);
             cycler.sense();
             toStringDelta();
             cycler.cycle();
-            i++;
+            cycle++;
             isHalt = halt.read();
             System.out.printf("CheckHalt %s%n", isHalt);
-        }  while(!isHalt.booleanValue() && i < 85);
+        }  while(!isHalt.booleanValue() && cycle < 85);
 
         for(int k = 0; k < 31; k++) {
             System.out.printf("%x : %x%n", 1024 + (4*k), memory[k+256]);
         }
-        System.out.printf("Completed in %d cycles%n", i);
+        System.out.printf("Completed in %d cycles%n", cycle);
     }
 
     public void toStringDelta() {

@@ -13,7 +13,10 @@ public class Multiplexer<T extends Value> {
     /** Desired input */
     private Output<T> muxOutput;
 
-    Multiplexer(int size) {
+    String name;
+
+    Multiplexer(String name, int size) {
+        this.name = name;
         /**
          * Return desired input
          * @return desired input
@@ -25,6 +28,10 @@ public class Multiplexer<T extends Value> {
             T inputValue = inputArray[indexValue.byteValue()].read();
             return (T)inputValue.clone();
         };
+    }
+
+    public String toString() {
+        return name;
     }
 
     /**

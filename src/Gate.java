@@ -33,16 +33,19 @@ public class Gate {
     /** Either 0 or 1 for output*/
     Output<Value8> gateOutput;
 
+    String gateName;
+
     /**
      * Constructor
      *
      * @param precomputedOutput outputs for each input combination
      */
-    Gate(int[] precomputedOutput) {
+    Gate(String gateName, int[] precomputedOutput) {
         inputs = new Output[31 - Integer.numberOfLeadingZeros(precomputedOutput.length)];
         this.precomputedOutput = precomputedOutput;
+        this.gateName = gateName;
         gateOutput = () -> {
-            String name = "Gate(";
+            String name = "";
             int index = 0;
             for (int i = inputs.length - 1; i >= 0; i--) {
                 index = (index << 1) + inputs[i].read().intValue();
@@ -50,6 +53,10 @@ public class Gate {
             }
             return new Value8(precomputedOutput[index]);
         };
+    }
+
+    public String toString() {
+        return gateName;
     }
 
     /**

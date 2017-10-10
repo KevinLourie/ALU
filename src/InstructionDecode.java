@@ -43,13 +43,13 @@ public class InstructionDecode {
      * @param cycler cycler
      */
     InstructionDecode(Cycler cycler, int[] registers) {
-        wbEnableGate = new Gate(Gate.and2);
-        memoryWriteEnableGate = new Gate(Gate.and2);
+        wbEnableGate = new Gate("WbEnableGate", Gate.and2);
+        memoryWriteEnableGate = new Gate("MemoryWriteEnableGate", Gate.and2);
 
         // If go is false, then turn off WB enable
         adder = new Adder();
-        sSelectorMux = new Multiplexer<>(3);
-        tSelectorMux = new Multiplexer<>(3);
+        sSelectorMux = new Multiplexer<>("SSSelector", 3);
+        tSelectorMux = new Multiplexer<>("TSelector", 3);
         registerBank = new RegisterBank(cycler, registers);
         decoder = new Decoder();
         instructionRegister = new Register<>("InstructionDecode.instruction", Value32.zero, cycler);
@@ -66,15 +66,11 @@ public class InstructionDecode {
             Value8 branchCondition = decoder.getBranchConditionOutput().read();
             Value32 s = getSOutput().read();
             Value32 t = getTOutput().read();
-            String srcFixed = String.format("JumpEnable(%s)", branchCondition);
-            String src = String.format("JumpEnable(%s, %s, %s)", branchCondition, s, t);
             byte branch = 0;
             switch (branchCondition.byteValue()) {
                 case BranchCondition.never:
-                    src = srcFixed;
                     break;
                 case BranchCondition.always:
-                    src = srcFixed;
                     branch = 1;
                     break;
                 case BranchCondition.equal:
@@ -152,6 +148,7 @@ public class InstructionDecode {
     }
 
     public void setGo(Output<Value8> goInput) {
+        instructionRegister.setEnableInput(goInput);
         nextPcLatch.setEnableInput(goInput);
         wbEnableGate.setInput(0, goInput);
         memoryWriteEnableGate.setInput(0, goInput);

@@ -23,7 +23,7 @@ public class MemoryAccess {
      * @param arr integer array
      */
     MemoryAccess(int[] arr, Cycler cycler) {
-        wbMux = new Multiplexer<>(2);
+        wbMux = new Multiplexer<>("WbMux", 2);
         dataMemory = new DataMemory(cycler, arr);
         tLatch = new Register<>("MemoryAccess.T", Value32.zero, cycler);
         resultLatch = new Register<>("MemoryAccess.Result", Value32.zero, cycler);

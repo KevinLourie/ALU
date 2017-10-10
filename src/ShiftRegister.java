@@ -108,8 +108,4 @@ public class ShiftRegister<T extends Value> implements ICycle {
     public Output<T> getOutput(int index) {
         return output[index];
     }
-
-    public Output<T>[] getOutputs() {
-        return output.clone();
-    }
 }

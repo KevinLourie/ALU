@@ -4,29 +4,32 @@
 public class WbControlUnit {
 
     /** Latch for WB Selector */
-    ShiftRegister<Value8> wbSelectorLatch;
+    private ShiftRegister<Value8> wbSelectorLatch;
+
+    /** For turning off wbEnable and memoryWriteEnable if go is false */
+    private Gate wbEnableGate;
 
     /** Latch for WB enable */
-    ShiftRegister<Value8> wbEnableLatch;
+    private ShiftRegister<Value8> wbEnableLatch;
 
     /** Latch for WB mux index */
-    ShiftRegister<Value8> wbMuxIndexLatch;
+    private ShiftRegister<Value8> wbMuxIndexLatch;
 
-    ShiftRegister<Value8> haltEnableLatch;
+    private ShiftRegister<Value8> haltEnableLatch;
 
     /** Selector of the S register */
-    Output<Value8> sSelectorInput;
+    private Output<Value8> sSelectorInput;
 
     /** Selector of the T register */
-    Output<Value8> tSelectorInput;
+    private Output<Value8> tSelectorInput;
 
     /** S mux index. 0 uses the register bank, 1 uses the result from the ALU, and 2 for the write back */
-    Output<Value8> sMuxIndexOutput;
+    private Output<Value8> sMuxIndexOutput;
 
     /** T mux index */
-    Output<Value8> tMuxIndexOutput;
+    private Output<Value8> tMuxIndexOutput;
 
-    Output<Value8> goOutput;
+    private Output<Value8> goOutput;
 
     public Output<Value8> getSMuxIndexOutput() {
         return sMuxIndexOutput;
@@ -36,17 +39,14 @@ public class WbControlUnit {
         return tMuxIndexOutput;
     }
 
-    Decoder decoder = new Decoder();
-
     WbControlUnit(Cycler cycler) {
+        wbEnableGate = new Gate("WbEnableGate", Gate.and2);
         wbSelectorLatch = new ShiftRegister<>("WbControlUnit.wbSelector", 2, Value8.zero, cycler);
         wbEnableLatch = new ShiftRegister<>("WbControlUnit.wbEnable", 2, Value8.zero, cycler);
         wbMuxIndexLatch = new ShiftRegister<>("WbControlUnit.wbMuxIndex", 2, Value8.zero, cycler);
         haltEnableLatch = new ShiftRegister<>("WbControlUnit.haltEnable", 2, Value8.zero, cycler);
         sMuxIndexOutput = () -> computeMuxIndex(sSelectorInput.read());
         tMuxIndexOutput = () -> computeMuxIndex(tSelectorInput.read());
-        sSelectorInput = decoder.getSSelectorOutput();
-        tSelectorInput = decoder.getTSelectorOutput();
         goOutput = () -> {
             final int sSelectorInputValue = sSelectorInput.read().intValue();
             int sStall = determineGo(sSelectorInputValue);
@@ -64,7 +64,6 @@ public class WbControlUnit {
      * @return mux index for S or T
      */
     private Value8 computeMuxIndex(Value8 selector) {
-        Value8 wbMuxIndex = wbMuxIndexLatch.getOutput(0).read();
         Value8 wbEnable0 = wbEnableLatch.getOutput(0).read();
         Value8 wbSelector0 = wbSelectorLatch.getOutput(0).read();
         Value8 wbEnable1 = wbEnableLatch.getOutput(1).read();
@@ -90,13 +89,13 @@ public class WbControlUnit {
         boolean notYetFetched = wbMuxIndex == 0;
 
         // Check if the data being used in the load is the same as the data being used in the next instruction.
-        int wbSelector0 = wbSelectorLatch.getOutput(0).read().intValue();
-        boolean dataIsSame = wbSelector0 == selector;
+        int wbSelector = wbSelectorLatch.getOutput(0).read().intValue();
+        boolean dataIsSame = wbSelector == selector;
 
         // Check if a write back will occur, but not yet.
-        // TODO: It seems like this should be wbEnable0, not wbEnable1. However, then R5 is never written.
-        int wbEnable1 = wbEnableLatch.getOutput(1).read().intValue();
-        boolean willWriteBack = wbEnable1 == 1;
+        // TODO: It seems like this should be wbEnable0, not wbEnable. However, then R5 is never written.
+        int wbEnable = wbEnableLatch.getOutput(0).read().intValue();
+        boolean willWriteBack = wbEnable == 1;
 
         if(notYetFetched && dataIsSame && willWriteBack) {
             return 1;
@@ -188,16 +187,4 @@ public class WbControlUnit {
     public Output<Value8> getGoOutput() {
         return goOutput;
     }
-
-    /**
-     * Setter for latch precomputedOutput
-     * @param wbControlUnit latch precomputedOutput
-     */
-    public void setLatchInputs(WbControlUnit wbControlUnit) {
-        setWbEnableInput(wbControlUnit.getWbEnableOutput());
-        setWbMuxIndexInput(wbControlUnit.getWbMuxIndexOutput());
-        setWbSelectorInput(wbControlUnit.getWbSelectorOutput());
-        setHaltEnableLatch(wbControlUnit.getHaltEnableLatch());
-    }
-
 }

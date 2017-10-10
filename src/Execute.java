@@ -31,7 +31,7 @@ public class Execute {
      */
     Execute(Cycler cycler) {
         alu = new Alu();
-        aluMux = new Multiplexer<>(2);
+        aluMux = new Multiplexer<>("AluMux", 2);
         aluMuxIndexLatch = new Register<>("Execute.aluMuxIndex", Value8.zero, cycler);
         sLatch = new Register<>("Execute.s", Value32.zero, cycler);
         tLatch = new Register<>("Execute.t", Value32.zero, cycler);
