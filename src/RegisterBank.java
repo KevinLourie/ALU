@@ -39,6 +39,10 @@ public class RegisterBank implements ICycle {
 
     RegisterBank(Cycler cycler, int[] registers) {
         this.registers = registers;
+
+        tempWb = Value32.zero;
+        tempWbSelector = Value8.zero;
+
         sOutput = () -> {
             // Fetch S register
             Value8 address = sSelectorInput.read();
@@ -113,7 +117,11 @@ public class RegisterBank implements ICycle {
         if(tempWb.equals(registers[wbSelectorValue])) {
             return null;
         }
-        return "R" + wbSelectorValue + ":" + String.format("%x", tempWb.intValue());
+        return toString();
+    }
+
+    public String toString() {
+        return "R" + tempWbSelector.intValue() + ":" + String.format("%x", tempWb.intValue());
     }
 
     /**
@@ -132,9 +140,6 @@ public class RegisterBank implements ICycle {
         if (tempWbEnable.booleanValue()) {
             tempWb = wbInput.read();
             tempWbSelector = wbSelectorInput.read();
-        } else {
-            tempWb = null;
-            tempWbSelector = null;
         }
     }
 

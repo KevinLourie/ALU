@@ -82,7 +82,8 @@ public class CPU {
                 .setCInput(instructionDecode.getImmediateOutput())
                 .setAluOpInput(instructionDecode.getAluOpOutput())
                 .setMemoryWriteEnableInput(instructionDecode.getMemoryWriteEnableOutput())
-                .setAluMuxIndexInput(instructionDecode.getAluMuxIndexOutput());
+                .setAluMuxIndexInput(instructionDecode.getAluMuxIndexOutput())
+                .setGo(wbControlUnit.getGoOutput());
         memoryAccess
                 .setMemoryWriteEnableInput(execute.getMemoryWriteEnableOutput())
                 .setTInput(execute.getTOutput())

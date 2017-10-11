@@ -26,6 +26,9 @@ public class Execute {
 
     private Register<Value8> memoryWriteEnableLatch;
 
+    /** For turning off memoryWriteEnable if go is false */
+    Gate memoryWriteEnableGate;
+
     /**
      * Construct ALU, ALU multiplexer, data registers, address register, and ALU operator register
      */
@@ -38,8 +41,11 @@ public class Execute {
         cLatch = new Register<>("Execute.c", Value32.zero, cycler);
         memoryWriteEnableLatch = new Register<>("Execute.memoryWriteEnable", Value8.one, cycler);
         aluOpLatch = new Register<>("Execute.aluOp", new Value8(AluOp.Add), cycler);
+        memoryWriteEnableGate = new Gate("Execute.MemoryWriteEnableGate", Gate.and2);
 
         // Internal wire
+        memoryWriteEnableLatch.setInput(memoryWriteEnableGate.getOutput());
+
         alu
                 .setInput0(sLatch.getOutput())
                 .setInput1(aluMux.getOutput())
@@ -67,8 +73,12 @@ public class Execute {
      * @return Execute
      */
     public Execute setSInput(Output<Value32> sInput) {
-        // TODO: add correct enable precomputedOutput
         sLatch.setInput(sInput);
+        return this;
+    }
+
+    public Execute setGo(Output<Value8> goInput) {
+        memoryWriteEnableGate.setInput(0, goInput);
         return this;
     }
 
@@ -119,7 +129,7 @@ public class Execute {
     }
 
     public Execute setMemoryWriteEnableInput(Output<Value8> memoryWriteEnableInput) {
-        memoryWriteEnableLatch.setInput(memoryWriteEnableInput);
+        memoryWriteEnableGate.setInput(1, memoryWriteEnableInput);
         return this;
     }
 

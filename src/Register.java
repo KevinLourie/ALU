@@ -27,7 +27,7 @@ public class Register<T extends Value> implements ICycle {
 
     Register(String name, T initial, Cycler cycler) {
         this.name = name;
-        data = initial;
+        data = tempData = initial;
         output = () -> {
             return data;
         };
@@ -41,7 +41,7 @@ public class Register<T extends Value> implements ICycle {
      * @return true if it has changed, false is not
      */
     public String toStringDelta() {
-        return tempData == null || tempData.equals(data) ? null : toString();
+        return tempData.equals(data) ? null : toString();
     }
 
     @Override
@@ -85,8 +85,6 @@ public class Register<T extends Value> implements ICycle {
         if (tempEnable.booleanValue()) {
             T inputValue = input.read();
             tempData = inputValue;
-        } else {
-            tempData = null;
         }
     }
 

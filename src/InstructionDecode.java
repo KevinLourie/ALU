@@ -31,21 +31,12 @@ public class InstructionDecode {
 
     private Multiplexer<Value32> tSelectorMux;
 
-    /** For turning off wbEnable and memoryWriteEnable if go is false */
-    Gate wbEnableGate;
-
-    /** For turning off memoryWriteEnable if go is false */
-    Gate memoryWriteEnableGate;
-
     /**
      * Constructor
      *
      * @param cycler cycler
      */
     InstructionDecode(Cycler cycler, int[] registers) {
-        wbEnableGate = new Gate("WbEnableGate", Gate.and2);
-        memoryWriteEnableGate = new Gate("MemoryWriteEnableGate", Gate.and2);
-
         // If go is false, then turn off WB enable
         adder = new Adder();
         sSelectorMux = new Multiplexer<>("SSSelector", 3);
@@ -99,10 +90,6 @@ public class InstructionDecode {
             return new Value8(branch);
         };
 
-        // Internal wiring
-        wbEnableGate.setInput(1, decoder.getWbEnableOutput());
-        memoryWriteEnableGate.setInput(1, decoder.getMemoryWriteEnableOutput());
-
         sSelectorMux.setInput(0, registerBank.getSOutput());
         tSelectorMux.setInput(0, registerBank.getTOutput());
 
@@ -150,8 +137,6 @@ public class InstructionDecode {
     public void setGo(Output<Value8> goInput) {
         instructionRegister.setEnableInput(goInput);
         nextPcLatch.setEnableInput(goInput);
-        wbEnableGate.setInput(0, goInput);
-        memoryWriteEnableGate.setInput(0, goInput);
     }
 
     /**
@@ -194,7 +179,7 @@ public class InstructionDecode {
     }
 
     public Output<Value8> getMemoryWriteEnableOutput() {
-        return memoryWriteEnableGate.getOutput();
+        return decoder.getMemoryWriteEnableOutput();
     }
 
     public Output<Value8> getWbMuxIndexOutput() {
@@ -206,7 +191,7 @@ public class InstructionDecode {
     }
 
     public Output<Value8> getWbEnableOutput() {
-        return wbEnableGate.getOutput();
+        return decoder.getWbEnableOutput();
     }
 
     public Output<Value8> getHaltOutput() {

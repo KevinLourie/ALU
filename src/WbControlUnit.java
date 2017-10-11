@@ -40,7 +40,7 @@ public class WbControlUnit {
     }
 
     WbControlUnit(Cycler cycler) {
-        wbEnableGate = new Gate("WbEnableGate", Gate.and2);
+        wbEnableGate = new Gate("WbControlUnit.WbEnableGate", Gate.and2);
         wbSelectorLatch = new ShiftRegister<>("WbControlUnit.wbSelector", 2, Value8.zero, cycler);
         wbEnableLatch = new ShiftRegister<>("WbControlUnit.wbEnable", 2, Value8.zero, cycler);
         wbMuxIndexLatch = new ShiftRegister<>("WbControlUnit.wbMuxIndex", 2, Value8.zero, cycler);
@@ -55,6 +55,10 @@ public class WbControlUnit {
             int go = sStall == 0 && tStall == 0 ? 1 : 0;
             return new Value8(go);
         };
+
+        // Internal wiring
+        wbEnableGate.setInput(0, getGoOutput());
+        wbEnableLatch.setInput(wbEnableGate.getOutput());
     }
 
     /**
@@ -136,7 +140,7 @@ public class WbControlUnit {
      * @return WbLatches
      */
     public WbControlUnit setWbEnableInput(Output<Value8> wbEnableInput) {
-        wbEnableLatch.setInput(wbEnableInput);
+        wbEnableGate.setInput(1, wbEnableInput);
         return this;
     }
 
