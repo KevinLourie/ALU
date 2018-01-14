@@ -23,7 +23,7 @@ public class InstructionFetch {
         instructionMemory = new InstructionMemory(arr);
         adder = new Adder();
         pc = new Register<>("InstructionFetch.pc", Value32.zero, cycler);
-        pcMux = new Multiplexer<>("PcMux", 2);
+        pcMux = new Multiplexer<>("InstructionFetch.PcMux", 2);
 
         // Internal wiring
         adder.init(pc.getOutput(), new ConstantOutput<Value32>(new Value32(4)));

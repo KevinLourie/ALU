@@ -48,11 +48,9 @@ public class WbControlUnit {
         sMuxIndexOutput = () -> computeMuxIndex(sSelectorInput.read());
         tMuxIndexOutput = () -> computeMuxIndex(tSelectorInput.read());
         goOutput = () -> {
-            final int sSelectorInputValue = sSelectorInput.read().intValue();
-            int sStall = determineGo(sSelectorInputValue);
-            final int tSelectorInputValue = tSelectorInput.read().intValue();
-            int tStall = determineGo(tSelectorInputValue);
-            int go = sStall == 0 && tStall == 0 ? 1 : 0;
+            final boolean sStall = determineStall(sSelectorInput.read());
+            final boolean tStall = determineStall(tSelectorInput.read());
+            final int go = sStall || tStall ? 0 : 1;
             return new Value8(go);
         };
 
@@ -72,13 +70,13 @@ public class WbControlUnit {
         Value8 wbSelector0 = wbSelectorLatch.getOutput(0).read();
         Value8 wbEnable1 = wbEnableLatch.getOutput(1).read();
         Value8 wbSelector1 = wbSelectorLatch.getOutput(1).read();
-        if(wbEnable0.intValue() == 1 && selector == wbSelector0) {
-            return new Value8(1);
+        if(wbEnable0.equals(Value8.one) && selector.equals(wbSelector0)) {
+            return Value8.one;
         }
-        else if(wbEnable1.intValue() == 1 && selector == wbSelector1) {
-            return new Value8(2);
+        else if(wbEnable1.equals(Value8.one) && selector.equals(wbSelector1)) {
+            return Value8.two;
         }
-        return new Value8(0);
+        return Value8.zero;
     }
 
     /**
@@ -86,25 +84,21 @@ public class WbControlUnit {
      * @param selector data being used in instruction
      * @return stall or not stall
      */
-    private int determineGo(int selector) {
+    private boolean determineStall(Value8 selector) {
         // This means that the data has not yet been fetched from memory. If the
         // next instruction uses the data loaded from memory, it will not have the correct value.
-        int wbMuxIndex = wbMuxIndexLatch.getOutput(0).read().intValue();
-        boolean notYetFetched = wbMuxIndex == 0;
+        final Value8 wbMuxIndex = wbMuxIndexLatch.getOutput(0).read();
+        final boolean notYetFetched = wbMuxIndex.equals(Value8.zero);
 
         // Check if the data being used in the load is the same as the data being used in the next instruction.
-        int wbSelector = wbSelectorLatch.getOutput(0).read().intValue();
-        boolean dataIsSame = wbSelector == selector;
+        final Value8 wbSelector = wbSelectorLatch.getOutput(0).read();
+        final boolean dataIsSame = wbSelector.equals(selector);
 
         // Check if a write back will occur, but not yet.
-        // TODO: It seems like this should be wbEnable0, not wbEnable. However, then R5 is never written.
-        int wbEnable = wbEnableLatch.getOutput(0).read().intValue();
-        boolean willWriteBack = wbEnable == 1;
+        final Value8 wbEnable = wbEnableLatch.getOutput(0).read();
+        boolean willWriteBack = wbEnable.equals(Value8.one);
 
-        if(notYetFetched && dataIsSame && willWriteBack) {
-            return 1;
-        }
-        return 0;
+       return notYetFetched && dataIsSame && willWriteBack;
     }
 
     public WbControlUnit setSSelectorInput(Output<Value8> sSelectorInput) {

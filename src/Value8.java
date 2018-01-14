@@ -9,6 +9,8 @@ public class Value8 extends Value {
 
     public static final Value8 one = new Value8(1);
 
+    public static final Value8 two = new Value8(2);
+
     public Value8(int n) {
         this.n = (byte)n;
     }

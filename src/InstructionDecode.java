@@ -39,8 +39,8 @@ public class InstructionDecode {
     InstructionDecode(Cycler cycler, int[] registers) {
         // If go is false, then turn off WB enable
         adder = new Adder();
-        sSelectorMux = new Multiplexer<>("SSSelector", 3);
-        tSelectorMux = new Multiplexer<>("TSelector", 3);
+        sSelectorMux = new Multiplexer<>("InstructionDecode.sSelectorMux", 3);
+        tSelectorMux = new Multiplexer<>("InstructionDecode.tSelectorMux", 3);
         registerBank = new RegisterBank(cycler, registers);
         decoder = new Decoder();
         instructionRegister = new Register<>("InstructionDecode.instruction", Value32.zero, cycler);
